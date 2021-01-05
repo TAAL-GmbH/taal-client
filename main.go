@@ -1,0 +1,117 @@
+package main
+
+import (
+	"crypto/sha256"
+	"encoding/hex"
+	"fmt"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"taal-client/client"
+	"taal-client/config"
+	"taal-client/server"
+)
+
+func usage() {
+	fmt.Println(`
+Usage
+-----
+taal-client register <api-key>
+  Creates a private key which is held locally, and sends the public key to Taal to be linked to an existing API key.
+
+taal-client start
+  Starts listening for requests on :9500.  This value can be changed with the LISTEN environment variable.
+
+  All requests will be sent to https://mapi.taal.com by default unless overridden with the MAPI_URL environment variable.
+
+Environment variables
+---------------------
+  LISTEN
+  TAAL_URL
+  TAAL_TIMEOUT
+
+Example
+-------
+  LISTEN=localhost:8080 MAPI_URL=http://localhost:4000 ./taal_client serve
+
+	`)
+
+	os.Exit(1)
+}
+
+func main() {
+	conf := config.Load()
+
+	taal := client.New(conf.TaalUrl, conf.TaalTimeOut)
+
+	if len(os.Args) == 2 && os.Args[1] == "start" {
+		// taal-client start
+
+		stopServer := make(chan bool, 1)
+		stop := make(chan os.Signal, 1)
+		signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+		go func() {
+			<-stop
+			stopServer <- true
+		}()
+
+		s := server.New(conf.ListenAddress, taal)
+
+		if err := s.Start(stopServer); err != nil {
+			log.Fatalf("app terminated with error: %v", err)
+		}
+
+	} else if len(os.Args) == 3 && os.Args[1] == "register" {
+		// taal-client register <api-key>
+		apiKey := os.Args[2]
+
+		// var privateKey *bsvec.PrivateKey
+
+		privateKey, err := config.GetPrivateKey(apiKey)
+		if err != nil {
+			if os.IsNotExist(err) {
+				// The file is not there, so we can continue registration
+			} else {
+				fmt.Printf("failed to check apiKey existence: %s", err)
+				os.Exit(1)
+			}
+		}
+
+		if privateKey != nil {
+			fmt.Printf("apikey has already been registered")
+			os.Exit(1)
+		}
+
+		h := sha256.Sum256([]byte(apiKey))
+
+		signature, err := privateKey.Sign(h[:])
+		if err != nil {
+			fmt.Printf("failed to sign private key with api key: %s", err)
+			os.Exit(1)
+		}
+
+		signatureStr := hex.EncodeToString(signature.Serialize())
+		publicKeyStr := hex.EncodeToString(privateKey.PubKey().SerializeCompressed())
+
+		err = taal.Register(signatureStr, publicKeyStr, apiKey)
+		if err != nil {
+			fmt.Printf("failed to register: %s", err)
+			os.Exit(1)
+		}
+
+		err = config.StorePrivateKey(apiKey, privateKey)
+		if err != nil {
+			fmt.Printf("failed to write private key: %s", err)
+			os.Exit(1)
+		}
+
+		fmt.Println("Registration successful")
+		os.Exit(0)
+
+	} else {
+		usage()
+	}
+}

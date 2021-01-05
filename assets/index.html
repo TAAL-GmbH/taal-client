@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WoC Client Example</title>
+  <style>
+    * {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14pt;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      background-color: rgb(247, 247, 247);
+    }
+    .button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+    #container {
+      margin: 20px;
+    }
+    #network {
+      margin-top: 10px;
+      margin-bottom: 20px;
+    }
+    #mydata {
+      padding: 5px;
+      min-width: 500px;
+      min-height: 200px;
+      margin-bottom: 20px;
+      
+    }
+    #apikey {
+      min-width: 400px;
+      margin-bottom: 20px;
+    }
+    #results {
+      margin: 20px;
+    }
+    #addFees, #tag {
+      margin-bottom: 20px;
+    }
+  </style>
+  <script>
+    const networks = {
+      local: {
+        writeUrl: '/api/v1/write',
+        readUrl: 'https://test.whatsonchain.com/tx/',
+        apikey: 'testnet_6941c83684a9194ca53f25cff60c8710'
+      },
+      test: {
+        writeUrl: 'https://mapi.taal.com/api/v1/write',
+        readUrl: 'https://test.whatsonchain.com/tx/',
+        apikey: 'regtest_b31b13a39b71165e251b11140920dbf7'
+      }
+    }
+
+    function writeData() {
+      var network = document.getElementById("network").value
+      var mydata = document.getElementById("mydata").value
+      var apikey = document.getElementById("apikey").value
+      var tag = document.getElementById("tag").value
+      if (!apikey) {
+        apikey = networks[network].apikey
+      }
+      var addFees = document.getElementById("addFees").checked
+
+      fetch(networks[network].writeUrl, {
+        method: "POST",
+        body: mydata,
+        headers: {
+          "Authorization": "Bearer " + apikey,
+		      "Content-Type": "text/plain",
+          "X-FeesRequired": addFees,
+          "X-Tag": tag
+	      },
+      }).then(function(response) {
+        response.text().then(function(txid) {
+          if (response.status === 200) {
+            var url = `${networks[network].readUrl}${txid}`
+            document.getElementById("results").innerHTML += `<div><a href="${url}">${url}</a></div>`
+            document.getElementById("mydata").value = ""
+          } else {
+            alert("There was an error writing: " + response.statusText)
+          }
+        }).catch(function(err) {
+          alert("Could not read response: " + err.message)
+        })
+      }).catch(function(err) {
+        console.log(err)
+      })
+    }
+    
+  </script>
+</head>
+<body>
+  <div id="container">
+    <h1>Simple WoC Client Example</h1>
+    <div>
+      <label for="network">Network:</label>
+      <select id="network">
+        <option value="local">local</option>
+        <option value="test">test</option>
+      </select>
+    </div>
+    <div>
+      <label for="apikey">API key:</label>
+      <input id="apikey", type="text", placeholder="overwrite default..."></input>
+    </div>
+    <div>
+      <label for="tag">Tag:</label>
+      <input id="tag", type="text", value="WOCC"></input>
+    </div>
+    <textarea id="mydata" placeholder="Enter text to send to blockchain"></textarea>
+    <div>
+      <input id="addFees", type="checkbox", checked value="false"></input>
+      <label for="addFees">Add fees</label>
+    </div>
+    <div>
+      <input type="button" class="button" onClick="writeData()" value="Send to blockchain"></input>
+    </div>
+    <div id="results"></div>  
+  </div>
+</body>
+</html>
