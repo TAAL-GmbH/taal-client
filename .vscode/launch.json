@@ -28,7 +28,7 @@
       "program": "${workspaceFolder}/main.go",
       "cwd": "${workspaceFolder}",
       "env": {},
-      "args": ["register", "regtest_b31b13a39b71165e251b11140920dbf7"],
+      "args": ["register", "testnet_1b13ef42af601bd8e8445e9ba01607a0"],
       "showLog": true
     }
   ]

@@ -12,6 +12,8 @@ import (
 	"taal-client/client"
 	"taal-client/config"
 	"taal-client/server"
+
+	"github.com/bitcoinsv/bsvd/bsvec"
 )
 
 func usage() {
@@ -34,7 +36,7 @@ Environment variables
 
 Example
 -------
-  LISTEN=localhost:8080 MAPI_URL=http://localhost:4000 ./taal_client serve
+  LISTEN=localhost:8080 MAPI_URL=http://localhost:4000 ./taal_client start
 
 	`)
 
@@ -68,8 +70,6 @@ func main() {
 		// taal-client register <api-key>
 		apiKey := os.Args[2]
 
-		// var privateKey *bsvec.PrivateKey
-
 		privateKey, err := config.GetPrivateKey(apiKey)
 		if err != nil {
 			if os.IsNotExist(err) {
@@ -81,7 +81,13 @@ func main() {
 		}
 
 		if privateKey != nil {
-			fmt.Printf("apikey has already been registered")
+			fmt.Println("apikey has already been registered")
+			os.Exit(1)
+		}
+
+		privateKey, err = bsvec.NewPrivateKey(bsvec.S256())
+		if err != nil {
+			fmt.Printf("failed to generate new private key: %s", err)
 			os.Exit(1)
 		}
 
