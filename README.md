@@ -3,7 +3,7 @@ This is an small service that runs on a Taal customer's machine and interacts wi
 
 All private keys used for signing customer's transactions are only held on the customer's machine.
 
-```
+```text
 Usage
 -----
 taal-client register <api-key>
@@ -42,7 +42,7 @@ Before this client can be used, a valid Taal APIKey needs to be registered in or
 
 After starting the TaalClient with ```taal-client start``` you can then write data to the blockchain by POSTing to the TaalClient.
 
-```sh
+```c
 curl --location --request POST 'http://localhost:9500/api/v1/write' \
 --header 'X-FeesRequired: true' \
 --header 'X-Tag: AN_OPTIONAL_TAG' \
