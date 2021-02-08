@@ -18,6 +18,7 @@ cd $(dirname $BASH_SOURCE)
 
 PROG_NAME="taal-client"
 
+
 if [ -z "$(git status --porcelain)" ]; then
   # Working directory clean
   GIT_COMMIT=$(git rev-parse HEAD)
