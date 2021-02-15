@@ -12,7 +12,7 @@ taal-client register <api-key>
 taal-client start
   Starts listening for requests on :9500.  This value can be changed with the LISTEN environment variable.
 
-  All requests will be sent to https://mapi.taal.com by default unless overridden with the MAPI_URL environment variable.
+  All requests will be sent to https://mapi.taal.com by default unless overridden with the TAAL_URL environment variable.
 
 Environment variables
 ---------------------
@@ -22,7 +22,7 @@ Environment variables
 
 Example
 -------
-  LISTEN=localhost:8080 MAPI_URL=http://localhost:4000 ./taal_client start
+  LISTEN=localhost:8080 TAAL_URL=http://localhost:4000 ./taal_client start
 
 ```
 

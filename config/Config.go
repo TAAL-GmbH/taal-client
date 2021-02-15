@@ -40,7 +40,7 @@ func Load() *Config {
 
 	url := os.Getenv("TAAL_URL")
 	if url != "" {
-		config.ListenAddress = url
+		config.TaalUrl = url
 	}
 
 	timeout := os.Getenv("TAAL_TIMEOUT")
