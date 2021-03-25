@@ -14,7 +14,7 @@
       "host": "127.0.0.1",
       "program": "${workspaceFolder}/main.go",
       "cwd": "${workspaceFolder}",
-      "env": {"LISTEN": "localhost:9500"},
+      "env": {"LISTEN": "localhost:9500", "TAAL_URL": "http://localhost:9004"},
       "args": ["start"],
       "showLog": true
     },{
