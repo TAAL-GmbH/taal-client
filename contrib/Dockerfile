@@ -1,10 +1,33 @@
-FROM golang:alpine
+FROM golang:alpine as builder
 
 ADD . /var/share/
 
 WORKDIR /var/share
 
-RUN apk add --update bash && /bin/bash contrib/build.sh && ls build/linux && \
-  cp contrib/run.sh /usr/local/bin/run.sh && chmod +x /usr/local/bin/run.sh
+ENV USER=appuser
+ENV UID=10001 
 
-CMD [ "/usr/local/bin/run.sh" ]
+RUN adduser \    
+    --disabled-password \    
+    --gecos "" \    
+    --home "/nonexistent" \    
+    --shell "/sbin/nologin" \    
+    --no-create-home \    
+    --uid "${UID}" \    
+    "${USER}"
+
+RUN apk add --update bash && /bin/bash contrib/build.sh && ls -la /tmp/taal-client
+
+
+FROM scratch
+
+COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /etc/group /etc/group
+
+COPY --from=builder /tmp/taal-client /go/bin/taal-client
+
+USER appuser:appuser
+
+ENTRYPOINT [ "/go/bin/taal-client" ]
+
+CMD ["start"]

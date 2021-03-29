@@ -37,8 +37,10 @@ else
   FILENAME=${PROG_NAME}_${GIT_COMMIT}_${BUILD}
 fi
 
+env GOOS=linux GOARCH=amd64 go get -d -v
+
 #env GOOS=darwin GOARCH=amd64 go build -o build/darwin/$FILENAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-env GOOS=linux GOARCH=amd64 go build -o build/linux/$FILENAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+env GOOS=linux CGO_ENABLED=0 GOARCH=amd64 go build -o build/linux/$FILENAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 #env GOOS=linux GOARCH=arm go build -o build/raspian/$FILENAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 #env GOOS=windows GOARCH=386 go build -o build/windows/$FILENAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 
@@ -56,6 +58,6 @@ else
   echo "${PROG_NAME}: Build FAILED"
 fi
 
-cp build/linux/$FILENAME /usr/local/bin/taal-client
+cp build/linux/$FILENAME /tmp/taal-client
 
-chmod +x /usr/local/bin/taal-client
+chmod +x /tmp/taal-client
