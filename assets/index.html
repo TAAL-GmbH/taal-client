@@ -35,9 +35,10 @@
       margin: 20px;
     }
 
-    #network {
+    #url {
       margin-top: 10px;
       margin-bottom: 20px;
+      min-width: 500px;
     }
 
     #mydata {
@@ -63,25 +64,14 @@
     }
   </style>
   <script>
-    const networks = {
-      local: {
-        writeUrl: '/api/v1/write',
-        readUrl: 'https://www.whatsonchain.com/tx/',
-      },
-      test: {
-        writeUrl: 'https://mapi.taal.com/api/v1/write',
-        readUrl: 'https://test.whatsonchain.com/tx/',
-      }
-    }
-
     function writeData() {
-      var network = document.getElementById("network").value
+      var url = document.getElementById("url").value
       var mydata = document.getElementById("mydata").value
       var apikey = document.getElementById("apikey").value
       var tag = document.getElementById("tag").value
       var addFees = document.getElementById("addFees").checked
 
-      fetch(networks[network].writeUrl, {
+      fetch(url, {
         method: "POST",
         body: mydata,
         headers: {
@@ -92,8 +82,8 @@
         },
       }).then(function (response) {
         response.json().then(function (j) {
-          if (response.status === 200) {
-            var url = `${networks[network].readUrl}${j.txid}`
+          if (response.status === 201) {
+            var url = (apikey.startsWith('testnet_') ? 'https://test.whatsonchain.com/tx/' : 'https://www.whatsonchain.com/tx/') + j.txid
             document.getElementById("results").innerHTML += `<div><a href="${url}">${url}</a></div>`
             document.getElementById("mydata").value = ""
           } else {
@@ -114,11 +104,9 @@
   <div id="container">
     <h1>Simple WoC Client Example</h1>
     <div>
-      <label for="network">Network:</label>
-      <select id="network">
-        <option value="local">local</option>
-        <option value="test">test</option>
-      </select>
+    <div>
+      <label for="url">TaalClient URL:</label>
+      <input id="url", type="text" value="http://localhost:9500/api/v1/write"></input>
     </div>
     <div>
       <label for="apikey">API key:</label>
