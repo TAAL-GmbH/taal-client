@@ -25,6 +25,11 @@ type Server struct {
 	taal    *client.Client
 }
 
+type successResponse struct {
+	Status int32  `json:"status"`
+	Txid   string `json:"txid"`
+}
+
 type errorResponse struct {
 	Status int32  `json:"status"`
 	Code   int32  `json:"code"`
@@ -157,7 +162,7 @@ func (s Server) write(c echo.Context) error {
 		return s.sendError(c, http.StatusBadRequest, 16, fmt.Errorf("failed to submit transactions: %w", err))
 	}
 
-	return c.String(http.StatusOK, dataTx.GetTxID())
+	return s.sendSuccess(c, http.StatusCreated, dataTx.GetTxID())
 }
 
 func signTx(pk *bsvec.PrivateKey, tx *bt.Tx) error {
@@ -192,5 +197,12 @@ func (s Server) sendError(c echo.Context, status int, code int32, err error) err
 		Status: int32(status),
 		Code:   code,
 		Err:    err.Error(),
+	})
+}
+
+func (s Server) sendSuccess(c echo.Context, status int, txid string) error {
+	return c.JSON(status, &successResponse{
+		Status: int32(status),
+		Txid:   txid,
 	})
 }

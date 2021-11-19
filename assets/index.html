@@ -96,9 +96,9 @@
           "X-Tag": tag
         },
       }).then(function (response) {
-        response.text().then(function (txid) {
+        response.json().then(function (j) {
           if (response.status === 200) {
-            var url = `${networks[network].readUrl}${txid}`
+            var url = `${networks[network].readUrl}${j.txid}`
             document.getElementById("results").innerHTML += `<div><a href="${url}">${url}</a></div>`
             document.getElementById("mydata").value = ""
           } else {
