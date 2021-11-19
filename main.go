@@ -36,8 +36,8 @@ Environment variables
 
 Example
 -------
-  LISTEN=localhost:8080 TAAL_URL=http://localhost:4000 ./taal_client start
-
+  LISTEN=localhost:8080 TAAL_URL=http://localhost:4000 TAAL_TIMEOUT=1m ./taal_client start
+  
 	`)
 
 	os.Exit(1)
