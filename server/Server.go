@@ -150,6 +150,8 @@ func (s Server) write(c echo.Context) error {
 		return s.sendError(c, http.StatusBadRequest, 15, fmt.Errorf("failed to sign transaction: %w", err))
 	}
 
+	// fmt.Printf("DATA TX:\n%x\n", dataTx.ToBytes())
+
 	err = s.taal.SubmitTransactions(apiKey, feeTx, dataTx)
 	if err != nil {
 		return s.sendError(c, http.StatusBadRequest, 16, fmt.Errorf("failed to submit transactions: %w", err))

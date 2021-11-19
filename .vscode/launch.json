@@ -10,11 +10,13 @@
       "request": "launch",
       "mode": "debug",
       "remotePath": "",
-      "port": 9981,
-      "host": "127.0.0.1",
       "program": "${workspaceFolder}/main.go",
       "cwd": "${workspaceFolder}",
-      "env": {"LISTEN": "localhost:9500", "TAAL_URL": "http://localhost:9004"},
+      "env": {
+        "LISTEN": "localhost:9500",
+        "TAAL_URL": "http://localhost:9004",
+        "TAAL_TIMEOUT": "10m"
+      },
       "args": ["start"],
       "showLog": true
     },{

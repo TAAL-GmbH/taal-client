@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
@@ -13,8 +14,9 @@ import (
 )
 
 type Client struct {
-	client *http.Client
-	url    string
+	client  *http.Client
+	url     string
+	Timeout time.Duration
 }
 
 type RegisterRequest struct {
@@ -29,12 +31,12 @@ func New(url string, timeout time.Duration) *Client {
 				InsecureSkipVerify: true,
 			},
 		},
-		Timeout: timeout,
 	}
 
 	return &Client{
-		client: client,
-		url:    url,
+		client:  client,
+		url:     url,
+		Timeout: timeout,
 	}
 }
 
@@ -57,6 +59,10 @@ func (c *Client) Register(signature string, publicKey string, apiKey string) err
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
+	defer cancel()
+	req = req.WithContext(ctx)
 
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", apiKey))
 	req.Header.Set("Content-Type", "application/json")
@@ -93,6 +99,10 @@ func (c *Client) GetTransactionsTemplate(apiKey string, size int, feesRequired b
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to create request: %w", err)
 	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
+	defer cancel()
+	req = req.WithContext(ctx)
 
 	req.Header.Set("Authorization", "Bearer "+apiKey)
 	req.Header.Set("Content-Type", "application/json")
@@ -151,6 +161,10 @@ func (c *Client) SubmitTransactions(apiKey string, feeTx *bt.Tx, dataTx *bt.Tx) 
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
+	defer cancel()
+	req = req.WithContext(ctx)
 
 	req.Header.Set("Authorization", apiKey)
 	req.Header.Set("Content-Type", "application/json")

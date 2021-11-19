@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,9 +12,12 @@
       margin: 0;
       padding: 0;
     }
-    html, body {
+
+    html,
+    body {
       background-color: rgb(247, 247, 247);
     }
+
     .button {
       background-color: #4CAF50;
       border: none;
@@ -26,28 +30,35 @@
       margin: 4px 2px;
       cursor: pointer;
     }
+
     #container {
       margin: 20px;
     }
+
     #network {
       margin-top: 10px;
       margin-bottom: 20px;
     }
+
     #mydata {
       padding: 5px;
       min-width: 500px;
       min-height: 200px;
       margin-bottom: 20px;
-      
+
     }
+
     #apikey {
       min-width: 500px;
       margin-bottom: 20px;
     }
+
     #results {
       margin: 20px;
     }
-    #addFees, #tag {
+
+    #addFees,
+    #tag {
       margin-bottom: 20px;
     }
   </style>
@@ -55,12 +66,12 @@
     const networks = {
       local: {
         writeUrl: '/api/v1/write',
-        readUrl: 'https://test.whatsonchain.com/tx/',
+        readUrl: 'https://www.whatsonchain.com/tx/',
         apikey: 'testnet_6941c83684a9194ca53f25cff60c8710'
       },
       test: {
         writeUrl: 'https://mapi.taal.com/api/v1/write',
-        readUrl: 'https://test.whatsonchain.com/tx/',
+        readUrl: 'https://www.whatsonchain.com/tx/',
         apikey: 'regtest_b31b13a39b71165e251b11140920dbf7'
       }
     }
@@ -80,12 +91,12 @@
         body: mydata,
         headers: {
           "Authorization": "Bearer " + apikey,
-		      "Content-Type": "text/plain",
+          "Content-Type": "text/plain",
           "X-FeesRequired": addFees,
           "X-Tag": tag
-	      },
-      }).then(function(response) {
-        response.text().then(function(txid) {
+        },
+      }).then(function (response) {
+        response.text().then(function (txid) {
           if (response.status === 200) {
             var url = `${networks[network].readUrl}${txid}`
             document.getElementById("results").innerHTML += `<div><a href="${url}">${url}</a></div>`
@@ -93,16 +104,17 @@
           } else {
             alert("There was an error writing: " + response.statusText)
           }
-        }).catch(function(err) {
+        }).catch(function (err) {
           alert("Could not read response: " + err.message)
         })
-      }).catch(function(err) {
+      }).catch(function (err) {
         console.log(err)
       })
     }
-    
+
   </script>
 </head>
+
 <body>
   <div id="container">
     <h1>Simple WoC Client Example</h1>
@@ -115,21 +127,22 @@
     </div>
     <div>
       <label for="apikey">API key:</label>
-      <input id="apikey", type="text", placeholder="overwrite default..."></input>
+      <input id="apikey" , type="text" , placeholder="overwrite default..."></input>
     </div>
     <div>
       <label for="tag">Tag:</label>
-      <input id="tag", type="text", value="WOCC"></input>
+      <input id="tag" , type="text" , value="WOCC"></input>
     </div>
     <textarea id="mydata" placeholder="Enter text to send to blockchain"></textarea>
     <div>
-      <input id="addFees", type="checkbox", checked value="false"></input>
+      <input id="addFees" , type="checkbox" , checked value="false"></input>
       <label for="addFees">Add fees</label>
     </div>
     <div>
       <input type="button" class="button" onClick="writeData()" value="Send to blockchain"></input>
     </div>
-    <div id="results"></div>  
+    <div id="results"></div>
   </div>
 </body>
+
 </html>
