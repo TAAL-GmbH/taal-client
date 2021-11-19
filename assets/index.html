@@ -67,12 +67,10 @@
       local: {
         writeUrl: '/api/v1/write',
         readUrl: 'https://www.whatsonchain.com/tx/',
-        apikey: 'testnet_6941c83684a9194ca53f25cff60c8710'
       },
       test: {
         writeUrl: 'https://mapi.taal.com/api/v1/write',
-        readUrl: 'https://www.whatsonchain.com/tx/',
-        apikey: 'regtest_b31b13a39b71165e251b11140920dbf7'
+        readUrl: 'https://test.whatsonchain.com/tx/',
       }
     }
 
@@ -81,9 +79,6 @@
       var mydata = document.getElementById("mydata").value
       var apikey = document.getElementById("apikey").value
       var tag = document.getElementById("tag").value
-      if (!apikey) {
-        apikey = networks[network].apikey
-      }
       var addFees = document.getElementById("addFees").checked
 
       fetch(networks[network].writeUrl, {
@@ -127,7 +122,7 @@
     </div>
     <div>
       <label for="apikey">API key:</label>
-      <input id="apikey" , type="text" , placeholder="overwrite default..."></input>
+      <input id="apikey" , type="text"></input>
     </div>
     <div>
       <label for="tag">Tag:</label>
