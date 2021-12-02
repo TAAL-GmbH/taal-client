@@ -55,12 +55,12 @@
       min-width: 500px;
     }
 
-    #datalabel {
+    #dataLabel {
       vertical-align: top;
       margin-top: 5px;
     }
 
-    #mydata {
+    #data {
       padding: 5px;
       border: 1px solid #ccc;
       min-width: 500px;
@@ -68,7 +68,7 @@
       margin-bottom: 20px;
     }
 
-    #apikey {
+    #apiKey {
       min-width: 500px;
       margin-bottom: 20px;
     }
@@ -87,45 +87,45 @@
     }
   </style>
   <script>
-    function showCurl(apikey, type, tag, mydata, url) {
-      let data='curl -X POST'
-      if (apikey) data += ` -H 'Authorization: Bearer ${apikey}'`
-      if (type) data += ` -H 'Content-Type: ${type}'`
-      if (tag) data += ` -H 'X-Tag: ${tag}'`
-      if (mydata) data += ` -d "${mydata}"`
-      data += ` ${url}`
+    function showCurl(apiKey, type, tag, data, url) {
+      let curl='curl -X POST'
+      if (apiKey) curl += ` -H 'Authorization: Bearer ${apiKey}'`
+      if (type) curl += ` -H 'Content-Type: ${type}'`
+      if (tag) curl += ` -H 'X-Tag: ${tag}'`
+      if (data) curl += ` -d "${data}"`
+      curl += ` ${url}`
 
-      document.getElementById("curl").innerHTML = data
+      document.getElementById("curl").innerHTML = curl
     }
 
     function writeData() {
       var url = document.getElementById("url").value
       var type = document.getElementById("type").value
-      var mydata = document.getElementById("mydata").value
-      var apikey = document.getElementById("apikey").value
+      var data = document.getElementById("data").value
+      var apiKey = document.getElementById("apiKey").value
       var tag = document.getElementById("tag").value
       
-      showCurl(apikey, type, tag, mydata, url)
-      return
-
+      showCurl(apiKey, type, tag, data, url)
+      
       fetch(url, {
         method: "POST",
-        body: mydata,
+        body: data,
         headers: {
-          "Authorization": "Bearer " + apikey,
+          "Authorization": "Bearer " + apiKey,
           "Content-Type": type,
           "X-Tag": tag
         },
       }).then(function (response) {
         response.json().then(function (j) {
           if (response.status === 201) {
-            showCurl(apikey, type, tag, mydata, url)
-
-            var url = (apikey.startsWith('testnet_') ? 'https://test.whatsonchain.com/tx/' : 'https://www.whatsonchain.com/tx/') + j.txid
+            var url = (apiKey.startsWith('testnet_') ? 'https://test.whatsonchain.com/tx/' : 'https://www.whatsonchain.com/tx/') + j.txid
             document.getElementById("results").innerHTML += `<div><a href="${url}">${url}</a></div>`
-            document.getElementById("mydata").value = ""
+            document.getElementById("data").value = ""
           } else {
             alert("There was an error writing: " + response.statusText)
+            document.getElementById("curl").innerHTML = ''
+            // console.log(response)
+            // console.log(j)
           }
         }).catch(function (err) {
           alert("Could not read response: " + err.message)
@@ -147,8 +147,8 @@
       <input id="url", type="text" value="http://localhost:9500/api/v1/write"></input>
     </div>
     <div>
-      <label for="apikey">API key:</label>
-      <input id="apikey" , type="text"></input>
+      <label for="apiKey">API key:</label>
+      <input id="apiKey" , type="text"></input>
     </div>
     <div>
       <label for="tag">Tag (optional):</label>
@@ -159,8 +159,8 @@
       <input id="type" , type="text" value='text/plain'></input>
     </div>
     <div>
-      <label id='datalabel' for="mydata">Data:</label>
-      <textarea id="mydata" placeholder="Enter text to send to blockchain"></textarea>
+      <label id='dataLabel' for="data">Data:</label>
+      <textarea id="data" placeholder="Enter text to send to blockchain"></textarea>
     </div>
     <div id='curl'></div>
     <div>

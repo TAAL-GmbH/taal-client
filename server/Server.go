@@ -100,6 +100,7 @@ func (s Server) Start(stopServer chan bool) error {
 	}()
 
 	log.Printf("INFO: starting on %s", s.address)
+	log.Printf("INFO: Requests will be proxied to %q", s.taal.Url)
 	log.Printf("INFO: Example interface available at http://localhost:9500/example")
 
 	if err := s.server.Start(s.address); err != nil && err != http.ErrServerClosed {
@@ -160,7 +161,12 @@ func (s Server) write(c echo.Context) error {
 		return s.sendError(c, http.StatusBadRequest, 14, fmt.Errorf("failed to create op return output: %w", err))
 	}
 
-	feeTx, dataTx, err := s.taal.GetTransactionsTemplate(apiKey, len(opReturnOutput.ToBytes()), c.Request().Header.Get("x-feesrequired") == "true")
+	feesRequired := true
+	if c.Request().Header.Get("x-feesrequired") == "false" {
+		feesRequired = false
+	}
+
+	feeTx, dataTx, err := s.taal.GetTransactionsTemplate(apiKey, len(opReturnOutput.ToBytes()), feesRequired)
 	if err != nil {
 		return s.sendError(c, http.StatusBadRequest, 13, fmt.Errorf("failed to get transactions: %w", err))
 	}

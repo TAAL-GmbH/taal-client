@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/libsv/go-bt"
@@ -15,7 +16,7 @@ import (
 
 type Client struct {
 	client  *http.Client
-	url     string
+	Url     string
 	Timeout time.Duration
 }
 
@@ -35,7 +36,7 @@ func New(url string, timeout time.Duration) *Client {
 
 	return &Client{
 		client:  client,
-		url:     url,
+		Url:     url,
 		Timeout: timeout,
 	}
 }
@@ -48,12 +49,12 @@ func (c *Client) Register(signature string, publicKey string, apiKey string) err
 
 	payload, err := json.Marshal(requestPayload)
 	if err != nil {
-		return fmt.Errorf("failed to serialise: %w", err)
+		return fmt.Errorf("failed to serialize: %w", err)
 	}
 
 	req, err := http.NewRequest(
 		http.MethodPost,
-		fmt.Sprintf("%s%s", c.url, "/api/v1/pubkey"),
+		fmt.Sprintf("%s%s", c.Url, "/api/v1/pubkey"),
 		bytes.NewBuffer(payload),
 	)
 	if err != nil {
@@ -93,7 +94,7 @@ type Payload struct {
 func (c *Client) GetTransactionsTemplate(apiKey string, size int, feesRequired bool) (feeTx *bt.Tx, dataTx *bt.Tx, err error) {
 	req, err := http.NewRequest(
 		http.MethodGet,
-		fmt.Sprintf("%s/api/v1/txTemplates?size=%d&feesRequired=%t", c.url, size, feesRequired),
+		fmt.Sprintf("%s/api/v1/txTemplates?size=%d&feesRequired=%t", c.Url, size, feesRequired),
 		nil,
 	)
 	if err != nil {
@@ -126,17 +127,17 @@ func (c *Client) GetTransactionsTemplate(apiKey string, size int, feesRequired b
 
 	err = json.NewDecoder(resp.Body).Decode(&payload)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to deserialise request: %w", err)
+		return nil, nil, fmt.Errorf("failed to deserialize request: %w", err)
 	}
 
 	feeTx, err = bt.NewTxFromString(payload.FeeTransaction)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to deserialise fee tx: %w", err)
+		return nil, nil, fmt.Errorf("failed to deserialize fee tx: %w", err)
 	}
 
 	dataTx, err = bt.NewTxFromString(payload.DataTransaction)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to deserialise data tx: %w", err)
+		return nil, nil, fmt.Errorf("failed to deserialize data tx: %w", err)
 	}
 
 	return
@@ -150,12 +151,16 @@ func (c *Client) SubmitTransactions(apiKey string, feeTx *bt.Tx, dataTx *bt.Tx) 
 
 	payload, err := json.Marshal(request)
 	if err != nil {
-		return fmt.Errorf("failed to serialise request: %w", err)
+		return fmt.Errorf("failed to serialize request: %w", err)
+	}
+
+	if _, ok := os.LookupEnv("DEBUG"); ok {
+		log.Printf("\nFUND: %s\nDATA: %s\n", request.FeeTransaction, request.DataTransaction)
 	}
 
 	req, err := http.NewRequest(
 		http.MethodPost,
-		fmt.Sprintf("%s%s", c.url, "/api/v1/submitTransactions"),
+		fmt.Sprintf("%s%s", c.Url, "/api/v1/submitTransactions"),
 		bytes.NewBuffer(payload),
 	)
 	if err != nil {
@@ -190,7 +195,7 @@ func (c *Client) SubmitTransactions(apiKey string, feeTx *bt.Tx, dataTx *bt.Tx) 
 		var errorResponsePayload errorResponse
 		err = json.NewDecoder(resp.Body).Decode(&errorResponsePayload)
 		if err != nil {
-			return fmt.Errorf("failed to unserialise response: %w", err)
+			return fmt.Errorf("failed to un-serialize response: %w", err)
 		}
 
 		return fmt.Errorf("failed to submit: %v", errorResponsePayload.Err)

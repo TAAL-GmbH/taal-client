@@ -58,11 +58,6 @@ env GOOS=windows GOARCH=386 go build -o build/windows/$FILENAME -ldflags="-s -w 
 if [[ "$?" == "0" ]]; then
   echo $GIT_COMMIT > build/commit.dat
   echo "${PROG_NAME}: Built $FILENAME"
-
-  cp -r assets build/darwin/
-  cp -r assets build/linux/
-  cp -r assets build/raspian/
-  cp -r assets build/windows/
 else
   echo "${PROG_NAME}: Build FAILED"
 fi

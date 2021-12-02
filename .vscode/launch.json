@@ -14,8 +14,9 @@
       "cwd": "${workspaceFolder}",
       "env": {
         "LISTEN": "localhost:9500",
-        "TAAL_URL": "http://localhost:9004",
-        "TAAL_TIMEOUT": "10m"
+        "XXXTAAL_URL": "http://localhost:9004",
+        "TAAL_TIMEOUT": "10m",
+        "DEBUG": 1,
       },
       "args": ["start"],
       "showLog": true
