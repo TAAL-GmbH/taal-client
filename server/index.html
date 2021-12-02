@@ -4,18 +4,32 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WoC Client Example</title>
+  <title>TaalClient Example</title>
   <style>
     * {
-      font-family: 'Courier New', Courier, monospace;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 14pt;
       margin: 0;
       padding: 0;
     }
 
-    html,
-    body {
+    html, body {
       background-color: rgb(247, 247, 247);
+    }
+
+    h1 {
+      font-size: 20pt;
+      text-align: center;
+    }
+
+    label {
+      display:inline-block;
+      min-width: 140px;
+    }
+
+    input {
+      border: 1px solid #ccc;
+      padding: 5px;
     }
 
     .button {
@@ -41,12 +55,17 @@
       min-width: 500px;
     }
 
+    #datalabel {
+      vertical-align: top;
+      margin-top: 5px;
+    }
+
     #mydata {
       padding: 5px;
+      border: 1px solid #ccc;
       min-width: 500px;
       min-height: 200px;
       margin-bottom: 20px;
-
     }
 
     #apikey {
@@ -58,31 +77,50 @@
       margin: 20px;
     }
 
-    #addFees,
-    #tag {
+    #curl {
+      font-family: 'Courier New', Courier, monospace;
+      padding: 20px;
+    }
+
+    #addFees, #tag, #type {
       margin-bottom: 20px;
     }
   </style>
   <script>
+    function showCurl(apikey, type, tag, mydata, url) {
+      let data='curl -X POST'
+      if (apikey) data += ` -H 'Authorization: Bearer ${apikey}'`
+      if (type) data += ` -H 'Content-Type: ${type}'`
+      if (tag) data += ` -H 'X-Tag: ${tag}'`
+      if (mydata) data += ` -d "${mydata}"`
+      data += ` ${url}`
+
+      document.getElementById("curl").innerHTML = data
+    }
+
     function writeData() {
       var url = document.getElementById("url").value
+      var type = document.getElementById("type").value
       var mydata = document.getElementById("mydata").value
       var apikey = document.getElementById("apikey").value
       var tag = document.getElementById("tag").value
-      var addFees = document.getElementById("addFees").checked
+      
+      showCurl(apikey, type, tag, mydata, url)
+      return
 
       fetch(url, {
         method: "POST",
         body: mydata,
         headers: {
           "Authorization": "Bearer " + apikey,
-          "Content-Type": "text/plain",
-          "X-FeesRequired": addFees,
+          "Content-Type": type,
           "X-Tag": tag
         },
       }).then(function (response) {
         response.json().then(function (j) {
           if (response.status === 201) {
+            showCurl(apikey, type, tag, mydata, url)
+
             var url = (apikey.startsWith('testnet_') ? 'https://test.whatsonchain.com/tx/' : 'https://www.whatsonchain.com/tx/') + j.txid
             document.getElementById("results").innerHTML += `<div><a href="${url}">${url}</a></div>`
             document.getElementById("mydata").value = ""
@@ -102,7 +140,7 @@
 
 <body>
   <div id="container">
-    <h1>Simple WoC Client Example</h1>
+    <h1>TaalClient Example</h1>
     <div>
     <div>
       <label for="url">TaalClient URL:</label>
@@ -113,16 +151,20 @@
       <input id="apikey" , type="text"></input>
     </div>
     <div>
-      <label for="tag">Tag:</label>
-      <input id="tag" , type="text" , value="WOCC"></input>
-    </div>
-    <textarea id="mydata" placeholder="Enter text to send to blockchain"></textarea>
-    <div>
-      <input id="addFees" , type="checkbox" , checked value="false"></input>
-      <label for="addFees">Add fees</label>
+      <label for="tag">Tag (optional):</label>
+      <input id="tag" , type="text"></input>
     </div>
     <div>
-      <input type="button" class="button" onClick="writeData()" value="Send to blockchain"></input>
+      <label for="type">MIME type:</label>
+      <input id="type" , type="text" value='text/plain'></input>
+    </div>
+    <div>
+      <label id='datalabel' for="mydata">Data:</label>
+      <textarea id="mydata" placeholder="Enter text to send to blockchain"></textarea>
+    </div>
+    <div id='curl'></div>
+    <div>
+      <input type="button" class="button" onClick="writeData()" value="Broadcast"></input>
     </div>
     <div id="results"></div>
   </div>

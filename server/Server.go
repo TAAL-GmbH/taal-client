@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"embed"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -36,6 +37,12 @@ type errorResponse struct {
 	Err    string `json:"error"`
 }
 
+var (
+	//go:embed index.html
+
+	res embed.FS
+)
+
 func New(address string, taal *client.Client) Server {
 	e := echo.New()
 	e.HideBanner = true
@@ -67,7 +74,18 @@ func New(address string, taal *client.Client) Server {
 	group := e.Group("/api/v1")
 	group.POST("/write", s.write)
 
-	e.Static("/taal-client", "assets")
+	e.GET("*", func(c echo.Context) error {
+		if !strings.HasPrefix(c.Request().URL.Path, "/example") {
+			return c.String(http.StatusNotFound, "Not found")
+		}
+
+		b, err := res.ReadFile("index.html")
+		if err != nil {
+			return c.String(http.StatusNotFound, "Not found")
+		}
+
+		return c.Blob(http.StatusOK, "text/html", b)
+	})
 
 	return s
 }
@@ -82,6 +100,8 @@ func (s Server) Start(stopServer chan bool) error {
 	}()
 
 	log.Printf("INFO: starting on %s", s.address)
+	log.Printf("INFO: Example interface available at http://localhost:9500/example")
+
 	if err := s.server.Start(s.address); err != nil && err != http.ErrServerClosed {
 		log.Printf("ERROR: HTTP server failed: %v", err)
 		return err
