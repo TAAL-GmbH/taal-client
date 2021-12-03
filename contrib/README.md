@@ -12,7 +12,7 @@ docker build -t taal-client:latest -f ./contrib/Dockerfile .
 Run the server daemon.
 
 ```bash
-docker run --rm=true --name taal  -e MAPI_URL=https://mapi.staging.taal.com/mapi -p 8080:8080 -e LISTEN=localhost:8080  -d taal-client:latest
+docker run --rm=true --name taal -e TAAL_URL=https://tapi.staging.taal.com -p 8080:8080 -e LISTEN=localhost:8080  -d taal-client:latest
 ```
 * retreive the `$API_KEY` from Taal Console testnet package
 
@@ -24,7 +24,7 @@ docker stop taal
 
 ## Register API keys
 
-The user can register muliple API keys.  To register an API key, do the following:
+The user can register multiple API keys.  To register an API key, do the following:
 
 ```bash
 docker exec taal /go/bin/taal-client register $API_KEY

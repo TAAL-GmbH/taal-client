@@ -29,7 +29,7 @@ const keyFolder = "./keys"
 func Load() *Config {
 	config := &Config{
 		ListenAddress: ":9500",
-		TaalUrl:       "https://mapi.taal.com",
+		TaalUrl:       "https://tapi.taal.com",
 		TaalTimeOut:   5 * time.Second,
 	}
 

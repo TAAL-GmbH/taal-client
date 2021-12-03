@@ -12,8 +12,8 @@ if [ -z ${LISTEN+x} ]; then
     exit 1;
 fi
 
-if [ -z ${MAPI_URL+x} ]; then
-    decho "set MAPI_URL env variable"
+if [ -z ${TAAL_URL+x} ]; then
+    decho "set TAAL_URL env variable"
     exit 1;
 fi
 

@@ -26,7 +26,7 @@ taal-client register <api-key>
 taal-client start
   Starts listening for requests on :9500.  This value can be changed with the LISTEN environment variable.
 
-  All requests will be sent to https://mapi.taal.com by default unless overridden with the TAAL_URL environment variable.
+  All requests will be sent to https://tapi.taal.com by default unless overridden with the TAAL_URL environment variable.
 
 	DEBUG = 1 will log all transactions to console
 
