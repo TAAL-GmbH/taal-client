@@ -17,7 +17,7 @@ taal-client start
 
   All requests will be sent to https://mapi.taal.com by default unless overridden with the TAAL_URL environment variable.
 
-  DEBUG will log all transactions to console
+  DEBUG = 1 will log all transactions to console
 
 Environment variables
 ---------------------
@@ -28,7 +28,7 @@ Environment variables
 
 Example
 -------
-  LISTEN=localhost:8080 TAAL_URL=http://localhost:4000 TAAL_TIMEOUT=1m ./taal_client start
+  DEBUG=1 LISTEN=localhost:8080 TAAL_URL=http://localhost:4000 TAAL_TIMEOUT=1m ./taal_client start
 
 ```
 
