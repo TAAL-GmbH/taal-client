@@ -23,7 +23,7 @@
     }
 
     label {
-      display:inline-block;
+      display: inline-block;
       min-width: 140px;
     }
 
@@ -68,7 +68,11 @@
       margin-bottom: 20px;
     }
 
-    #apiKey {
+    #type:disabled, #data:disabled {
+      background-color: silver;
+    }
+
+    #key {
       min-width: 500px;
       margin-bottom: 20px;
     }
@@ -82,17 +86,24 @@
       padding: 20px;
     }
 
-    #addFees, #tag, #type {
+    #addFees, #tag, #type, #file {
       margin-bottom: 20px;
     }
   </style>
+
   <script>
-    function showCurl(apiKey, type, tag, data, url) {
-      let curl='curl -X POST'
-      if (apiKey) curl += ` -H 'Authorization: Bearer ${apiKey}'`
+    let file = null
+    let fileData = null
+
+    function showCurl(key, type, tag, data, url) {
+      let curl = 'curl -X POST'
+      if (key) curl += ` -H 'Authorization: Bearer ${key}'`
       if (type) curl += ` -H 'Content-Type: ${type}'`
       if (tag) curl += ` -H 'X-Tag: ${tag}'`
-      if (data) curl += ` -d "${data}"`
+
+      if (file) {
+        curl += ` -d @${file.name}`
+      } else if (data) curl += ` -d "${data}"`
       curl += ` ${url}`
 
       document.getElementById("curl").innerHTML = curl
@@ -100,27 +111,36 @@
 
     function writeData() {
       var url = document.getElementById("url").value
+      var key = document.getElementById("key").value
+      var tag = document.getElementById("tag").value
       var type = document.getElementById("type").value
       var data = document.getElementById("data").value
-      var apiKey = document.getElementById("apiKey").value
-      var tag = document.getElementById("tag").value
       
-      showCurl(apiKey, type, tag, data, url)
+      showCurl(key, type, tag, data, url)
       
       fetch(url, {
         method: "POST",
-        body: data,
+        body: fileData ? fileData : data,
         headers: {
-          "Authorization": "Bearer " + apiKey,
+          "Authorization": "Bearer " + key,
           "Content-Type": type,
           "X-Tag": tag
         },
       }).then(function (response) {
         response.json().then(function (j) {
           if (response.status === 201) {
-            var url = (apiKey.startsWith('testnet_') ? 'https://test.whatsonchain.com/tx/' : 'https://www.whatsonchain.com/tx/') + j.txid
+            var url = (key.startsWith('testnet_') ? 'https://test.whatsonchain.com/tx/' : 'https://www.whatsonchain.com/tx/') + j.txid
             document.getElementById("results").innerHTML += `<div><a href="${url}">${url}</a></div>`
+            document.getElementById("file").value = null
             document.getElementById("data").value = ""
+            document.getElementById("type").disabled = null
+            document.getElementById("data").disabled = null
+            file = null
+            fileData = null
+      
+
+            localStorage.setItem('tag', tag)
+            localStorage.setItem('key', key)
           } else {
             alert("There was an error writing: " + response.statusText)
             document.getElementById("curl").innerHTML = ''
@@ -147,8 +167,8 @@
       <input id="url", type="text" value="http://localhost:9500/api/v1/write"></input>
     </div>
     <div>
-      <label for="apiKey">API key:</label>
-      <input id="apiKey" , type="text"></input>
+      <label for="key">API key:</label>
+      <input id="key" , type="text"></input>
     </div>
     <div>
       <label for="tag">Tag (optional):</label>
@@ -162,12 +182,61 @@
       <label id='dataLabel' for="data">Data:</label>
       <textarea id="data" placeholder="Enter text to send to blockchain"></textarea>
     </div>
-    <div id='curl'></div>
+    <div>
+      <label for="file">File:</label>
+      <input type="file" id="file" name="file" capture accept="image/*, audio/*, application/json, application/pdf, video/*, text/*">
+    </div>
+  
     <div>
       <input type="button" class="button" onClick="writeData()" value="Broadcast"></input>
     </div>
+    
+    <div id='curl'></div>
     <div id="results"></div>
   </div>
+
+  <script>
+
+    const tag = localStorage.getItem('tag')
+    if (tag) {
+      document.getElementById("tag").value = tag
+    }
+
+    const key = localStorage.getItem('key')
+    if (key) {
+      document.getElementById("key").value = key
+    }
+    
+    document.getElementById("file").addEventListener("change", () => {
+      const input = document.getElementById("file")
+      const files = input.files
+      file = files[0]
+      
+      document.getElementById("type").value = file.type
+      document.getElementById("type").disabled = 'true'
+
+      if (file.type.startsWith('text/')) {
+        const fr = new FileReader()
+        fr.onload=function(){
+          document.getElementById('data').textContent = fr.result
+          document.getElementById("data").disabled = 'true'
+        }
+        fr.readAsText(file)
+      } else {
+        document.getElementById('data').textContent = `< ${file.name} >`
+        document.getElementById("data").disabled = 'true'
+      }
+
+      const fr = new FileReader()
+      fr.onload=function(){
+        fileData = fr.result
+        console.log(fileData)
+      }
+      fr.readAsArrayBuffer(file)
+
+      
+    })
+  </script>
 </body>
 
 </html>
