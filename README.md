@@ -4,6 +4,8 @@ This is an small service that runs on a Taal customer's machine and interacts wi
 
 All private keys used for signing customer's transactions are only held on the customer's machine.
 
+Binaries for Linux, Mac and Windows can be found at https://taal-gmbh.github.io.
+
 ## Direct Usage
 
 ```text
