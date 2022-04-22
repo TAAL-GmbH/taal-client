@@ -50,7 +50,10 @@ else
   FILENAME=${PROG_NAME}_${GIT_COMMIT}_${BUILD}
 fi
 
-env GOOS=darwin GOARCH=amd64 go build -o build/darwin/$FILENAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+env GOOS=darwin GOARCH=amd64 go build -o build/darwin/${FILENAME}_intel -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+env GOOS=darwin GOARCH=arm64 go build -o build/darwin/${FILENAME}_arm -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+lipo -create -output build/darwin/$FILENAME build/darwin/${FILENAME}_intel build/darwin/${FILENAME}_arm
+
 env GOOS=linux GOARCH=amd64 go build -o build/linux/$FILENAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 env GOOS=linux GOARCH=arm go build -o build/raspian/$FILENAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 env GOOS=windows GOARCH=386 go build -o build/windows/$FILENAME.exe -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
