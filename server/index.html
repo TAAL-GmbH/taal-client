@@ -102,7 +102,7 @@
       if (tag) curl += ` -H 'X-Tag: ${tag}'`
 
       if (file) {
-        curl += ` -d @${file.name}`
+        curl += ` --data-binary @${file.name}`
       } else if (data) curl += ` -d "${data}"`
       curl += ` ${url}`
 

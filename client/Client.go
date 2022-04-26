@@ -6,6 +6,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -192,13 +193,19 @@ func (c *Client) SubmitTransactions(apiKey string, feeTx *bt.Tx, dataTx *bt.Tx) 
 			Err    string `json:"error"`
 		}
 
-		var errorResponsePayload errorResponse
-		err = json.NewDecoder(resp.Body).Decode(&errorResponsePayload)
+		bodyBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return fmt.Errorf("failed to un-serialize response: %w", err)
+			return fmt.Errorf("failed to read response: %v", err)
 		}
 
-		return fmt.Errorf("failed to submit: %v", errorResponsePayload.Err)
+		var errorResponsePayload errorResponse
+
+		if err := json.Unmarshal(bodyBytes, &errorResponsePayload); err != nil {
+			errorResponsePayload.Code = int32(resp.StatusCode)
+			errorResponsePayload.Err = string(bodyBytes)
+		}
+
+		return fmt.Errorf("failed to submit [%d]: %v", errorResponsePayload.Code, errorResponsePayload.Err)
 	}
 
 	return nil
