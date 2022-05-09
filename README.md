@@ -59,7 +59,7 @@ curl --location --request POST 'http://localhost:9500/api/v1/write' \
 --data-raw '{
     "key1": "value1",
     "key2": "value2"
-}
+}'
 ```
 
 ![Writing sequence](./assets/write.png)
