@@ -73,6 +73,7 @@ func New(address string, taal *client.Client) Server {
 
 	group := e.Group("/api/v1")
 	group.POST("/write", s.write)
+	group.GET("/read/:txid", s.read)
 
 	e.GET("*", func(c echo.Context) error {
 		if !strings.HasPrefix(c.Request().URL.Path, "/example") {
@@ -117,16 +118,7 @@ func (s Server) write(c echo.Context) error {
 		return s.sendError(c, http.StatusUnauthorized, 1, errors.New("missing authorization"))
 	}
 
-	parts := strings.SplitN(authHeader, "Bearer ", 2)
-	if len(parts) != 2 {
-		return s.sendError(c, http.StatusUnauthorized, 1, errors.New("invalid authorization"))
-	}
-
-	if parts[1] == "" {
-		return s.sendError(c, http.StatusUnauthorized, 1, errors.New("missing apikey"))
-	}
-
-	apiKey := parts[1]
+	apiKey := strings.Replace(authHeader, "Bearer ", "", 1)
 
 	privateKey, err := config.GetPrivateKey(apiKey)
 	if err != nil {
@@ -189,6 +181,22 @@ func (s Server) write(c echo.Context) error {
 	}
 
 	return s.sendSuccess(c, http.StatusCreated, dataTx.GetTxID())
+}
+
+func (s Server) read(c echo.Context) error {
+	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
+	if authHeader == "" {
+		return s.sendError(c, http.StatusUnauthorized, 1, errors.New("missing authorization"))
+	}
+
+	apiKey := strings.Replace(authHeader, "Bearer ", "", 1)
+
+	readerCloser, contentType, err := s.taal.ReadTransaction(apiKey, c.Param("txid"))
+	if err != nil {
+		return s.sendError(c, http.StatusBadRequest, 13, fmt.Errorf("failed to get transaction: %w", err))
+	}
+
+	return c.Stream(http.StatusOK, contentType, readerCloser)
 }
 
 func signTx(pk *bsvec.PrivateKey, tx *bt.Tx) error {
