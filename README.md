@@ -63,3 +63,12 @@ curl --location --request POST 'http://localhost:9500/api/v1/write' \
 ```
 
 ![Writing sequence](./assets/write.png)
+
+## Reading data
+
+After starting the TaalClient with ```taal-client start``` you can then read data from the blockchain by GETing from the TaalClient.
+
+```c
+curl --location --request GET 'http://localhost:9500/api/v1/read/<txid>' \
+--header 'Authorization: Bearer <APIKey>'
+```
