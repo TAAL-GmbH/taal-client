@@ -30,7 +30,11 @@ func AppHandler(c echo.Context) error {
 		resource += "/index.html"
 		b, err = res.ReadFile(resource)
 		if err != nil {
-			return c.String(http.StatusNotFound, "Not found")
+			resource = "public/index.html"
+			b, err = res.ReadFile(resource)
+			if err != nil {
+				return c.String(http.StatusNotFound, "Not found")
+			}
 		}
 	}
 
