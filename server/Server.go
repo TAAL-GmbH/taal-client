@@ -91,6 +91,7 @@ func (s Server) Start(stopServer chan bool) error {
 
 	log.Printf("INFO: starting on %s", s.address)
 	log.Printf("INFO: Requests will be proxied to %q", s.taal.Url)
+	log.Printf("INFO: Console available at http://localhost:9500")
 	log.Printf("INFO: Example interface available at http://localhost:9500/example")
 
 	if err := s.server.Start(s.address); err != nil && err != http.ErrServerClosed {
