@@ -39,6 +39,11 @@ rm -rf build
 
 echo "${PROG_NAME}: Building..."
 
+cd console
+npm run build
+cd ..
+
+
 mkdir -p build/darwin
 mkdir -p build/windows
 mkdir -p build/linux
