@@ -5,7 +5,9 @@
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w",
-    "start": "sirv public --no-clear"
+    "start": "sirv public --no-clear --single",
+    "lint": "standard",
+    "lint-fix": "standard --fix"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^17.0.0",
@@ -23,7 +25,6 @@
     "mdbsvelte": "^1.0.12",
     "sirv-cli": "^2.0.0",
     "svelte-chartjs": "^1.1.4",
-    "svelte-clock": "^1.0.0",
     "svelte-routing": "^1.6.0"
   }
 }

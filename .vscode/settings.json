@@ -3,6 +3,9 @@
     "bitcoinsv",
     "bsvd",
     "bsvec",
-    "libsv"
+    "chartjs",
+    "libsv",
+    "mdbsvelte",
+    "sirv"
   ]
 }
