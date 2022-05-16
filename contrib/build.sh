@@ -21,6 +21,9 @@ PROG_NAME="taal-client"
 
 GIT_COMMIT=$(date +%Y-%m-%d-%H-%M-%S)
 
+cd console
+npm run build
+cd ..
 
 rm -rf build
 

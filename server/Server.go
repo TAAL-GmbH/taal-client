@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"embed"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -13,6 +12,7 @@ import (
 
 	"taal-client/client"
 	"taal-client/config"
+	"taal-client/console"
 
 	"github.com/bitcoinsv/bsvd/bsvec"
 	"github.com/labstack/echo/v4"
@@ -36,12 +36,6 @@ type errorResponse struct {
 	Code   int32  `json:"code"`
 	Err    string `json:"error"`
 }
-
-var (
-	//go:embed index.html
-
-	res embed.FS
-)
 
 func New(address string, taal *client.Client) Server {
 	e := echo.New()
@@ -75,17 +69,12 @@ func New(address string, taal *client.Client) Server {
 	group.POST("/write", s.write)
 	group.GET("/read/:txid", s.read)
 
+	group.GET("/test", func(c echo.Context) error {
+		return c.String(http.StatusOK, "This is from the client")
+	})
+
 	e.GET("*", func(c echo.Context) error {
-		if !strings.HasPrefix(c.Request().URL.Path, "/example") {
-			return c.String(http.StatusNotFound, "Not found")
-		}
-
-		b, err := res.ReadFile("index.html")
-		if err != nil {
-			return c.String(http.StatusNotFound, "Not found")
-		}
-
-		return c.Blob(http.StatusOK, "text/html", b)
+		return console.AppHandler(c)
 	})
 
 	return s

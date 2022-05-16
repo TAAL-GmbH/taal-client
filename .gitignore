@@ -2,3 +2,4 @@
 build/
 keys/
 taal-client
+node_modules/
