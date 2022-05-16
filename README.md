@@ -72,3 +72,5 @@ After starting the TaalClient with ```taal-client start``` you can then read dat
 curl --location --request GET 'http://localhost:9500/api/v1/read/<txid>' \
 --header 'Authorization: Bearer <APIKey>'
 ```
+
+Console app is under construction
