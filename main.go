@@ -11,6 +11,7 @@ import (
 
 	"taal-client/client"
 	"taal-client/config"
+	"taal-client/repository"
 	"taal-client/server"
 
 	"github.com/bitcoinsv/bsvd/bsvec"
@@ -119,6 +120,20 @@ func register(conf *config.Config, taal *client.Client) {
 
 func main() {
 	conf := config.Load()
+
+	db, err := repository.NewDB("file:repository.db")
+	if err != nil {
+		log.Fatalf("app terminated with error: %v", err)
+		return
+	}
+
+	err = repository.RunMigrations(db)
+	if err != nil {
+		log.Fatalf("app terminated with error: %v", err)
+		return
+	}
+
+	defer db.Close()
 
 	taal := client.New(conf.TaalUrl, conf.TaalTimeOut)
 
