@@ -37,7 +37,12 @@ func GetKeyFromPrivateKey(apiKey string, pk *bsvec.PrivateKey) (Key, error) {
 }
 
 func GetKeyFromConfigKey(configKey config.JsonStruct) (Key, error) {
-	pubKeyAddress, err := bsvutil.NewAddressPubKey([]byte(configKey.PublicKey), &chaincfg.MainNetParams)
+	privateKey, err := GetPrivateKey(configKey.PrivateKey)
+	if err != nil {
+		return Key{}, nil
+	}
+
+	pubKeyAddress, err := bsvutil.NewAddressPubKey(privateKey.PubKey().SerializeCompressed(), &chaincfg.MainNetParams)
 	if err != nil {
 		return Key{}, errors.Wrap(err, "unable to create address")
 	}
@@ -51,8 +56,8 @@ func GetKeyFromConfigKey(configKey config.JsonStruct) (Key, error) {
 	return key, nil
 }
 
-func (k Key) GetPrivateKey() (*bsvec.PrivateKey, error) {
-	privateKeyDecoded, err := hex.DecodeString(k.PrivateKey)
+func GetPrivateKey(pk string) (*bsvec.PrivateKey, error) {
+	privateKeyDecoded, err := hex.DecodeString(pk)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to decode private key")
 	}
