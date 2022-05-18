@@ -1,6 +1,7 @@
 .history
 build/
 keys/
+keys_archive/
 taal-client
 node_modules/
 repository.db

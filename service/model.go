@@ -14,7 +14,7 @@ type Key struct {
 	ApiKey     string `db:"api_key"`
 	PublicKey  string `db:"public_key"`
 	PrivateKey string `db:"private_key"`
-	Adress     string `db:"address"`
+	Address    string `db:"address"`
 }
 
 func GetKeyFromPrivateKey(apiKey string, pk *bsvec.PrivateKey) (Key, error) {
@@ -30,7 +30,7 @@ func GetKeyFromPrivateKey(apiKey string, pk *bsvec.PrivateKey) (Key, error) {
 		ApiKey:     apiKey,
 		PublicKey:  publicKey,
 		PrivateKey: privateKey,
-		Adress:     pubKeyAddress.EncodeAddress(),
+		Address:    pubKeyAddress.EncodeAddress(),
 	}
 
 	return key, nil
@@ -51,7 +51,7 @@ func GetKeyFromConfigKey(configKey config.JsonStruct) (Key, error) {
 		ApiKey:     configKey.ApiKey,
 		PublicKey:  configKey.PublicKey,
 		PrivateKey: configKey.PrivateKey,
-		Adress:     pubKeyAddress.EncodeAddress(),
+		Address:    pubKeyAddress.EncodeAddress(),
 	}
 	return key, nil
 }

@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/jmoiron/sqlx"
+
 	"taal-client/client"
 	"taal-client/config"
 	"taal-client/repository"
@@ -43,18 +45,38 @@ Example
 }
 
 func main() {
-	conf := config.Load()
-
-	db, err := repository.NewDB("file:repository.db")
+	conf, err := config.Load()
 	if err != nil {
-		log.Fatalf("app terminated with error: %v", err)
+		log.Fatalf("could not load configuration: %v", err)
 		return
 	}
 
-	err = repository.RunMigrations(db)
-	if err != nil {
-		log.Fatalf("app terminated with error: %v", err)
-		return
+	var db *sqlx.DB
+
+	if conf.ConnectToDB {
+		db, err = repository.GetPostgreSqlDB(conf.Host, conf.Port, conf.Username, conf.Password, conf.DBName)
+		if err != nil {
+			log.Fatalf("could not open postgres database: %v", err)
+			return
+		}
+
+		err = repository.RunMigrationsPostgreSQL(db)
+		if err != nil {
+			log.Fatalf("postgres database migration failed: %v", err)
+			return
+		}
+	} else {
+		db, err = repository.GetSQLiteDB()
+		if err != nil {
+			log.Fatalf("could not open sqlite database: %v", err)
+			return
+		}
+
+		err = repository.RunMigrationsSQLite(db)
+		if err != nil {
+			log.Fatalf("sqlite database migration failed: %v", err)
+			return
+		}
 	}
 
 	defer db.Close()
@@ -73,7 +95,7 @@ func main() {
 	}
 
 	if len(os.Args) == 2 && os.Args[1] == "start" {
-		service.Start()
+	service.Start()
 	} else if len(os.Args) == 3 && os.Args[1] == "register" {
 		// taal-client register <api-key>
 		apiKey := os.Args[2]

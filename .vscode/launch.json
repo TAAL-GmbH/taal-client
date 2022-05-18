@@ -20,6 +20,29 @@
       },
       "args": ["start"],
       "showLog": true
+    },
+    {
+      "name": "Start with pg",
+      "type": "go",
+      "request": "launch",
+      "mode": "debug",
+      "remotePath": "",
+      "program": "${workspaceFolder}/main.go",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "LISTEN": "localhost:9500",
+        "XXXTAAL_URL": "http://localhost:9004",
+        "TAAL_TIMEOUT": "10m",
+        "DEBUG": "1",
+        "HOST": "localhost",
+        "DBNAME": "postgres",
+        "USERNAME": "postgres",
+        "PASSWORD": "password",
+        "PORT": "5432",
+        "CONNECT_TO_DB": "1"
+      },
+      "args": ["start"],
+      "showLog": true
     },{
       "name": "Register",
       "type": "go",

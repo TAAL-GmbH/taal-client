@@ -7,15 +7,23 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/bitcoinsv/bsvd/bsvec"
+	"github.com/pkg/errors"
 )
 
 type Config struct {
 	ListenAddress string
 	TaalUrl       string
 	TaalTimeOut   time.Duration
+	ConnectToDB   bool
+	Host          string
+	DBName        string
+	Username      string
+	Password      string
+	Port          int
 }
 
 type JsonStruct struct {
@@ -26,7 +34,7 @@ type JsonStruct struct {
 
 const keyFolder = "./keys"
 
-func Load() *Config {
+func Load() (*Config, error) {
 	config := &Config{
 		ListenAddress: ":9500",
 		TaalUrl:       "https://tapi.taal.com",
@@ -53,7 +61,42 @@ func Load() *Config {
 		}
 	}
 
-	return config
+	connectToDB := os.Getenv("CONNECT_TO_DB")
+	config.ConnectToDB = connectToDB == "1"
+	if !config.ConnectToDB {
+		return config, nil
+	}
+
+	host := os.Getenv("HOST")
+	if host != "" {
+		config.Host = host
+	}
+
+	dbName := os.Getenv("DBNAME")
+	if dbName != "" {
+		config.DBName = dbName
+	}
+
+	username := os.Getenv("USERNAME")
+	if username != "" {
+		config.Username = username
+	}
+
+	password := os.Getenv("PASSWORD")
+	if password != "" {
+		config.Password = password
+	}
+
+	portstr := os.Getenv("PORT")
+	if portstr != "" {
+		port, err := strconv.Atoi(portstr)
+		if err != nil {
+			return nil, errors.Wrapf(err, "unable to parse port %s to integer", portstr)
+		}
+		config.Port = port
+	}
+
+	return config, nil
 }
 
 func GetPrivateKey(apiKey string) (*bsvec.PrivateKey, error) {
@@ -114,8 +157,7 @@ func StorePrivateKey(apiKey string, pk *bsvec.PrivateKey) error {
 }
 
 func MoveConfigKeysToArchive() error {
-	fmt.Println("not yet implemented")
-	return nil
+	return os.Rename("keys", "keys_archive")
 }
 
 func GetKeysFromJson() ([]JsonStruct, error) {

@@ -4,13 +4,17 @@ import (
 	"context"
 	"database/sql"
 	"embed"
+	"fmt"
 	"net/http"
 	"taal-client/service"
 
 	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
 	sqlite "github.com/golang-migrate/migrate/v4/database/sqlite3"
 	"github.com/golang-migrate/migrate/v4/source/httpfs"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/pkg/errors"
 )
@@ -18,28 +22,54 @@ import (
 //go:embed migrations
 var migrations embed.FS
 
-func NewDB(dbPath string) (*sqlx.DB, error) {
-	sqliteDb, err := sql.Open("sqlite3", dbPath)
+const sqLiteDBPath = "./localdata/db"
+
+func GetPostgreSqlDB(host string, port int, username string, password string, dbName string) (*sqlx.DB, error) {
+	var sqlDB *sql.DB
+
+	connectionString := fmt.Sprintf("port=%d host=%s user=%s password=%s dbname=%s sslmode=disable", port, host, username, password, dbName)
+
+	sqlDB, err := sql.Open("postgres", connectionString)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to open PostgreSQL DB")
+	}
+
+	return sqlx.NewDb(sqlDB, "postgres"), nil
+}
+
+func GetSQLiteDB() (*sqlx.DB, error) {
+	sqliteDb, err := sql.Open("sqlite3", sqLiteDBPath)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to open sqlite DB")
 	}
 
-	db := sqlx.NewDb(sqliteDb, "sqlite3")
-
-	return db, nil
+	return sqlx.NewDb(sqliteDb, "sqlite3"), nil
 }
 
-func RunMigrations(db *sqlx.DB) error {
-	sourceInstance, err := httpfs.New(http.FS(migrations), "migrations")
-	if err != nil {
-		return errors.Wrap(err, "invalid source instance")
-	}
+func RunMigrationsSQLite(db *sqlx.DB) error {
 	targetInstance, err := sqlite.WithInstance(db.DB, new(sqlite.Config))
 	if err != nil {
 		return errors.Wrap(err, "invalid target sqlite instance")
 	}
-	m, err := migrate.NewWithInstance(
-		"httpfs", sourceInstance, "sqlite", targetInstance)
+	return RunMigrations(targetInstance, "sqlite")
+}
+
+func RunMigrationsPostgreSQL(db *sqlx.DB) error {
+	// config := new(postgres.Config)
+	targetInstance, err := postgres.WithInstance(db.DB, &postgres.Config{})
+	if err != nil {
+		return errors.Wrap(err, "invalid target postgres instance")
+	}
+	return RunMigrations(targetInstance, "postgres")
+}
+
+func RunMigrations(driver database.Driver, databaseName string) error {
+	sourceInstance, err := httpfs.New(http.FS(migrations), "migrations")
+	if err != nil {
+		return errors.Wrap(err, "invalid source instance")
+	}
+
+	m, err := migrate.NewWithInstance("httpfs", sourceInstance, databaseName, driver)
 	if err != nil {
 		return errors.Wrap(err, "failed to initialize migrate instance")
 	}
@@ -59,8 +89,8 @@ func NewRepository(db sqlx.DB) Repository {
 }
 
 func (r Repository) InsertKey(ctx context.Context, key service.Key) error {
-	query := `INSERT INTO keys (api_key, private_key, public_key, address) VALUES (?, ?, ?, ?)`
-	_, err := r.db.ExecContext(ctx, query, key.ApiKey, key.PrivateKey, key.PublicKey, key.Adress)
+	query := `INSERT INTO keys (api_key, private_key, public_key, address) VALUES ($1, $2, $3, $4);`
+	_, err := r.db.ExecContext(ctx, query, key.ApiKey, key.PrivateKey, key.PublicKey, key.Address)
 
 	return err
 }
