@@ -18,7 +18,7 @@ type Config struct {
 	TaalTimeOut   time.Duration
 }
 
-type jsonStruct struct {
+type JsonStruct struct {
 	ApiKey     string `json:"apiKey"`
 	PrivateKey string `json:"privateKey"`
 	PublicKey  string `json:"publicKey"`
@@ -68,7 +68,7 @@ func GetPrivateKey(apiKey string) (*bsvec.PrivateKey, error) {
 		return nil, err
 	}
 
-	var s jsonStruct
+	var s JsonStruct
 	if err := json.Unmarshal(b, &s); err != nil {
 		return nil, err
 	}
@@ -100,7 +100,7 @@ func StorePrivateKey(apiKey string, pk *bsvec.PrivateKey) error {
 	enc := json.NewEncoder(f)
 	enc.SetIndent("", "  ")
 
-	j := &jsonStruct{
+	j := &JsonStruct{
 		ApiKey:     apiKey,
 		PrivateKey: hex.EncodeToString(pk.Serialize()),
 		PublicKey:  hex.EncodeToString(pk.PubKey().SerializeCompressed()),
@@ -111,4 +111,41 @@ func StorePrivateKey(apiKey string, pk *bsvec.PrivateKey) error {
 	}
 
 	return nil
+}
+
+func MoveConfigKeysToArchive() error {
+	fmt.Println("not yet implemented")
+	return nil
+}
+
+func GetKeysFromJson() ([]JsonStruct, error) {
+	keys := make([]JsonStruct, 0)
+
+	items, _ := ioutil.ReadDir(keyFolder)
+	for _, item := range items {
+		if item.IsDir() {
+			continue
+		}
+		filepath := fmt.Sprintf("%s/%s", keyFolder, item.Name())
+		f, err := os.Open(filepath)
+		if err != nil {
+			return nil, err
+		}
+
+		defer f.Close()
+
+		b, err := ioutil.ReadAll(f)
+		if err != nil {
+			return nil, err
+		}
+
+		var key JsonStruct
+		if err := json.Unmarshal(b, &key); err != nil {
+			return nil, err
+		}
+
+		keys = append(keys, key)
+	}
+
+	return keys, nil
 }

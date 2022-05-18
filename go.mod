@@ -4,7 +4,9 @@ go 1.17
 
 require (
 	github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173
+	github.com/bitcoinsv/bsvutil v0.0.0-20181216182056-1d77cf353ea9
 	github.com/golang-migrate/migrate/v4 v4.15.2
+	github.com/jmoiron/sqlx v1.3.5
 	github.com/labstack/echo/v4 v4.1.17
 	github.com/libsv/go-bt v0.0.6
 	github.com/mattn/go-sqlite3 v1.14.13
@@ -12,7 +14,6 @@ require (
 )
 
 require (
-	github.com/bitcoinsv/bsvutil v0.0.0-20181216182056-1d77cf353ea9 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect

@@ -1,20 +1,15 @@
 package main
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
+	"context"
 	"fmt"
 	"log"
 	"os"
-	"os/signal"
-	"syscall"
 
 	"taal-client/client"
 	"taal-client/config"
 	"taal-client/repository"
-	"taal-client/server"
-
-	"github.com/bitcoinsv/bsvd/bsvec"
+	"taal-client/service"
 )
 
 func usage() {
@@ -47,77 +42,6 @@ Example
 	os.Exit(1)
 }
 
-func start(conf *config.Config, taal *client.Client) {
-	// taal-client start
-
-	stopServer := make(chan bool, 1)
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
-
-	go func() {
-		<-stop
-		stopServer <- true
-	}()
-
-	s := server.New(conf.ListenAddress, taal)
-
-	if err := s.Start(stopServer); err != nil {
-		log.Fatalf("app terminated with error: %v", err)
-	}
-}
-
-func register(conf *config.Config, taal *client.Client) {
-	// taal-client register <api-key>
-	apiKey := os.Args[2]
-
-	privateKey, err := config.GetPrivateKey(apiKey)
-	if err != nil {
-		if os.IsNotExist(err) {
-			// The file is not there, so we can continue registration
-		} else {
-			fmt.Printf("failed to check apiKey existence: %s", err)
-			os.Exit(1)
-		}
-	}
-
-	if privateKey != nil {
-		fmt.Println("apikey has already been registered")
-		os.Exit(1)
-	}
-
-	privateKey, err = bsvec.NewPrivateKey(bsvec.S256())
-	if err != nil {
-		fmt.Printf("failed to generate new private key: %s", err)
-		os.Exit(1)
-	}
-
-	h := sha256.Sum256([]byte(apiKey))
-
-	signature, err := privateKey.Sign(h[:])
-	if err != nil {
-		fmt.Printf("failed to sign private key with api key: %s", err)
-		os.Exit(1)
-	}
-
-	signatureStr := hex.EncodeToString(signature.Serialize())
-	publicKeyStr := hex.EncodeToString(privateKey.PubKey().SerializeCompressed())
-
-	err = taal.Register(signatureStr, publicKeyStr, apiKey)
-	if err != nil {
-		fmt.Printf("failed to register: %s", err)
-		os.Exit(1)
-	}
-
-	err = config.StorePrivateKey(apiKey, privateKey)
-	if err != nil {
-		fmt.Printf("failed to write private key: %s", err)
-		os.Exit(1)
-	}
-
-	fmt.Println("Registration successful")
-	os.Exit(0)
-}
-
 func main() {
 	conf := config.Load()
 
@@ -135,12 +59,26 @@ func main() {
 
 	defer db.Close()
 
-	taal := client.New(conf.TaalUrl, conf.TaalTimeOut)
+	service := service.Service{
+		Taal:       client.New(conf.TaalUrl, conf.TaalTimeOut),
+		Config:     conf,
+		Repository: repository.NewRepository(*db),
+	}
+
+	ctx := context.Background()
+
+	err = service.MoveKeysToDB(ctx)
+	if err != nil {
+		log.Fatalf("app terminated with error: %v", err)
+	}
 
 	if len(os.Args) == 2 && os.Args[1] == "start" {
-		start(conf, taal)
+		service.Start()
 	} else if len(os.Args) == 3 && os.Args[1] == "register" {
-		register(conf, taal)
+		// taal-client register <api-key>
+		apiKey := os.Args[2]
+		service.Register(apiKey)
+		os.Exit(0)
 	} else {
 		usage()
 	}
