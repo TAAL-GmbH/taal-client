@@ -6,6 +6,7 @@ import (
 	"embed"
 	"fmt"
 	"net/http"
+	"os"
 	"taal-client/service"
 
 	"github.com/golang-migrate/migrate/v4"
@@ -22,7 +23,10 @@ import (
 //go:embed migrations
 var migrations embed.FS
 
-const sqLiteDBPath = "./localdata/db"
+const (
+	dbFolder         = "localdata"
+	sqLiteDBFilename = "db"
+)
 
 func GetPostgreSqlDB(host string, port int, username string, password string, dbName string) (*sqlx.DB, error) {
 	var sqlDB *sql.DB
@@ -38,7 +42,13 @@ func GetPostgreSqlDB(host string, port int, username string, password string, db
 }
 
 func GetSQLiteDB() (*sqlx.DB, error) {
-	sqliteDb, err := sql.Open("sqlite3", sqLiteDBPath)
+	if err := os.Mkdir(dbFolder, 0755); err != nil {
+		if !os.IsExist(err) {
+			return nil, err
+		}
+	}
+
+	sqliteDb, err := sql.Open("sqlite3", fmt.Sprintf("./%s/%s", dbFolder, sqLiteDBFilename))
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to open sqlite DB")
 	}
