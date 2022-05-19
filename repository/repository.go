@@ -26,7 +26,7 @@ func (r Repository) InsertKey(ctx context.Context, key server.Key) error {
 }
 
 func (r Repository) GetKey(ctx context.Context, apiKey string) (server.Key, error) {
-	query := `SELECT * FROM keys WHERE api_key = $1 LIMIT 1`
+	query := `SELECT * FROM keys WHERE api_key = $1 LIMIT 1;`
 
 	key := server.Key{}
 
@@ -36,4 +36,17 @@ func (r Repository) GetKey(ctx context.Context, apiKey string) (server.Key, erro
 	}
 
 	return key, nil
+}
+
+func (r Repository) GetAllKeys(ctx context.Context) ([]server.Key, error) {
+	query := `SELECT * FROM keys;`
+
+	keys := make([]server.Key, 0)
+
+	err := r.db.SelectContext(ctx, &keys, query)
+	if err != nil {
+		return nil, err
+	}
+
+	return keys, nil
 }

@@ -18,7 +18,7 @@ func (s Server) Register(c echo.Context) error {
 	ctx := context.Background()
 	_, err := s.repository.GetKey(ctx, apiKey)
 	if err == nil {
-		return s.sendError(c, http.StatusBadRequest, errRegisterApiKeyHasAlreadyBeenRegistered, errors.Wrap(err, "apikey has already been registered"))
+		return s.sendError(c, http.StatusBadRequest, errRegisterApiKeyHasAlreadyBeenRegistered, errors.New("apikey has already been registered"))
 	}
 	if err != sql.ErrNoRows {
 		return s.sendError(c, http.StatusInternalServerError, errRegisterFailedToCheckApiKey, errors.Wrap(err, "failed to check apiKey existence"))

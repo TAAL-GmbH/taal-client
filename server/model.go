@@ -10,10 +10,14 @@ import (
 )
 
 type Key struct {
-	ApiKey     string `db:"api_key"`
-	PublicKey  string `db:"public_key"`
-	PrivateKey string `db:"private_key"`
-	Address    string `db:"address"`
+	ApiKey     string `db:"api_key" json:"api_key"`
+	PublicKey  string `db:"public_key" json:"public_key"`
+	PrivateKey string `db:"private_key" json:"-"`
+	Address    string `db:"address" json:"address"`
+}
+
+type Keys struct {
+	Keys []Key `json:"keys"`
 }
 
 func GetKeyFromPrivateKey(apiKey string, pk *bsvec.PrivateKey) (Key, error) {

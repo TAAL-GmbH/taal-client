@@ -20,4 +20,5 @@ const (
 	errRegisterFailedToRegisterApiKey           = 21
 	errRegisterFailedToGetKeysFromPrivateKey    = 22
 	errRegisterFailedToStoreKeys                = 23
+	errAPIKeysFailedToGetKeys                   = 24
 )
