@@ -1,7 +1,6 @@
 package config
 
 import (
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -10,7 +9,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/bitcoinsv/bsvd/bsvec"
 	"github.com/pkg/errors"
 )
 
@@ -97,67 +95,6 @@ func Load() (*Config, error) {
 	}
 
 	return config, nil
-}
-
-func GetPrivateKey(apiKey string) (*bsvec.PrivateKey, error) {
-	f, err := os.Open(fmt.Sprintf("%s/%s.json", keyFolder, apiKey))
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	b, err := ioutil.ReadAll(f)
-	if err != nil {
-		return nil, err
-	}
-
-	var s JsonStruct
-	if err := json.Unmarshal(b, &s); err != nil {
-		return nil, err
-	}
-
-	privateKeyDecoded, err := hex.DecodeString(s.PrivateKey)
-	if err != nil {
-		return nil, fmt.Errorf("failed to decode private key: %w", err)
-	}
-
-	privateKey, _ := bsvec.PrivKeyFromBytes(bsvec.S256(), privateKeyDecoded)
-
-	return privateKey, nil
-}
-
-func StorePrivateKey(apiKey string, pk *bsvec.PrivateKey) error {
-	// Make sure path exists
-	if err := os.Mkdir(keyFolder, 0755); err != nil {
-		if !os.IsExist(err) {
-			return err
-		}
-	}
-
-	f, err := os.OpenFile(fmt.Sprintf("%s/%s.json", keyFolder, apiKey), os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	enc := json.NewEncoder(f)
-	enc.SetIndent("", "  ")
-
-	j := &JsonStruct{
-		ApiKey:     apiKey,
-		PrivateKey: hex.EncodeToString(pk.Serialize()),
-		PublicKey:  hex.EncodeToString(pk.PubKey().SerializeCompressed()),
-	}
-
-	if err := enc.Encode(j); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func MoveConfigKeysToArchive() error {
-	return os.Rename("keys", "keys_archive")
 }
 
 func GetKeysFromJson() ([]JsonStruct, error) {

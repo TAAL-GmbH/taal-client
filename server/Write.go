@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"taal-client/config"
 
 	"github.com/labstack/echo/v4"
 )
@@ -16,31 +15,31 @@ import (
 func (s Server) write(c echo.Context) error {
 	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
 	if authHeader == "" {
-		return s.sendError(c, http.StatusUnauthorized, 1, errors.New("missing authorization"))
+		return s.sendError(c, http.StatusUnauthorized, errWriteTxNotAuthorized, errors.New("missing authorization"))
 	}
 
 	apiKey := strings.Replace(authHeader, "Bearer ", "", 1)
 
-	privateKey, err := config.GetPrivateKey(apiKey)
+	privateKey, err := s.repository.GetKey(c.Request().Context(), apiKey)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return s.sendError(c, http.StatusUnauthorized, 1, errors.New("unknown apikey"))
+			return s.sendError(c, http.StatusUnauthorized, errWriteApiKeyUnknown, errors.New("unknown apikey"))
 		}
-		return s.sendError(c, http.StatusInternalServerError, 1, errors.New("failed to read apikey data"))
+		return s.sendError(c, http.StatusInternalServerError, errWriteFailedToReadApiKey, errors.New("failed to read apikey data"))
 	}
 
 	mimeType := c.Request().Header.Get(echo.HeaderContentType)
 	if mimeType == "" {
-		return s.sendError(c, http.StatusBadRequest, 10, errors.New("empty mimetype"))
+		return s.sendError(c, http.StatusBadRequest, errWriteEmptyMimeType, errors.New("empty mimetype"))
 	}
 
 	if c.Request().Body == nil {
-		return s.sendError(c, http.StatusBadRequest, 11, errors.New("empty body"))
+		return s.sendError(c, http.StatusBadRequest, errWriteEmptyBody, errors.New("empty body"))
 	}
 
 	reqBody, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, 12, fmt.Errorf("could not read body: %w", err))
+		return s.sendError(c, http.StatusBadRequest, errWriteCouldNotReadBody, fmt.Errorf("could not read body: %w", err))
 	}
 	defer func() {
 		err = c.Request().Body.Close()
@@ -51,7 +50,7 @@ func (s Server) write(c echo.Context) error {
 
 	opReturnOutput, err := buildOpReturnOutput(c.Request().Header.Get("x-tag"), mimeType, reqBody)
 	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, 14, fmt.Errorf("failed to create op return output: %w", err))
+		return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, fmt.Errorf("failed to create op return output: %w", err))
 	}
 
 	feesRequired := true
@@ -61,7 +60,7 @@ func (s Server) write(c echo.Context) error {
 
 	feeTx, dataTx, err := s.taal.GetTransactionsTemplate(apiKey, len(opReturnOutput.ToBytes()), feesRequired)
 	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, 13, fmt.Errorf("failed to get transactions: %w", err))
+		return s.sendError(c, http.StatusBadRequest, errWriteFailedToGetTxs, fmt.Errorf("failed to get transactions: %w", err))
 	}
 
 	dataTx.Inputs[0].PreviousTxSatoshis = feeTx.GetOutputs()[0].Satoshis
@@ -69,16 +68,15 @@ func (s Server) write(c echo.Context) error {
 
 	dataTx.AddOutput(opReturnOutput)
 
-	err = signTx(privateKey, dataTx)
+	privateKeyCurve, err := GetPrivateKeyCurve(privateKey.PrivateKey)
+	err = signTx(privateKeyCurve, dataTx)
 	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, 15, fmt.Errorf("failed to sign transaction: %w", err))
+		return s.sendError(c, http.StatusBadRequest, errWriteFailedToSignTx, fmt.Errorf("failed to sign transaction: %w", err))
 	}
-
-	// fmt.Printf("DATA TX:\n%x\n", dataTx.ToBytes())
 
 	err = s.taal.SubmitTransactions(apiKey, feeTx, dataTx)
 	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, 16, fmt.Errorf("failed to submit transactions: %w", err))
+		return s.sendError(c, http.StatusBadRequest, errWriteFailedToSubmitTxs, fmt.Errorf("failed to submit transactions: %w", err))
 	}
 
 	return s.sendSuccess(c, http.StatusCreated, dataTx.GetTxID())

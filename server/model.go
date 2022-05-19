@@ -1,8 +1,7 @@
-package service
+package server
 
 import (
 	"encoding/hex"
-	"taal-client/config"
 
 	"github.com/bitcoinsv/bsvd/bsvec"
 	"github.com/bitcoinsv/bsvd/chaincfg"
@@ -36,34 +35,14 @@ func GetKeyFromPrivateKey(apiKey string, pk *bsvec.PrivateKey) (Key, error) {
 	return key, nil
 }
 
-func GetKeyFromConfigKey(configKey config.JsonStruct) (Key, error) {
-	privateKey, err := GetPrivateKey(configKey.PrivateKey)
-	if err != nil {
-		return Key{}, nil
-	}
-
-	pubKeyAddress, err := bsvutil.NewAddressPubKey(privateKey.PubKey().SerializeCompressed(), &chaincfg.MainNetParams)
-	if err != nil {
-		return Key{}, errors.Wrap(err, "unable to create address")
-	}
-
-	key := Key{
-		ApiKey:     configKey.ApiKey,
-		PublicKey:  configKey.PublicKey,
-		PrivateKey: configKey.PrivateKey,
-		Address:    pubKeyAddress.EncodeAddress(),
-	}
-	return key, nil
-}
-
-func GetPrivateKey(pk string) (*bsvec.PrivateKey, error) {
-	privateKeyDecoded, err := hex.DecodeString(pk)
+func GetPrivateKeyCurve(privateKey string) (*bsvec.PrivateKey, error) {
+	privateKeyDecoded, err := hex.DecodeString(privateKey)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to decode private key")
 	}
 
-	privateKey, _ := bsvec.PrivKeyFromBytes(bsvec.S256(), privateKeyDecoded)
+	privateKeyCurve, _ := bsvec.PrivKeyFromBytes(bsvec.S256(), privateKeyDecoded)
 
-	return privateKey, nil
+	return privateKeyCurve, nil
 
 }

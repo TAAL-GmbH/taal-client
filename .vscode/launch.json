@@ -18,7 +18,7 @@
         "TAAL_TIMEOUT": "10m",
         "DEBUG": "1",
       },
-      "args": ["start"],
+      "args": [""],
       "showLog": true
     },
     {
@@ -41,18 +41,7 @@
         "PORT": "5432",
         "CONNECT_TO_DB": "1"
       },
-      "args": ["start"],
-      "showLog": true
-    },{
-      "name": "Register",
-      "type": "go",
-      "request": "launch",
-      "mode": "debug",
-      "remotePath": "",
-      "program": "${workspaceFolder}/main.go",
-      "cwd": "${workspaceFolder}",
-      "env": {},
-      "args": ["register", "testnet_1b13ef42af601bd8e8445e9ba01607a0"],
+      "args": [""],
       "showLog": true
     }
   ]

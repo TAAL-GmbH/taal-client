@@ -15,10 +15,17 @@ import (
 	"github.com/libsv/go-bt"
 )
 
+//go:generate moq -pkg service_test -out repository_mock_test.go . Repository
+type Repository interface {
+	InsertKey(ctx context.Context, key Key) error
+	GetKey(ctx context.Context, apiKey string) (Key, error)
+}
+
 type Server struct {
-	server  *echo.Echo
-	address string
-	taal    *client.Client
+	server     *echo.Echo
+	address    string
+	taal       *client.Client
+	repository Repository
 }
 
 type successResponse struct {
@@ -32,7 +39,7 @@ type errorResponse struct {
 	Err    string `json:"error"`
 }
 
-func New(address string, taal *client.Client) Server {
+func New(address string, taal *client.Client, repo Repository) Server {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
@@ -55,14 +62,16 @@ func New(address string, taal *client.Client) Server {
 	}))
 
 	s := Server{
-		server:  e,
-		address: address,
-		taal:    taal,
+		server:     e,
+		address:    address,
+		taal:       taal,
+		repository: repo,
 	}
 
 	group := e.Group("/api/v1")
 	group.POST("/write", s.write)
 	group.GET("/read/:txid", s.read)
+	group.POST("/register/:apikey", s.Register)
 
 	group.GET("/test", func(c echo.Context) error {
 		return c.String(http.StatusOK, "This is from the client")
