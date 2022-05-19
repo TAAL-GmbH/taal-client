@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import Key from "./key.svelte";
-    // define the data holding variable
+    
     let keys;
 
     onMount(async () => {

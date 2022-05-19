@@ -15,6 +15,7 @@
   import { Router, Route, Link } from 'svelte-routing'
   import Home from './routes/home.svelte'
   import Settings from './routes/settings.svelte'
+  import Transactions from './routes/transactions.svelte'
 
   export let url = ''
 
@@ -59,6 +60,7 @@
         <Link to="/" class="navbar-item has-text-light">Home</Link>
 
         <Link to="/settings" class="navbar-item has-text-light">Settings</Link>
+        <Link to="/transactions" class="navbar-item has-text-light">Transactions</Link>
       </div>
     </div>
   </nav>
@@ -66,6 +68,7 @@
   <main class="section">
     <Route path="/"><Home /></Route>
     <Route path="settings" component={Settings} />
+    <Route path="transactions" component={Transactions} />
   </main>
 </Router>
 
