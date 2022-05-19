@@ -3,15 +3,20 @@
 </script>
 
 <article>
-    <small>
-      api key: <b>{key.api_key}</b>   
-    </small><br/>
-    <small>
-      address: <b>{key.address}</b>   
-    </small><br/>
-    <small>
-      public key: <b>{key.public_key}</b>
-    </small><br/>
+    <table>
+      <tr>
+        <th>API key:  &nbsp;</th>
+        <th>{key.api_key}</th>
+      </tr>
+      <tr>
+        <th>Public key:  &nbsp;</th>
+        <th>{key.public_key}</th>
+      </tr>
+      <tr>
+        <th>Address:  &nbsp;</th>
+        <th>{key.address}</th>
+      </tr>
+    </table>
 </article>
 
 <style>
