@@ -8,6 +8,10 @@
           <th>Transaction ID:  &nbsp;</th>
           <th><a href="https://www.whatsonchain.com/tx/{transaction.id}">{transaction.id}</a></th>
         </tr>
+        <tr>
+          <th>API Key used:  &nbsp;</th>
+          <th>{transaction.api_key}</th>
+        </tr>
       </table>
 </article>
 <style>

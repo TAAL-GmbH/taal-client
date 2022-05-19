@@ -51,10 +51,10 @@ func (r Repository) GetAllKeys(ctx context.Context) ([]server.Key, error) {
 	return keys, nil
 }
 
-func (r Repository) InsertTransaction(ctx context.Context, txID string) error {
+func (r Repository) InsertTransaction(ctx context.Context, tx server.Transaction) error {
 
-	query := `INSERT INTO transactions (id) VALUES ($1);`
-	_, err := r.db.ExecContext(ctx, query, txID)
+	query := `INSERT INTO transactions (id, api_key) VALUES ($1, $2);`
+	_, err := r.db.ExecContext(ctx, query, tx.ID, tx.ApiKey)
 
 	return err
 }

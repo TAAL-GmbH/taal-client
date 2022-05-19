@@ -21,7 +21,8 @@ type Keys struct {
 }
 
 type Transaction struct {
-	ID string `db:"id" json:"id"`
+	ID     string `db:"id" json:"id"`
+	ApiKey string `db:"api_key" json:"api_key"`
 }
 
 type Transactions struct {

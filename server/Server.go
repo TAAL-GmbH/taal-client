@@ -20,7 +20,7 @@ type Repository interface {
 	InsertKey(ctx context.Context, key Key) error
 	GetKey(ctx context.Context, apiKey string) (Key, error)
 	GetAllKeys(ctx context.Context) ([]Key, error)
-	InsertTransaction(ctx context.Context, txID string) error
+	InsertTransaction(ctx context.Context, tx Transaction) error
 	GetAllTransactions(ctx context.Context) ([]Transaction, error)
 }
 

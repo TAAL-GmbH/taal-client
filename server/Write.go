@@ -80,7 +80,8 @@ func (s Server) write(c echo.Context) error {
 	}
 
 	ctx := context.Background()
-	err = s.repository.InsertTransaction(ctx, dataTx.GetTxID())
+	tx := Transaction{ID: dataTx.GetTxID(), ApiKey: apiKey}
+	err = s.repository.InsertTransaction(ctx, tx)
 	if err != nil {
 		return s.sendError(c, http.StatusBadRequest, errWriteInsertTransaction, errors.Wrap(err, "failed to write transaction to DB"))
 	}
