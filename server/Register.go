@@ -51,7 +51,6 @@ func (s Server) Register(c echo.Context) error {
 
 	err = s.repository.InsertKey(ctx, key)
 	if err != nil {
-
 		return s.sendError(c, http.StatusInternalServerError, errRegisterFailedToStoreKeys, errors.Wrap(err, "failed to write private key to DB"))
 	}
 

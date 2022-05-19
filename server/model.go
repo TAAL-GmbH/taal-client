@@ -20,7 +20,7 @@ func GetKeyFromPrivateKey(apiKey string, pk *bsvec.PrivateKey) (Key, error) {
 	privateKey := hex.EncodeToString(pk.Serialize())
 	publicKey := hex.EncodeToString(pk.PubKey().SerializeCompressed())
 
-	pubKeyAddress, err := bsvutil.NewAddressPubKey([]byte(publicKey), &chaincfg.MainNetParams)
+	pubKeyAddress, err := bsvutil.NewAddressPubKey(pk.PubKey().SerializeCompressed(), &chaincfg.MainNetParams)
 	if err != nil {
 		return Key{}, errors.Wrap(err, "unable to create address")
 	}
