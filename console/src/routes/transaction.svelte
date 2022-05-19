@@ -6,7 +6,7 @@
     <table>
         <tr>
           <th>Transaction ID:  &nbsp;</th>
-          <th>{transaction.id}</th>
+          <th><a href="https://www.whatsonchain.com/tx/{transaction.id}">{transaction.id}</a></th>
         </tr>
       </table>
 </article>
