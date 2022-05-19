@@ -68,7 +68,7 @@ func (s Server) write(c echo.Context) error {
 
 	dataTx.AddOutput(opReturnOutput)
 
-	privateKeyCurve, err := GetPrivateKeyCurve(privateKey.PrivateKey)
+	privateKeyCurve, err := GetPrivateKey(privateKey.PrivateKey)
 	err = signTx(privateKeyCurve, dataTx)
 	if err != nil {
 		return s.sendError(c, http.StatusBadRequest, errWriteFailedToSignTx, errors.Wrap(err, "failed to sign transaction"))

@@ -3,9 +3,17 @@
     "bitcoinsv",
     "bsvd",
     "bsvec",
+    "bsvutil",
+    "chaincfg",
     "chartjs",
+    "dbname",
+    "httpfs",
+    "jmoiron",
     "libsv",
+    "mattn",
     "mdbsvelte",
-    "sirv"
+    "sirv",
+    "sqlx",
+    "sslmode"
   ]
 }

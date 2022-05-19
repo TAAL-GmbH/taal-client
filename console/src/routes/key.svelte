@@ -1,31 +1,10 @@
 <script>
-    export let key;
+  export let key
 </script>
 
-<article>
-    <table>
-      <tr>
-        <th>API key:  &nbsp;</th>
-        <th>{key.api_key}</th>
-      </tr>
-      <tr>
-        <th>Public key:  &nbsp;</th>
-        <th>{key.public_key}</th>
-      </tr>
-      <tr>
-        <th>Address:  &nbsp;</th>
-        <th>{key.address}</th>
-      </tr>
-    </table>
-</article>
-
-<style>
-    article {
-      margin: 0 0 1em 0;
-    }
-    h1 {
-      font-size: 1.4em;
-      margin: 0;
-      display: block;
-    }
-</style>
+<tr>
+  <td>{key.createdAt.replace('T', ' ').slice(0, 16)}</td>
+  <td>{key.api_key}</td>
+  <td title={key.publicKey}>{key.address}</td>
+  <td><button class="button is-primary">Revoke</button></td>
+</tr>
