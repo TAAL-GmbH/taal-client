@@ -50,3 +50,24 @@ func (r Repository) GetAllKeys(ctx context.Context) ([]server.Key, error) {
 
 	return keys, nil
 }
+
+func (r Repository) InsertTransaction(ctx context.Context, txID string) error {
+
+	query := `INSERT INTO transactions (id) VALUES ($1);`
+	_, err := r.db.ExecContext(ctx, query, txID)
+
+	return err
+}
+
+func (r Repository) GetAllTransactions(ctx context.Context) ([]server.Transaction, error) {
+	query := `SELECT * FROM transactions;`
+
+	txs := make([]server.Transaction, 0)
+
+	err := r.db.SelectContext(ctx, &txs, query)
+	if err != nil {
+		return nil, err
+	}
+
+	return txs, nil
+}

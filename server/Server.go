@@ -20,6 +20,8 @@ type Repository interface {
 	InsertKey(ctx context.Context, key Key) error
 	GetKey(ctx context.Context, apiKey string) (Key, error)
 	GetAllKeys(ctx context.Context) ([]Key, error)
+	InsertTransaction(ctx context.Context, txID string) error
+	GetAllTransactions(ctx context.Context) ([]Transaction, error)
 }
 
 type Server struct {
@@ -74,6 +76,7 @@ func New(address string, taal *client.Client, repo Repository) Server {
 	group.GET("/read/:txid", s.read)
 	group.POST("/register/:apikey", s.register)
 	group.GET("/apikeys", s.getApiKeys)
+	group.GET("/transactions", s.getTransactions)
 
 	group.GET("/test", func(c echo.Context) error {
 		return c.String(http.StatusOK, "This is from the client")

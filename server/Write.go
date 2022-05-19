@@ -1,8 +1,7 @@
 package server
 
 import (
-	"errors"
-	"fmt"
+	"context"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -10,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 )
 
 func (s Server) write(c echo.Context) error {
@@ -39,7 +39,7 @@ func (s Server) write(c echo.Context) error {
 
 	reqBody, err := ioutil.ReadAll(c.Request().Body)
 	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, errWriteCouldNotReadBody, fmt.Errorf("could not read body: %w", err))
+		return s.sendError(c, http.StatusBadRequest, errWriteCouldNotReadBody, errors.Wrap(err, "could not read body"))
 	}
 	defer func() {
 		err = c.Request().Body.Close()
@@ -50,7 +50,7 @@ func (s Server) write(c echo.Context) error {
 
 	opReturnOutput, err := buildOpReturnOutput(c.Request().Header.Get("x-tag"), mimeType, reqBody)
 	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, fmt.Errorf("failed to create op return output: %w", err))
+		return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.Wrap(err, "failed to create op return output"))
 	}
 
 	feesRequired := true
@@ -60,7 +60,7 @@ func (s Server) write(c echo.Context) error {
 
 	feeTx, dataTx, err := s.taal.GetTransactionsTemplate(apiKey, len(opReturnOutput.ToBytes()), feesRequired)
 	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, errWriteFailedToGetTxs, fmt.Errorf("failed to get transactions: %w", err))
+		return s.sendError(c, http.StatusBadRequest, errWriteFailedToGetTxs, errors.Wrap(err, "failed to get transactions"))
 	}
 
 	dataTx.Inputs[0].PreviousTxSatoshis = feeTx.GetOutputs()[0].Satoshis
@@ -71,12 +71,18 @@ func (s Server) write(c echo.Context) error {
 	privateKeyCurve, err := GetPrivateKeyCurve(privateKey.PrivateKey)
 	err = signTx(privateKeyCurve, dataTx)
 	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, errWriteFailedToSignTx, fmt.Errorf("failed to sign transaction: %w", err))
+		return s.sendError(c, http.StatusBadRequest, errWriteFailedToSignTx, errors.Wrap(err, "failed to sign transaction"))
 	}
 
 	err = s.taal.SubmitTransactions(apiKey, feeTx, dataTx)
 	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, errWriteFailedToSubmitTxs, fmt.Errorf("failed to submit transactions: %w", err))
+		return s.sendError(c, http.StatusBadRequest, errWriteFailedToSubmitTxs, errors.Wrap(err, "failed to submit transactions"))
+	}
+
+	ctx := context.Background()
+	err = s.repository.InsertTransaction(ctx, dataTx.GetTxID())
+	if err != nil {
+		return s.sendError(c, http.StatusBadRequest, errWriteInsertTransaction, errors.Wrap(err, "failed to write transaction to DB"))
 	}
 
 	return s.sendSuccess(c, http.StatusCreated, dataTx.GetTxID())

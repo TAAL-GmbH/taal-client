@@ -9,7 +9,7 @@ const (
 	errWriteEmptyMimeType                       = 10
 	errWriteEmptyBody                           = 11
 	errWriteCouldNotReadBody                    = 12
-	errReadTxErr                                = 13
+	errReadTx                                   = 13
 	errWriteFailedToReturnOpReturnOutput        = 14
 	errWriteFailedToSignTx                      = 15
 	errWriteFailedToSubmitTxs                   = 16
@@ -21,4 +21,5 @@ const (
 	errRegisterFailedToGetKeysFromPrivateKey    = 22
 	errRegisterFailedToStoreKeys                = 23
 	errAPIKeysFailedToGetKeys                   = 24
+	errWriteInsertTransaction                   = 25
 )

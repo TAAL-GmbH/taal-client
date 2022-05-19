@@ -20,6 +20,14 @@ type Keys struct {
 	Keys []Key `json:"keys"`
 }
 
+type Transaction struct {
+	ID string `db:"id" json:"id"`
+}
+
+type Transactions struct {
+	Transactions []Transaction `json:"transactions"`
+}
+
 func GetKeyFromPrivateKey(apiKey string, pk *bsvec.PrivateKey) (Key, error) {
 	privateKey := hex.EncodeToString(pk.Serialize())
 	publicKey := hex.EncodeToString(pk.PubKey().SerializeCompressed())
