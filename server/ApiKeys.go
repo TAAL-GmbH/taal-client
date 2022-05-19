@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (s Server) GetApiKeys(c echo.Context) error {
+func (s Server) getApiKeys(c echo.Context) error {
 	ctx := context.Background()
 	keys, err := s.repository.GetAllKeys(ctx)
 	if err != nil {

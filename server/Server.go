@@ -72,8 +72,8 @@ func New(address string, taal *client.Client, repo Repository) Server {
 	group := e.Group("/api/v1")
 	group.POST("/write", s.write)
 	group.GET("/read/:txid", s.read)
-	group.POST("/register/:apikey", s.Register)
-	group.GET("/apikeys", s.GetApiKeys)
+	group.POST("/register/:apikey", s.register)
+	group.GET("/apikeys", s.getApiKeys)
 
 	group.GET("/test", func(c echo.Context) error {
 		return c.String(http.StatusOK, "This is from the client")

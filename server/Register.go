@@ -12,7 +12,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (s Server) Register(c echo.Context) error {
+func (s Server) register(c echo.Context) error {
 	apiKey := c.Param("apikey")
 
 	ctx := context.Background()

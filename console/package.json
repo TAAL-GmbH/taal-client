@@ -32,6 +32,7 @@
     "mdbsvelte": "^1.0.12",
     "sirv-cli": "^2.0.0",
     "svelte-chartjs": "^1.1.4",
+    "svelte-notifications": "^0.9.95",
     "svelte-routing": "^1.6.0"
   }
 }

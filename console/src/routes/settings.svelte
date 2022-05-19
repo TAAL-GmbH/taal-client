@@ -4,6 +4,9 @@
   import Key from "./key.svelte";
   import Keys from "./keys.svelte";
   import Register from "./register.svelte";
+
+
+  import Notifications from 'svelte-notifications';
   
   let keys;
   let key;
@@ -12,5 +15,7 @@
 
 <main>
   <Keys {keys} />
-  <Register/>
+  <Notifications>
+    <Register/>
+  </Notifications>
 </main>
