@@ -17,6 +17,16 @@
   import Settings from './routes/settings.svelte'
   import Transactions from './routes/transactions.svelte'
 
+  let isActive = false
+
+  function toggleMenu() {
+    isActive = !isActive
+  }
+
+  function closeMenu() {
+    isActive = false
+  }
+
   export let url = ''
 
   const src = 'taal-logo.png'
@@ -31,10 +41,7 @@
 </svelte:head>
 
 <Router {url}>
-  <nav
-    class="navbar is-fixed-top has-background-dark"
-    aria-label="main navigation"
-  >
+  <nav class="navbar is-fixed-top is-dark" aria-label="main navigation">
     <div class="navbar-brand">
       <a class="navbar-item has-text-light" href="https://taal.com">
         <img {src} alt="Taal logo" />
@@ -44,10 +51,11 @@
       <a
         href="#/"
         role="button"
-        class="navbar-burger"
+        class="navbar-burger {isActive ? 'is-active' : ''}"
         aria-label="menu"
         aria-expanded="false"
         data-target="navbarBasicExample"
+        on:click={toggleMenu}
       >
         <span aria-hidden="true" />
         <span aria-hidden="true" />
@@ -55,12 +63,19 @@
       </a>
     </div>
 
-    <div id="navbarBasicExample" class="navbar-menu">
-      <div class="navbar-start">
-        <Link to="/" class="navbar-item has-text-light">Home</Link>
+    <div
+      id="navbarBasicExample"
+      class="navbar-menu {isActive ? 'is-active' : ''}"
+    >
+      <div class="navbar-start is-dark">
+        <Link to="/" class="navbar-item" on:click={closeMenu}>Home</Link>
 
-        <Link to="/settings" class="navbar-item has-text-light">Settings</Link>
-        <Link to="/transactions" class="navbar-item has-text-light">Transactions</Link>
+        <Link to="/settings" class="navbar-item" on:click={closeMenu}
+          >Settings</Link
+        >
+        <Link to="/transactions" class="navbar-item" on:click={closeMenu}
+          >Transactions</Link
+        >
       </div>
     </div>
   </nav>
