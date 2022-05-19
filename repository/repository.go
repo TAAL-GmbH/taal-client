@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"time"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -18,9 +19,13 @@ func NewRepository(db sqlx.DB) Repository {
 	return Repository{db: db}
 }
 
+const ISO8601 = "2006-01-02T15:04:05.999Z"
+
 func (r Repository) InsertKey(ctx context.Context, key server.Key) error {
-	query := `INSERT INTO keys (api_key, private_key, public_key, address) VALUES ($1, $2, $3, $4);`
-	_, err := r.db.ExecContext(ctx, query, key.ApiKey, key.PrivateKey, key.PublicKey, key.Address)
+	createdAt := time.Now().UTC().Format(ISO8601)
+
+	query := `INSERT INTO keys (created_at, api_key, private_key, public_key, address) VALUES ($1, $2, $3, $4, $5);`
+	_, err := r.db.ExecContext(ctx, query, createdAt, key.ApiKey, key.PrivateKey, key.PublicKey, key.Address)
 
 	return err
 }
