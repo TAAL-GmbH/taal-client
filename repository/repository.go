@@ -39,7 +39,7 @@ func (r Repository) GetKey(ctx context.Context, apiKey string) (server.Key, erro
 }
 
 func (r Repository) GetAllKeys(ctx context.Context) ([]server.Key, error) {
-	query := `SELECT * FROM keys;`
+	query := `SELECT * FROM keys WHERE revoked_at IS NULL;`
 
 	keys := make([]server.Key, 0)
 

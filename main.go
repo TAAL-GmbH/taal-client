@@ -163,7 +163,7 @@ func moveKeysToDB(ctx context.Context, repo repository.Repository) error {
 }
 
 func getKeyFromConfigKey(configKey config.JsonStruct) (server.Key, error) {
-	privateKey, err := server.GetPrivateKeyCurve(configKey.PrivateKey)
+	privateKey, err := server.GetPrivateKey(configKey.PrivateKey)
 	if err != nil {
 		return server.Key{}, nil
 	}
