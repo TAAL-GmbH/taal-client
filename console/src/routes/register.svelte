@@ -13,7 +13,11 @@
 	    const json = await res.json()
 
         if (json.status != 200) {
-            addNotification({text: `Error: ${json.error}`, position: 'bottom-left'});
+            addNotification({
+                text: `Error: ${json.error}`, 
+                position: 'bottom-left',
+                type: 'warning'
+            });
         };
 	}
 </script>
