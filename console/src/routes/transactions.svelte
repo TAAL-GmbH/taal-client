@@ -17,13 +17,23 @@
 <h1>Transactions</h1>
 
 {#if transactions}
+<table class="table">
+  <tr>
+    <th>ID</th>
+    <th>API Key used</th>
+  </tr>
   {#each transactions as transaction }
-    <ul>
-      <li>    
         <Transaction {transaction} />
-      </li>
-    </ul>
   {/each}
+</table>
 {:else}
   <p class="loading">loading...</p>
 {/if}
+
+<style>
+  h1 {
+    font-size: 1.4em;
+    font-weight: bold;
+    display: block;
+  }
+</style>
