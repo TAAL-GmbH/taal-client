@@ -16,6 +16,8 @@
   import Home from './routes/home.svelte'
   import Settings from './routes/settings.svelte'
   import Transactions from './routes/transactions.svelte'
+  import Submit from './routes/submit.svelte'
+  import Notifications from 'svelte-notifications'
 
   let isActive = false
 
@@ -76,6 +78,8 @@
         <Link to="/transactions" class="navbar-item" on:click={closeMenu}
           >Transactions</Link
         >
+        <Link to="/submit" class="navbar-item" on:click={closeMenu}>Submit</Link
+        >
       </div>
     </div>
   </nav>
@@ -84,6 +88,10 @@
     <Route path="/"><Home /></Route>
     <Route path="settings" component={Settings} />
     <Route path="transactions" component={Transactions} />
+    <Notifications>
+      <Route path="submit" component={Submit} />
+    </Notifications>
+   
   </main>
 </Router>
 
