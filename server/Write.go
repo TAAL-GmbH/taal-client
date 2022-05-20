@@ -2,10 +2,10 @@ package server
 
 import (
 	"context"
+	"database/sql"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -19,10 +19,10 @@ func (s Server) write(c echo.Context) error {
 	}
 
 	apiKey := strings.Replace(authHeader, "Bearer ", "", 1)
-
-	privateKey, err := s.repository.GetKey(c.Request().Context(), apiKey)
+	ctx := context.Background()
+	privateKey, err := s.repository.GetKey(ctx, apiKey)
 	if err != nil {
-		if os.IsNotExist(err) {
+		if err == sql.ErrNoRows {
 			return s.sendError(c, http.StatusUnauthorized, errWriteApiKeyUnknown, errors.New("unknown apikey"))
 		}
 		return s.sendError(c, http.StatusInternalServerError, errWriteFailedToReadApiKey, errors.New("failed to read apikey data"))

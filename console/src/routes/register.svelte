@@ -8,21 +8,24 @@
   function register() {
     fetch(`${BASE_URL}/api/v1/register/${apiKey}`, {
       method: 'POST',
-    })
-      .then(function (response) {
-        const json = res.json()
-
-        if (json.status != 200) {
-          addNotification({
-            text: `Error: ${json.error}`,
-            position: 'bottom-left',
-            type: 'warning',
-          })
+    })  .then(res => {
+        if (!res.ok) {
+          return res.text().then(text => {throw new Error(text)});
+        }
+        else {
+          return res.json();
         }
       })
-      .catch(function (err) {
-        console.log(err)
+    .catch(err => {
+      const errJson = JSON.parse(err.message);
+      addNotification({
+        text: `${errJson.error}`,
+        position: 'bottom-left',
+        type: 'warning',
       })
+      
+      console.log(err);
+    })
   }
 </script>
 

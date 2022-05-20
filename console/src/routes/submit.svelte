@@ -28,22 +28,27 @@
         'X-Tag': tag,
       },
     })
-      .then(function (response) {
+      .then(res => {
         localStorage.setItem('tag', tag)
         localStorage.setItem('apiKey', apiKey)
 
-        const json = response.json()
-
-        if (json.status != 200) {
-          addNotification({
-            text: `Error: ${json.error}`,
-            position: 'bottom-left',
-            type: 'warning',
+        if (!res.ok) {
+          return res.text().then((text) => {
+            throw new Error(text)
           })
+        } else {
+          return res.json()
         }
       })
-      .catch(function (err) {
-        console.log(err)
+      .catch(err => {
+        const errJson = JSON.parse(err.message)
+        addNotification({
+          text: `${errJson.error}`,
+          position: 'bottom-left',
+          type: 'warning',
+        })
+        
+        console.log(err);
       })
   }
 </script>
