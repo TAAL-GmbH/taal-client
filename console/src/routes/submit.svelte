@@ -14,6 +14,9 @@
   let inputDataDisabled = false
   let inputMimeTypeDisabled = false
 
+  let curlCommand = ''
+  let curlCommandLabel = ''
+
   let files
   let file = null
   let fileData = null
@@ -49,8 +52,25 @@
     apiKey = localStorage.getItem('apiKey')
   })
 
+  function showCurl(key, type, tag, data, url) {
+    let curl = 'curl -X POST'
+    if (key) curl += ` -H 'Authorization: Bearer ${key}'`
+    if (type) curl += ` -H 'Content-Type: ${type}'`
+    if (tag) curl += ` -H 'X-Tag: ${tag}'`
+
+    if (file) {
+      curl += ` --data-binary @${file.name}`
+    } else if (data) curl += ` -d "${data}"`
+    curl += ` ${url}`
+
+    curlCommand = curl
+    curlCommandLabel = 'Curl command: '
+  }
+
   function writeData() {
-    fetch(`${taalClientURL}/api/v1/transactions`, {
+    let url = `${taalClientURL}/api/v1/transactions`
+    showCurl(apiKey, mimeType, tagString, data, url)
+    fetch(url, {
       method: 'POST',
       body: fileData ? fileData : data,
       headers: {
@@ -73,6 +93,7 @@
           position: 'bottom-left',
           type: 'success',
         })
+          showCurl(apiKey, mimeType, tagString, data, url)
           return res.json()
         }
       })
@@ -149,4 +170,8 @@
       >Submit transaction</button
     >
   </div>
+</div>
+<div>
+  <label for="curl">{curlCommandLabel}</label>
+  <div class="field" id="curl">{curlCommand}</div>
 </div>
