@@ -10,8 +10,37 @@
   let mimeType = 'text/plain'
   let data
 
+  let inputDataDisabled = false
+  let inputMimeTypeDisabled = false
+
+  let files
   let file = null
   let fileData = null
+
+
+  $: if (files != null) {
+    file = files[0]
+    mimeType = file.type
+
+    if (file.type.startsWith('text/')) {
+        const fr = new FileReader()
+        fr.onload=function(){
+          data = fr.result
+        }
+        fr.readAsText(file)
+      } else {
+        data = `< ${file.name} >`
+      }
+
+    inputDataDisabled = true
+    inputMimeTypeDisabled = true
+
+    const fr = new FileReader()
+      fr.onload=function(){
+        fileData = fr.result
+      }
+      fr.readAsArrayBuffer(file)
+  }
 
   onMount(async () => {
     tag = localStorage.getItem('tag')
@@ -28,7 +57,7 @@
         'X-Tag': tag,
       },
     })
-      .then(res => {
+      .then((res) => {
         localStorage.setItem('tag', tag)
         localStorage.setItem('apiKey', apiKey)
 
@@ -40,15 +69,15 @@
           return res.json()
         }
       })
-      .catch(err => {
+      .catch((err) => {
         const errJson = JSON.parse(err.message)
         addNotification({
           text: `${errJson.error}`,
           position: 'bottom-left',
           type: 'warning',
         })
-        
-        console.log(err);
+
+        console.log(err)
       })
   }
 </script>
@@ -72,6 +101,12 @@
   </div>
 </div>
 <div class="field">
+  <div id="input5" class="control">
+    <label for="mimetype">MIME type</label>
+    <input id="mimetype" class="input" type="text" bind:value={mimeType} disabled={inputMimeTypeDisabled} />
+  </div>
+</div>
+<div class="field">
   <div id="input4" class="control">
     <label for="data">Data</label>
     <textarea
@@ -80,14 +115,20 @@
       type="text"
       placeholder="Enter text to send to blockchain"
       bind:value={data}
+      disabled={inputDataDisabled}
     />
   </div>
 </div>
 <div class="field">
-  <div id="input5" class="control">
-    <label for="mimetype">MIME type</label>
-    <input id="mimetype" class="input" type="text" bind:value={mimeType} />
-  </div>
+  <label for="file">File</label>
+  <input
+    type="file"
+    id="file"
+    name="file"
+    capture
+    accept="image/*, audio/*, application/json, application/pdf, video/*, text/*"
+    bind:files
+/>
 </div>
 <div class="field is-grouped">
   <div class="control">
