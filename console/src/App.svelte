@@ -76,9 +76,9 @@
           >Settings</Link
         >
         <Link to="/transactions" class="navbar-item" on:click={closeMenu}
-          >Transactions</Link
+          >Transactions History</Link
         >
-        <Link to="/submit" class="navbar-item" on:click={closeMenu}>Submit</Link
+        <Link to="/submit" class="navbar-item" on:click={closeMenu}>Submit Transaction</Link
         >
       </div>
     </div>
