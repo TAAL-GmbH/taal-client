@@ -68,6 +68,11 @@
             throw new Error(text)
           })
         } else {
+          addNotification({
+          text: `Transaction submitted successfully`,
+          position: 'bottom-left',
+          type: 'success',
+        })
           return res.json()
         }
       })

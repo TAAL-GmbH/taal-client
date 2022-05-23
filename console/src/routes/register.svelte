@@ -13,6 +13,11 @@
           return res.text().then(text => {throw new Error(text)});
         }
         else {
+          addNotification({
+          text: `API key registered successfully`,
+          position: 'bottom-left',
+          type: 'success',
+        })
           return res.json();
         }
       })
