@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte'
   import Key from './key.svelte'
+  import Notifications from 'svelte-notifications'
 
   let keys
 
@@ -22,7 +23,9 @@
       <th />
     </tr>
     {#each keys as key}
-      <Key {key} />
+      <Notifications>
+        <Key {key} />
+      </Notifications>
     {/each}
   </table>
 {:else}
