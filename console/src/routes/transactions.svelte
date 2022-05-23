@@ -19,8 +19,10 @@
 {#if transactions}
 <table class="table">
   <tr>
+    <th>Created At</th>
     <th>ID</th>
     <th>API Key used</th>
+    <th>Data size [bytes]</th>
   </tr>
   {#each transactions as transaction }
         <Transaction {transaction} />

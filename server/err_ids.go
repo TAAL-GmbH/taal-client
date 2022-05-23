@@ -23,4 +23,5 @@ const (
 	errAPIKeysFailedToGetKeys                   = 24
 	errWriteInsertTransaction                   = 25
 	errAPIKeysRevoke                            = 26
+	errGetTransactions                          = 27
 )

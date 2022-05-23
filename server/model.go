@@ -23,8 +23,10 @@ type Keys struct {
 }
 
 type Transaction struct {
-	ID     string `db:"id" json:"id"`
-	ApiKey string `db:"api_key" json:"api_key"`
+	ID        string `db:"id" json:"id"`
+	ApiKey    string `db:"api_key" json:"api_key"`
+	DataBytes int    `db:"data_bytes" json:"data_bytes"`
+	CreatedAt string `db:"created_at" json:"created_at"`
 }
 
 type Transactions struct {

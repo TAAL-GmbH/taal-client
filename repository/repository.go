@@ -57,9 +57,9 @@ func (r Repository) GetAllKeys(ctx context.Context) ([]server.Key, error) {
 }
 
 func (r Repository) InsertTransaction(ctx context.Context, tx server.Transaction) error {
-
-	query := `INSERT INTO transactions (id, api_key) VALUES ($1, $2);`
-	_, err := r.db.ExecContext(ctx, query, tx.ID, tx.ApiKey)
+	createdAt := time.Now().UTC().Format(ISO8601)
+	query := `INSERT INTO transactions (created_at, id, api_key, data_bytes) VALUES ($1, $2, $3, $4);`
+	_, err := r.db.ExecContext(ctx, query, createdAt, tx.ID, tx.ApiKey, tx.DataBytes)
 
 	return err
 }
