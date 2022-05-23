@@ -7,6 +7,7 @@
   let apiKey
   let taalClientURL = 'http://localhost:9500/api/v1/write'
   let tag
+  let tagString = ''
   let mimeType = 'text/plain'
   let data
 
@@ -17,29 +18,30 @@
   let file = null
   let fileData = null
 
+  $: tagString = tag ? tag : ''
 
   $: if (files != null) {
     file = files[0]
     mimeType = file.type
 
     if (file.type.startsWith('text/')) {
-        const fr = new FileReader()
-        fr.onload=function(){
-          data = fr.result
-        }
-        fr.readAsText(file)
-      } else {
-        data = `< ${file.name} >`
+      const fr = new FileReader()
+      fr.onload = function () {
+        data = fr.result
       }
+      fr.readAsText(file)
+    } else {
+      data = `< ${file.name} >`
+    }
 
     inputDataDisabled = true
     inputMimeTypeDisabled = true
 
     const fr = new FileReader()
-      fr.onload=function(){
-        fileData = fr.result
-      }
-      fr.readAsArrayBuffer(file)
+    fr.onload = function () {
+      fileData = fr.result
+    }
+    fr.readAsArrayBuffer(file)
   }
 
   onMount(async () => {
@@ -54,7 +56,7 @@
       headers: {
         Authorization: 'Bearer ' + apiKey,
         'Content-Type': mimeType,
-        'X-Tag': tag,
+        'X-Tag': tagString,
       },
     })
       .then((res) => {
@@ -72,7 +74,7 @@
       .catch((err) => {
         const errJson = JSON.parse(err.message)
         addNotification({
-          text: `${errJson.error}`,
+          text: `Error: ${errJson.error}`,
           position: 'bottom-left',
           type: 'warning',
         })
@@ -103,7 +105,13 @@
 <div class="field">
   <div id="input5" class="control">
     <label for="mimetype">MIME type</label>
-    <input id="mimetype" class="input" type="text" bind:value={mimeType} disabled={inputMimeTypeDisabled} />
+    <input
+      id="mimetype"
+      class="input"
+      type="text"
+      bind:value={mimeType}
+      disabled={inputMimeTypeDisabled}
+    />
   </div>
 </div>
 <div class="field">
@@ -128,7 +136,7 @@
     capture
     accept="image/*, audio/*, application/json, application/pdf, video/*, text/*"
     bind:files
-/>
+  />
 </div>
 <div class="field is-grouped">
   <div class="control">
