@@ -6,7 +6,7 @@
   let apiKey
 
   function register() {
-    fetch(`${BASE_URL}/api/v1/register/${apiKey}`, {
+    fetch(`${BASE_URL}/api/v1/apikeys/${apiKey}`, {
       method: 'POST',
     })  .then(res => {
         if (!res.ok) {
@@ -19,7 +19,7 @@
     .catch(err => {
       const errJson = JSON.parse(err.message);
       addNotification({
-        text: `${errJson.error}`,
+        text: `Error: ${errJson.error}`,
         position: 'bottom-left',
         type: 'warning',
       })

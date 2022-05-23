@@ -5,7 +5,7 @@
   const { addNotification } = getNotificationsContext()
 
   let apiKey
-  let taalClientURL = 'http://localhost:9500/api/v1/write'
+  let taalClientURL = 'http://localhost:9500'
   let tag
   let tagString = ''
   let mimeType = 'text/plain'
@@ -50,7 +50,7 @@
   })
 
   function writeData() {
-    fetch(taalClientURL, {
+    fetch(`${taalClientURL}/api/v1/transactions`, {
       method: 'POST',
       body: fileData ? fileData : data,
       headers: {

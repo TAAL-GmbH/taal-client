@@ -5,7 +5,7 @@
     let transactions;
 
     onMount(async () => {
-    await fetch(`${BASE_URL}/api/v1/transactions`)
+    await fetch(`${BASE_URL}/api/v1/transactions/info`)
       .then(r => r.json())
       .then(data => {
         transactions = data.transactions;
