@@ -1,33 +1,53 @@
 <script>
+  import { getNotificationsContext } from 'svelte-notifications'
 
-    import { getNotificationsContext } from 'svelte-notifications';
+  const { addNotification } = getNotificationsContext()
 
-    const { addNotification } = getNotificationsContext();
-    
-    let apiKey
-    async function doPost () {
-        const res = await fetch(`${BASE_URL}/api/v1/register/${apiKey}`, {
-            method: 'POST'
-	    })
+  let apiKey
 
-	    const json = await res.json()
-
-        if (json.status != 200) {
-            addNotification({
-                text: `Error: ${json.error}`, 
-                position: 'bottom-left',
-                type: 'warning'
-            });
-        };
-	}
+  function register() {
+    fetch(`${BASE_URL}/api/v1/apikeys/${apiKey}`, {
+      method: 'POST',
+    })  .then(res => {
+        if (!res.ok) {
+          return res.text().then(text => {throw new Error(text)});
+        }
+        else {
+          addNotification({
+          text: `API key registered successfully`,
+          position: 'bottom-left',
+          type: 'success',
+        })
+          return res.json();
+        }
+      })
+    .catch(err => {
+      const errJson = JSON.parse(err.message);
+      addNotification({
+        text: `Error: ${errJson.error}`,
+        position: 'bottom-left',
+        type: 'warning',
+      })
+      
+      console.log(err);
+    })
+  }
 </script>
+
 <div class="field">
-    <div id="text1" class="control">
-      <input class="input" type="text" placeholder="API Key" bind:value={apiKey} />
-    </div>
+  <div id="text1" class="control">
+    <input
+      class="input"
+      type="text"
+      placeholder="API Key"
+      bind:value={apiKey}
+    />
   </div>
-  <div class="field is-grouped">
-    <div class="control">
-      <button class="button is-link" on:click="{doPost}">Register new API key</button>
-    </div>
+</div>
+<div class="field is-grouped">
+  <div class="control">
+    <button class="button is-link" on:click={register}
+      >Register new API key</button
+    >
+  </div>
 </div>

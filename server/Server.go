@@ -72,13 +72,23 @@ func New(address string, taal *client.Client, repo Repository) Server {
 	}
 
 	group := e.Group("/api/v1")
+
+	// Deprecated: Endpoint paths don't adhere to REST design principles because they are verbs
 	group.POST("/write", s.write)
 	group.GET("/read/:txid", s.read)
 	group.POST("/register/:apikey", s.register)
+
+	group.DELETE("/apikeys/:apikey", s.revoke)
+	group.POST("/apikeys/:apikey", s.register)
 	group.GET("/apikeys", s.getApiKeys)
-	group.GET("/transactions", s.getTransactions)
+
 	group.GET("/settings", s.getSettings)
 	// group.PUT("/settings/:key/:value", s.putSetting)
+
+	group.POST("/transactions", s.write)
+	group.GET("/transactions/:txid", s.read)
+	group.GET("/transactions", s.getTransactions)
+	group.GET("/transactions/info", s.getTransactions)
 
 	group.GET("/test", func(c echo.Context) error {
 		return c.String(http.StatusOK, "This is from the client")

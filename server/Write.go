@@ -2,10 +2,10 @@ package server
 
 import (
 	"context"
+	"database/sql"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -19,10 +19,10 @@ func (s Server) write(c echo.Context) error {
 	}
 
 	apiKey := strings.Replace(authHeader, "Bearer ", "", 1)
-
-	privateKey, err := s.repository.GetKey(c.Request().Context(), apiKey)
+	ctx := context.Background()
+	privateKey, err := s.repository.GetKey(ctx, apiKey)
 	if err != nil {
-		if os.IsNotExist(err) {
+		if err == sql.ErrNoRows {
 			return s.sendError(c, http.StatusUnauthorized, errWriteApiKeyUnknown, errors.New("unknown apikey"))
 		}
 		return s.sendError(c, http.StatusInternalServerError, errWriteFailedToReadApiKey, errors.New("failed to read apikey data"))
@@ -79,8 +79,13 @@ func (s Server) write(c echo.Context) error {
 		return s.sendError(c, http.StatusBadRequest, errWriteFailedToSubmitTxs, errors.Wrap(err, "failed to submit transactions"))
 	}
 
-	ctx := context.Background()
-	tx := Transaction{ID: dataTx.GetTxID(), ApiKey: apiKey}
+	log.Printf("Data tx ID: %s", dataTx.GetTxID())
+
+	tx := Transaction{
+		ID:        dataTx.GetTxID(),
+		ApiKey:    apiKey,
+		DataBytes: len(dataTx.ToBytes()),
+	}
 	err = s.repository.InsertTransaction(ctx, tx)
 	if err != nil {
 		return s.sendError(c, http.StatusBadRequest, errWriteInsertTransaction, errors.Wrap(err, "failed to write transaction to DB"))
