@@ -8,29 +8,31 @@
   function register() {
     fetch(`${BASE_URL}/api/v1/apikeys/${apiKey}`, {
       method: 'POST',
-    })  .then(res => {
-        if (!res.ok) {
-          return res.text().then(text => {throw new Error(text)});
-        }
-        else {
-          addNotification({
-          text: `API key registered successfully`,
-          position: 'bottom-left',
-          type: 'success',
-        })
-          return res.json();
-        }
-      })
-    .catch(err => {
-      const errJson = JSON.parse(err.message);
-      addNotification({
-        text: `Error: ${errJson.error}`,
-        position: 'bottom-left',
-        type: 'warning',
-      })
-      
-      console.log(err);
     })
+      .then((res) => {
+        if (!res.ok) {
+          return res.text().then((text) => {
+            throw new Error(text)
+          })
+        } else {
+          addNotification({
+            text: `API key registered successfully`,
+            position: 'bottom-left',
+            type: 'success',
+          })
+          return res.json()
+        }
+      })
+      .catch((err) => {
+        const errJson = JSON.parse(err.message)
+        addNotification({
+          text: `Error: ${errJson.error}`,
+          position: 'bottom-left',
+          type: 'warning',
+        })
+
+        console.log(err)
+      })
   }
 </script>
 
@@ -46,8 +48,6 @@
 </div>
 <div class="field is-grouped">
   <div class="control">
-    <button class="button is-link" on:click={register}
-      >Register new API key</button
-    >
+    <button class="button is-link" on:click={register}>Register API key</button>
   </div>
 </div>

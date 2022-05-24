@@ -15,10 +15,10 @@ import (
 	"github.com/pkg/errors"
 
 	"taal-client/client"
-	"taal-client/config"
 	"taal-client/database"
 	"taal-client/repository"
 	"taal-client/server"
+	"taal-client/settings"
 )
 
 const (
@@ -71,16 +71,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	conf, err := config.Load()
-	if err != nil {
-		log.Fatalf("could not load configuration: %v", err)
-		return
-	}
+	conf := settings.Get()
 
 	var db *sqlx.DB
+	var err error
 
-	if conf.ConnectToDB {
-		db, err = database.GetPostgreSqlDB(conf.Host, conf.Port, conf.Username, conf.Password, conf.DBName)
+	if conf.DBType == "postgres" {
+
+		db, err = database.GetPostgreSqlDB(conf.DBHost, conf.DBPort, conf.DBUsername, conf.DBPassword, conf.DBName)
 		if err != nil {
 			log.Fatalf("could not open postgres database: %v", err)
 			return
@@ -113,8 +111,13 @@ func main() {
 	}
 }
 
-func startServer(conf *config.Config, db *sqlx.DB) error {
-	client := client.New(conf.TaalUrl, conf.TaalTimeOut)
+func startServer(conf *settings.Settings, db *sqlx.DB) error {
+	timeout, err := time.ParseDuration(conf.TaalTimeOut)
+	if err != nil {
+		log.Fatalf("taal_timeout of %q is invalid: %v", timeout, err)
+	}
+
+	client := client.New(conf.TaalUrl, timeout)
 	repo := repository.NewRepository(db, time.Now)
 
 	// move keys from the key json files to the database. Once all active customers ran this code it can be removed
@@ -142,7 +145,7 @@ func startServer(conf *config.Config, db *sqlx.DB) error {
 func moveKeysToDB(ctx context.Context, repo repository.Repository) error {
 	// Check if there are configKeys in the configKeys folder. If yes, then store them in the DB
 	// Move existing keys to an archive
-	configKeys, err := config.GetKeysFromJson()
+	configKeys, err := settings.GetKeysFromJson()
 	if err != nil {
 		return errors.Wrap(err, "failed to get keys from json files")
 	}
@@ -169,7 +172,7 @@ func moveKeysToDB(ctx context.Context, repo repository.Repository) error {
 	return nil
 }
 
-func getKeyFromConfigKey(configKey config.JsonStruct) (server.Key, error) {
+func getKeyFromConfigKey(configKey settings.JsonStruct) (server.Key, error) {
 	privateKey, err := server.GetPrivateKey(configKey.PrivateKey)
 	if err != nil {
 		return server.Key{}, nil

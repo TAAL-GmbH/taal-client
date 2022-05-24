@@ -28,10 +28,12 @@
     "svelte": "^3.0.0"
   },
   "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "bulma": "^0.9.4",
     "mdbsvelte": "^1.0.12",
     "sirv-cli": "^2.0.0",
     "svelte-chartjs": "^1.1.4",
+    "svelte-fa": "^2.4.0",
     "svelte-notifications": "^0.9.95",
     "svelte-routing": "^1.6.0"
   }

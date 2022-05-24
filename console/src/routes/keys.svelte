@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
   import Key from './key.svelte'
   import Notifications from 'svelte-notifications'
+  import Register from './register.svelte'
 
   let keys
 
@@ -12,31 +13,34 @@
   })
 </script>
 
-<h1>Active API Keys</h1>
-
-{#if keys}
-  <table class="table">
-    <tr>
-      <th>Created</th>
-      <th>API Key</th>
-      <th>Address</th>
-      <th />
-    </tr>
-    {#each keys as key}
-      <Notifications>
-        <Key {key} />
-      </Notifications>
-    {/each}
-  </table>
-{:else}
-  <p class="loading">loading...</p>
-{/if}
+<div class="panel">
+  <p class="panel-heading">API keys</p>
+  <div class="panel-body pad">
+    <Notifications>
+      <Register class="pad" />
+    </Notifications>
+    {#if keys}
+      <table class="table">
+        <tr>
+          <th>Created</th>
+          <th>API Key</th>
+          <th>Address</th>
+          <th />
+        </tr>
+        {#each keys as key}
+          <Notifications>
+            <Key {key} />
+          </Notifications>
+        {/each}
+      </table>
+    {:else}
+      <p class="loading">loading...</p>
+    {/if}
+  </div>
+</div>
 
 <style>
-  h1 {
-    font-size: 1.4em;
-    font-weight: bold;
-    /* margin: 0; */
-    display: block;
+  .pad {
+    padding: 20px;
   }
 </style>

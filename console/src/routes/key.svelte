@@ -32,8 +32,8 @@
 </script>
 
 <tr>
-  <td>{key.createdAt.replace('T', ' ').slice(0, 16)}</td>
-  <td>{key.api_key}</td>
-  <td title={key.publicKey}>{key.address}</td>
+  <td class="is-vcentered">{key.createdAt.replace('T', ' ').slice(0, 16)}</td>
+  <td class="is-vcentered">{key.api_key}</td>
+  <td class="is-vcentered" title={key.publicKey}>{key.address}</td>
   <td><button class="button is-primary" on:click={revoke}>Revoke</button></td>
 </tr>
