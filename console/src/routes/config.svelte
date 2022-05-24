@@ -3,8 +3,6 @@
   import Fa from 'svelte-fa'
   import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons'
 
-  import Register from './register.svelte'
-
   import { listen } from 'svelte/internal'
 
   let settings = {}
@@ -20,17 +18,18 @@
   })
 </script>
 
-<form class="panel">
+<form class="panel is-link">
   <p class="panel-heading">Server settings</p>
   <div class="panel-body pad">
     <div class="field is-horizontal">
       <div class="field-label is-normal has-text-left">
-        <label class="label">Listen address:</label>
+        <label for="listenAddress" class="label">Listen address:</label>
       </div>
       <div class="field-body">
         <div class="field">
           <p class="control">
             <input
+              id="listenAddress"
               class="input"
               type="text"
               placeholder="localhost:9500"
@@ -40,15 +39,21 @@
         </div>
       </div>
     </div>
+    <p class="content is-small">
+      TaalClient will listen on the specified address. The default is
+      "localhost:9500" To bind to all interfaces on your machine, omit the host
+      part and only specify the port, for example ":9500".
+    </p>
 
     <div class="field is-horizontal">
       <div class="field-label is-normal has-text-left">
-        <label class="label">Taal URL:</label>
+        <label for="taalUrl" class="label">Taal URL:</label>
       </div>
       <div class="field-body">
         <div class="field">
           <p class="control">
             <input
+              id="taalUrl"
               class="input"
               type="text"
               placeholder="https://api.taal.com"
@@ -58,15 +63,20 @@
         </div>
       </div>
     </div>
+    <p class="content is-small">
+      TaalClient communicates with Taal API servers which are hosted at
+      https://api.taal.com.
+    </p>
 
     <div class="field is-horizontal">
       <div class="field-label is-normal has-text-left">
-        <label class="label">Taal timeout:</label>
+        <label for="timeout" class="label">Taal timeout:</label>
       </div>
       <div class="field-body">
         <div class="field">
           <p class="control">
             <input
+              id="timeout"
               class="input"
               type="text"
               placeholder="10s"
@@ -76,150 +86,166 @@
         </div>
       </div>
     </div>
+    <p class="content is-small">
+      The default timeout is 10s (10 seconds). This settings can be provided a
+      milliseconds (ms), seconds (s) or minutes (m).
+    </p>
   </div>
 </form>
 
-<p class="panel-heading">Database settings</p>
-<div class="panel-body pad">
-  <div class="field is-horizontal">
-    <div class="field-label is-normal has-text-left">
-      <label class="label">Database mode:</label>
-    </div>
-    <div class="field-body">
-      <div class="field">
-        <p class="control">
-          <label class="radio">
-            <input type="radio" bind:group={settings.dbType} value={'sqlite'} />
-            Local
-          </label>
-          <label class="radio">
-            <input
-              type="radio"
-              bind:group={settings.dbType}
-              value={'postges'}
-            />
-            Remote
-          </label>
-        </p>
+<form class="panel is-link">
+  <p class="panel-heading">Database settings</p>
+  <div class="panel-body pad">
+    <div class="field is-horizontal">
+      <div class="field-label is-normal has-text-left">
+        <label for="mode" class="label">Database mode:</label>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <p id="mode" class="control">
+            <label class="radio">
+              <input
+                type="radio"
+                bind:group={settings.dbType}
+                value={'sqlite'}
+              />
+              Local
+            </label>
+            <label class="radio">
+              <input
+                type="radio"
+                bind:group={settings.dbType}
+                value={'postges'}
+              />
+              Remote
+            </label>
+          </p>
+        </div>
       </div>
     </div>
+
+    {#if settings.dbType === 'sqlite'}
+      <div class="field is-horizontal">
+        <div class="field-label is-normal has-text-left">
+          <label for="filename" class="label">Filename:</label>
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <p class="control">
+              <input
+                id="filename"
+                class="input"
+                type="text"
+                placeholder="./taal_client.db"
+                value={settings.dbFilename}
+              />
+            </p>
+          </div>
+        </div>
+      </div>
+    {:else}
+      <div class="field is-horizontal">
+        <div class="field-label is-normal has-text-left">
+          <label for="host" class="label">Host:</label>
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <p class="control">
+              <input
+                id="host"
+                class="input"
+                type="text"
+                placeholder="localhost"
+                value={settings.dbHost}
+              />
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="field is-horizontal">
+        <div class="field-label is-normal has-text-left">
+          <label for="port" class="label">Port:</label>
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <p class="control">
+              <input
+                id="port"
+                class="input"
+                type="text"
+                placeholder="5432"
+                value={settings.dbPort}
+              />
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="field is-horizontal">
+        <div class="field-label is-normal has-text-left">
+          <label for="name" class="label">Database name:</label>
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <p class="control">
+              <input
+                id="name"
+                class="input"
+                type="text"
+                placeholder="taal_client"
+                value={settings.dbName}
+              />
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="field is-horizontal">
+        <div class="field-label is-normal has-text-left">
+          <label for="username" class="label">Username:</label>
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <p class="control">
+              <input
+                id="username"
+                class="input"
+                type="text"
+                placeholder="database username"
+                value={settings.dbUsername}
+              />
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="field is-horizontal">
+        <div class="field-label is-normal has-text-left">
+          <label for="password" class="label"
+            >Password:
+            <span class="icon is-small is-right" on:click={toggleShowPassword}>
+              <Fa icon={showPassword ? faLockOpen : faLock} />
+            </span>
+          </label>
+        </div>
+        <div class="field-body">
+          <div class="field">
+            <p class="control">
+              <input
+                id="password"
+                class="input"
+                type={showPassword ? 'text' : 'password'}
+                placeholder="database password"
+                value={settings.dbPassword}
+              />
+            </p>
+          </div>
+        </div>
+      </div>
+    {/if}
   </div>
-
-  {#if settings.dbType === 'sqlite'}
-    <div class="field is-horizontal">
-      <div class="field-label is-normal has-text-left">
-        <label class="label">Filename:</label>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <p class="control">
-            <input
-              class="input"
-              type="text"
-              placeholder="./taal_client.db"
-              value={settings.dbFilename}
-            />
-          </p>
-        </div>
-      </div>
-    </div>
-  {:else}
-    <div class="field is-horizontal">
-      <div class="field-label is-normal has-text-left">
-        <label class="label">Host:</label>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <p class="control">
-            <input
-              class="input"
-              type="text"
-              placeholder="localhost"
-              value={settings.dbHost}
-            />
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="field is-horizontal">
-      <div class="field-label is-normal has-text-left">
-        <label class="label">Port:</label>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <p class="control">
-            <input
-              class="input"
-              type="text"
-              placeholder="5432"
-              value={settings.dbPort}
-            />
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="field is-horizontal">
-      <div class="field-label is-normal has-text-left">
-        <label class="label">Database name:</label>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <p class="control">
-            <input
-              class="input"
-              type="text"
-              placeholder="taal_client"
-              value={settings.dbName}
-            />
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="field is-horizontal">
-      <div class="field-label is-normal has-text-left">
-        <label class="label">Username:</label>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <p class="control">
-            <input
-              class="input"
-              type="text"
-              placeholder="database username"
-              value={settings.dbUsername}
-            />
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="field is-horizontal">
-      <div class="field-label is-normal has-text-left">
-        <label class="label"
-          >Password:
-          <span class="icon is-small is-right" on:click={toggleShowPassword}>
-            <Fa icon={showPassword ? faLockOpen : faLock} />
-          </span>
-        </label>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <p class="control">
-            <input
-              class="input"
-              type={showPassword ? 'text' : 'password'}
-              placeholder="database password"
-              value={settings.dbPassword}
-            />
-          </p>
-        </div>
-      </div>
-    </div>
-  {/if}
-</div>
+</form>
 
 <style>
   .pad {

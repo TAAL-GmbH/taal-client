@@ -1,4 +1,7 @@
 <script>
+  // svelte-ignore unused-export-let
+  export let location
+
   import { onMount } from 'svelte'
   import { getNotificationsContext } from 'svelte-notifications'
 
@@ -89,10 +92,10 @@
           })
         } else {
           addNotification({
-          text: `Transaction submitted successfully`,
-          position: 'bottom-left',
-          type: 'success',
-        })
+            text: `Transaction submitted successfully`,
+            position: 'bottom-left',
+            type: 'success',
+          })
           showCurl(apiKey, mimeType, tagString, data, url)
           return res.json()
         }
