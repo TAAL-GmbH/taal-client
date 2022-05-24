@@ -11,6 +11,7 @@ require (
 	github.com/lib/pq v1.10.6
 	github.com/libsv/go-bt v0.0.6
 	github.com/mattn/go-sqlite3 v1.14.13
+	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/pkg/errors v0.9.1
 )
 

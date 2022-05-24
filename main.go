@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/bitcoinsv/bsvd/chaincfg"
 	"github.com/bitcoinsv/bsvutil"
@@ -15,8 +16,14 @@ import (
 
 	"taal-client/client"
 	"taal-client/config"
+	"taal-client/database"
 	"taal-client/repository"
 	"taal-client/server"
+)
+
+const (
+	dbFolder         = "localdata"
+	sqLiteDBFilename = "db"
 )
 
 func usage() {
@@ -73,25 +80,25 @@ func main() {
 	var db *sqlx.DB
 
 	if conf.ConnectToDB {
-		db, err = repository.GetPostgreSqlDB(conf.Host, conf.Port, conf.Username, conf.Password, conf.DBName)
+		db, err = database.GetPostgreSqlDB(conf.Host, conf.Port, conf.Username, conf.Password, conf.DBName)
 		if err != nil {
 			log.Fatalf("could not open postgres database: %v", err)
 			return
 		}
 
-		err = repository.RunMigrationsPostgreSQL(db)
+		err = database.RunMigrationsPostgreSQL(db)
 		if err != nil {
 			log.Fatalf("postgres database migration failed: %v", err)
 			return
 		}
 	} else {
-		db, err = repository.GetSQLiteDB()
+		db, err = database.GetSQLiteDB(dbFolder, sqLiteDBFilename)
 		if err != nil {
 			log.Fatalf("could not open sqlite database: %v", err)
 			return
 		}
 
-		err = repository.RunMigrationsSQLite(db)
+		err = database.RunMigrationsSQLite(db)
 		if err != nil {
 			log.Fatalf("sqlite database migration failed: %v", err)
 			return
@@ -108,7 +115,7 @@ func main() {
 
 func startServer(conf *config.Config, db *sqlx.DB) error {
 	client := client.New(conf.TaalUrl, conf.TaalTimeOut)
-	repo := repository.NewRepository(*db)
+	repo := repository.NewRepository(db, time.Now)
 
 	// move keys from the key json files to the database. Once all active customers ran this code it can be removed
 	ctx := context.Background()

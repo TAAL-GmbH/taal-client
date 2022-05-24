@@ -12,17 +12,21 @@ import (
 )
 
 type Repository struct {
-	db sqlx.DB
+	db  *sqlx.DB
+	now func() time.Time
 }
 
-func NewRepository(db sqlx.DB) Repository {
-	return Repository{db: db}
+func NewRepository(db *sqlx.DB, now func() time.Time) Repository {
+	return Repository{
+		db:  db,
+		now: now,
+	}
 }
 
 const ISO8601 = "2006-01-02T15:04:05.999Z"
 
 func (r Repository) InsertKey(ctx context.Context, key server.Key) error {
-	createdAt := time.Now().UTC().Format(ISO8601)
+	createdAt := r.now().UTC().Format(ISO8601)
 
 	query := `INSERT INTO keys (created_at, api_key, private_key, public_key, address) VALUES ($1, $2, $3, $4, $5);`
 	_, err := r.db.ExecContext(ctx, query, createdAt, key.ApiKey, key.PrivateKey, key.PublicKey, key.Address)
@@ -57,7 +61,7 @@ func (r Repository) GetAllKeys(ctx context.Context) ([]server.Key, error) {
 }
 
 func (r Repository) InsertTransaction(ctx context.Context, tx server.Transaction) error {
-	createdAt := time.Now().UTC().Format(ISO8601)
+	createdAt := r.now().UTC().Format(ISO8601)
 	query := `INSERT INTO transactions (created_at, id, api_key, data_bytes) VALUES ($1, $2, $3, $4);`
 	_, err := r.db.ExecContext(ctx, query, createdAt, tx.ID, tx.ApiKey, tx.DataBytes)
 
