@@ -11,16 +11,16 @@ import (
 )
 
 type Settings struct {
-	ListenAddress string
-	TaalUrl       string
-	TaalTimeOut   string
-	DBType        string
-	DBFile        string
-	DBHost        string
-	DBPort        int
-	DBName        string
-	DBUsername    string
-	DBPassword    string
+	ListenAddress string `json:"listenAddress"`
+	TaalUrl       string `json:"taalUrl"`
+	TaalTimeOut   string `json:"taalTimeout"`
+	DBType        string `json:"dbType"`
+	DBFilename    string `json:"dbFilename"`
+	DBHost        string `json:"dbHost"`
+	DBPort        int    `json:"dbPort"`
+	DBName        string `json:"dbName"`
+	DBUsername    string `json:"dbUsername"`
+	DBPassword    string `json:"dbPassword"`
 }
 
 var (
@@ -34,7 +34,12 @@ func init() {
 		TaalUrl:       "https://api.taal.com",
 		TaalTimeOut:   "10s",
 		DBType:        "sqlite",
-		DBName:        "./taal_client.db",
+		DBFilename:    "./taal_client.db",
+		DBHost:        "localhost",
+		DBPort:        5432,
+		DBName:        "dbname",
+		DBUsername:    "username",
+		DBPassword:    "password",
 	}
 
 	// Now overwrite with any settings from settings.conf
@@ -57,7 +62,7 @@ func init() {
 			switch database {
 			case "sqlite":
 				if file, found := m["db_filename"]; found {
-					settings.DBFile = file
+					settings.DBFilename = file
 				}
 
 			case "postgres":
