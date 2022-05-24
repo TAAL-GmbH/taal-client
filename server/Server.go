@@ -77,6 +77,8 @@ func New(address string, taal *client.Client, repo Repository) Server {
 	group.POST("/register/:apikey", s.register)
 	group.GET("/apikeys", s.getApiKeys)
 	group.GET("/transactions", s.getTransactions)
+	group.GET("/settings", s.getSettings)
+	// group.PUT("/settings/:key/:value", s.putSetting)
 
 	group.GET("/test", func(c echo.Context) error {
 		return c.String(http.StatusOK, "This is from the client")
@@ -98,10 +100,9 @@ func (s Server) Start(stopServer chan bool) error {
 		}
 	}()
 
-	log.Printf("INFO: starting on %s", s.address)
+	log.Printf("INFO: Service starting on %s", s.address)
 	log.Printf("INFO: Requests will be proxied to %q", s.taal.Url)
-	log.Printf("INFO: Console available at http://localhost:9500")
-	log.Printf("INFO: Example interface available at http://localhost:9500/example")
+	log.Printf("INFO: Console available at http://%s", s.address)
 
 	if err := s.server.Start(s.address); err != nil && err != http.ErrServerClosed {
 		log.Printf("ERROR: HTTP server failed: %v", err)

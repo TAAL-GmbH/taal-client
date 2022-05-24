@@ -1,5 +1,7 @@
 {
   "cSpell.words": [
+    "apikey",
+    "apikeys",
     "bitcoinsv",
     "bsvd",
     "bsvec",
@@ -9,9 +11,11 @@
     "dbname",
     "httpfs",
     "jmoiron",
+    "labstack",
     "libsv",
     "mattn",
     "mdbsvelte",
+    "proxied",
     "sirv",
     "sqlx",
     "sslmode"
