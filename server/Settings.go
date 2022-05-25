@@ -8,5 +8,10 @@ import (
 )
 
 func (s Server) getSettings(c echo.Context) error {
-	return c.JSON(http.StatusOK, settings.Get())
+	b, err := settings.GetJSON()
+	if err != nil {
+		return s.sendError(c, http.StatusInternalServerError, 22, err)
+	}
+
+	return c.Blob(http.StatusOK, echo.MIMEApplicationJSON, b)
 }

@@ -71,14 +71,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	conf := settings.Get()
-
 	var db *sqlx.DB
 	var err error
 
-	if conf.DBType == "postgres" {
+	if settings.Get("dbType") == "postgres" {
 
-		db, err = database.GetPostgreSqlDB(conf.DBHost, conf.DBPort, conf.DBUsername, conf.DBPassword, conf.DBName)
+		db, err = database.GetPostgreSqlDB()
 		if err != nil {
 			log.Fatalf("could not open postgres database: %v", err)
 			return
@@ -105,26 +103,26 @@ func main() {
 
 	defer db.Close()
 
-	err = startServer(conf, db)
+	err = startServer(db)
 	if err != nil {
 		log.Fatalf("app terminated with error: %v", err)
 	}
 }
 
-func startServer(conf *settings.Settings, db *sqlx.DB) error {
-	timeout, err := time.ParseDuration(conf.TaalTimeOut)
+func startServer(db *sqlx.DB) error {
+	timeout, err := settings.GetDuration("taalTimeout")
 	if err != nil {
 		log.Fatalf("taal_timeout of %q is invalid: %v", timeout, err)
 	}
 
-	client := client.New(conf.TaalUrl, timeout)
+	client := client.New(settings.Get("taalUrl"), timeout)
 	repo := repository.NewRepository(db, time.Now)
 
 	// move keys from the key json files to the database. Once all active customers ran this code it can be removed
 	ctx := context.Background()
 	moveKeysToDB(ctx, repo)
 
-	server := server.New(conf.ListenAddress, client, repo)
+	server := server.New(settings.Get("listenAddress"), client, repo)
 
 	stopServer := make(chan bool, 1)
 	stop := make(chan os.Signal, 1)

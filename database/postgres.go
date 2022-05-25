@@ -3,15 +3,22 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"taal-client/settings"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
 
-func GetPostgreSqlDB(host string, port int, username string, password string, dbName string) (*sqlx.DB, error) {
+func GetPostgreSqlDB() (*sqlx.DB, error) {
 	var sqlDB *sql.DB
 
-	connectionString := fmt.Sprintf("port=%d host=%s user=%s password=%s dbname=%s sslmode=disable", port, host, username, password, dbName)
+	connectionString := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		settings.Get("dbHost"),
+		settings.GetInt("dbPort"),
+		settings.Get("dbUsername"),
+		settings.Get("dbPassword"),
+		settings.Get("dbName"),
+	)
 
 	sqlDB, err := sql.Open("postgres", connectionString)
 	if err != nil {

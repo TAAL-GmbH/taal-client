@@ -18,7 +18,7 @@
   })
 </script>
 
-<form class="panel is-link">
+<form class="panel">
   <p class="panel-heading">Server settings</p>
   <div class="panel-body pad">
     <div class="field is-horizontal">
@@ -90,10 +90,35 @@
       The default timeout is 10s (10 seconds). This settings can be provided a
       milliseconds (ms), seconds (s) or minutes (m).
     </p>
+
+    <div class="field is-horizontal">
+      <div class="field-label is-normal has-text-left">
+        <label for="debug" class="label">Debug:</label>
+      </div>
+      <div class="field-body">
+        <div class="field">
+          <p id="debug" class="control">
+            <label class="check">
+              <input type="checkbox" checked={settings.debugServer} />
+              Server
+            </label>
+            <label class="check">
+              <input type="checkbox" checked={settings.debugTransactions} />
+              Transactions
+            </label>
+          </p>
+        </div>
+      </div>
+    </div>
+    <p class="content is-small">
+      Debug modes will add extra output to the console output of this service.
+      Server debug will output all access to server endpoints. Transactions
+      debug will output funding and data transaction raw hex.
+    </p>
   </div>
 </form>
 
-<form class="panel is-link">
+<form class="panel">
   <p class="panel-heading">Database settings</p>
   <div class="panel-body pad">
     <div class="field is-horizontal">
