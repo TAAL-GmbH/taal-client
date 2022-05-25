@@ -9,7 +9,7 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
+	"taal-client/settings"
 	"time"
 
 	"github.com/libsv/go-bt"
@@ -155,7 +155,7 @@ func (c *Client) SubmitTransactions(apiKey string, feeTx *bt.Tx, dataTx *bt.Tx) 
 		return fmt.Errorf("failed to serialize request: %w", err)
 	}
 
-	if _, ok := os.LookupEnv("DEBUG"); ok {
+	if settings.GetBool("debugTransactions") {
 		log.Printf("\nFUND: %s\nDATA: %s\n", request.FeeTransaction, request.DataTransaction)
 	}
 

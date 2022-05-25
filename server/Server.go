@@ -8,6 +8,7 @@ import (
 
 	"taal-client/client"
 	"taal-client/console"
+	"taal-client/settings"
 
 	"github.com/bitcoinsv/bsvd/bsvec"
 	"github.com/labstack/echo/v4"
@@ -63,6 +64,15 @@ func New(address string, taal *client.Client, repo Repository) Server {
 			"X-Tag",
 		},
 	}))
+
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			if settings.GetBool("debugServer") {
+				log.Printf("Server: %s: %s\n", c.Request().Method, c.Request().URL)
+			}
+			return next(c)
+		}
+	})
 
 	s := Server{
 		server:     e,

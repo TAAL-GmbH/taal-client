@@ -2,137 +2,109 @@ package settings
 
 import (
 	"bufio"
+	"encoding/json"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/pkg/errors"
 )
 
-type Settings struct {
-	ListenAddress string `json:"listenAddress"`
-	TaalUrl       string `json:"taalUrl"`
-	TaalTimeOut   string `json:"taalTimeout"`
-	DBType        string `json:"dbType"`
-	DBFilename    string `json:"dbFilename"`
-	DBHost        string `json:"dbHost"`
-	DBPort        int    `json:"dbPort"`
-	DBName        string `json:"dbName"`
-	DBUsername    string `json:"dbUsername"`
-	DBPassword    string `json:"dbPassword"`
-}
-
 var (
-	settings *Settings
+	mu       sync.RWMutex
+	settings map[string]string
 )
 
 func init() {
+	settings = make(map[string]string)
+
 	// Start with default values for all items...
-	settings = &Settings{
-		ListenAddress: ":9500",
-		TaalUrl:       "https://api.taal.com",
-		TaalTimeOut:   "10s",
-		DBType:        "sqlite",
-		DBFilename:    "./taal_client.db",
-		DBHost:        "localhost",
-		DBPort:        5432,
-		DBName:        "dbname",
-		DBUsername:    "username",
-		DBPassword:    "password",
-	}
+	settings["listenAddress"] = ":9500"
+	settings["taalUrl"] = "https://api.taal.com"
+	settings["taalTimeout"] = "10s"
+	settings["dbType"] = "sqlite"
+	settings["dbFilename"] = "./taal_client.db"
+	settings["dbHost"] = "localhost"
+	settings["dbPort"] = "5432"
+	settings["dbName"] = "dbname"
+	settings["dbUsername"] = "username"
+	settings["dbPassword"] = "password"
 
 	// Now overwrite with any settings from settings.conf
-	if m := readSettingsFile(); len(m) > 0 {
-		if listen, found := m["listen"]; found {
-			settings.ListenAddress = listen
-		}
-
-		if url, found := m["taal_url"]; found {
-			settings.TaalUrl = url
-		}
-
-		if timeout, found := m["taal_timeout"]; found {
-			settings.TaalTimeOut = timeout
-		}
-
-		if database, found := m["database"]; found {
-			settings.DBType = database
-
-			switch database {
-			case "sqlite":
-				if file, found := m["db_filename"]; found {
-					settings.DBFilename = file
-				}
-
-			case "postgres":
-				dbHost, found := m["db_host"]
-				if !found {
-					log.Fatalf("postgres database requested but missing db_host setting")
-				}
-				settings.DBHost = dbHost
-
-				dbPort, found := m["db_port"]
-				if !found {
-					log.Fatalf("postgres database request but missing db_port setting")
-				}
-				p, err := strconv.Atoi(dbPort)
-				if err != nil {
-					log.Fatalf("db_port was present in settings.conf but was an invalid number: %v", err)
-				}
-				settings.DBPort = p
-
-				dbName, found := m["db_name"]
-				if !found {
-					log.Fatalf("postgres database requested but missing db_name setting")
-				}
-				settings.DBHost = dbName
-
-				dbUsername, found := m["db_username"]
-				if !found {
-					log.Fatalf("postgres database requested but missing db_username setting")
-				}
-				settings.DBUsername = dbUsername
-
-				dbPassword, found := m["db_password"]
-				if !found {
-					log.Fatalf("postgres database requested but missing db_password setting")
-				}
-				settings.DBHost = dbPassword
-
-			default:
-				log.Fatalf("database was present in settings.conf but %s is not a supported database", database)
-			}
-		}
-	}
+	readSettingsFile()
 
 	// Now overwrite settings with any specified environment variables...
 	if listen := os.Getenv("LISTEN"); listen != "" {
-		settings.ListenAddress = listen
+		settings["listenAddress"] = listen
 	}
 
 	if url := os.Getenv("TAAL_URL"); url != "" {
-		settings.TaalUrl = url
+		settings["taalUrl"] = url
 	}
 
 	if timeout := os.Getenv("TAAL_TIMEOUT"); timeout != "" {
-		settings.TaalTimeOut = timeout
+		settings["taalTimeout"] = timeout
+	}
+
+	if debugTransactions := os.Getenv("DEBUG"); debugTransactions != "" {
+		settings["debugTransactions"] = debugTransactions
 	}
 }
 
-func Get() *Settings {
-	return settings
+func GetJSON() ([]byte, error) {
+	mu.RLock()
+	defer mu.RUnlock()
+
+	return json.Marshal(settings)
 }
 
-func readSettingsFile() map[string]string {
-	m := make(map[string]string)
+func Get(key string) string {
+	mu.RLock()
+	defer mu.RUnlock()
 
+	return settings[key]
+}
+
+func GetInt(key string) int {
+	val := Get(key)
+	if i, err := strconv.Atoi(val); err == nil {
+		return i
+	}
+
+	return 0
+}
+
+func GetBool(key string) bool {
+	val := Get(key)
+	if b, err := strconv.ParseBool(val); err == nil {
+		return b
+	}
+
+	return false
+}
+
+func GetDuration(key string) (time.Duration, error) {
+	val := Get(key)
+	return time.ParseDuration(val)
+}
+
+func Set(key string, val string) {
+	mu.Lock()
+	defer mu.Unlock()
+
+	settings[key] = val
+}
+
+func readSettingsFile() {
 	file, err := os.Open("settings.conf")
 	if err != nil {
 		if !errors.Is(err, os.ErrNotExist) {
 			log.Printf("Could not open settings.conf: %v", err)
 		}
-		return nil
+		return
 	}
 	defer file.Close()
 
@@ -151,10 +123,10 @@ func readSettingsFile() map[string]string {
 				if len(line) > equal {
 					value = strings.TrimSpace(line[equal+1:])
 				}
-				m[key] = value
+				settings[key] = value
 			}
 		}
 	}
 
-	return m
+	return
 }

@@ -27,7 +27,7 @@
     keys = data.keys
   })
 
-  let apiKey
+  let apiKey = ''
 
   function register() {
     fetch(`${BASE_URL}/api/v1/apikeys/${apiKey}`, {
@@ -60,7 +60,7 @@
   }
 </script>
 
-<div class="panel is-link">
+<div class="panel">
   <p class="panel-heading">
     <span class="wrapper">
       <span class="left"> Registered API keys </span>
