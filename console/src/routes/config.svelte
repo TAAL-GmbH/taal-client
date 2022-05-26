@@ -16,6 +16,34 @@
     const res = await fetch(`${BASE_URL}/api/v1/settings`)
     settings = await res.json()
   })
+
+  function toggleDebugServer() {
+    settings.debugServer = !settings.debugServer
+    saveSetting('debugServer')
+  }
+
+  async function saveSetting(key, val) {
+    try {
+      await fetch(`${BASE_URL}/api/v1/settings/${key}/${settings[key]}`, {
+        method: 'PUT',
+      })
+
+      addNotification({
+        text: `Setting updated successfully`,
+        position: 'bottom-left',
+        type: 'success',
+      })
+    } catch (err) {
+      const errJson = JSON.parse(err.message)
+      addNotification({
+        text: `Error: ${errJson.error}`,
+        position: 'bottom-left',
+        type: 'warning',
+      })
+
+      console.log(err)
+    }
+  }
 </script>
 
 <form class="panel">
@@ -99,7 +127,11 @@
         <div class="field">
           <p id="debug" class="control">
             <label class="check">
-              <input type="checkbox" checked={settings.debugServer} />
+              <input
+                type="checkbox"
+                checked={settings.debugServer}
+                on:change={toggleDebugServer}
+              />
               Server
             </label>
             <label class="check">
