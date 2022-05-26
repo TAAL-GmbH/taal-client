@@ -99,6 +99,67 @@ func TestInsertKey(t *testing.T) {
 	is.Equal(key, keyFromDB)
 }
 
+func TestGetAllKeys(t *testing.T) {
+	is := is.New(t)
+	err := prepareTestDatabase()
+	is.NoErr(err)
+
+	now := func() time.Time {
+		return time.Date(2022, 5, 1, 10, 0, 0, 0, time.UTC)
+	}
+
+	repo := repository.NewRepository(db, now)
+	ctx := context.Background()
+	keys, err := repo.GetAllKeys(ctx)
+	is.NoErr(err)
+
+	expectedKeys := []server.Key{
+		{
+			ApiKey:     "11111",
+			PublicKey:  "xskd023k3",
+			PrivateKey: "2099n2dskd",
+			Address:    "ke992kfj0",
+			CreatedAt:  "2022-05-21 15:10:58.022+00:00",
+		},
+		{
+			ApiKey:     "22222",
+			PublicKey:  "adlkfsd9",
+			PrivateKey: "xp3k0cj3m",
+			Address:    "20fk2pdkf",
+			CreatedAt:  "2022-05-24 15:10:58.022+00:00",
+		},
+	}
+
+	is.Equal(expectedKeys, keys)
+}
+
+func TestInsertTransaction(t *testing.T) {
+	is := is.New(t)
+
+	now := func() time.Time {
+		return time.Date(2022, 5, 1, 10, 0, 0, 0, time.UTC)
+	}
+
+	repo := repository.NewRepository(db, now)
+	ctx := context.Background()
+	tx := server.Transaction{
+		ID:        "12345abcde",
+		ApiKey:    "api_key_1",
+		DataBytes: 100,
+	}
+	err := repo.InsertTransaction(ctx, tx)
+	is.NoErr(err)
+
+	txsFromDB, err := repo.GetAllTransactions(ctx)
+	is.NoErr(err)
+
+	is.Equal(1, len(txsFromDB))
+
+	tx.CreatedAt = time.Date(2022, 5, 1, 10, 0, 0, 0, time.UTC).Format(repository.ISO8601)
+
+	is.Equal(tx, txsFromDB[0])
+}
+
 func TestGetTransactions(t *testing.T) {
 	is := is.New(t)
 	err := prepareTestDatabase()
@@ -120,8 +181,13 @@ func TestGetTransactions(t *testing.T) {
 			DataBytes: 100,
 			CreatedAt: "2022-05-23 15:10:58.022+00:00",
 		},
+		{
+			ID:        "23456bcdef",
+			ApiKey:    "api_key_2",
+			DataBytes: 200,
+			CreatedAt: "2022-05-25 15:10:58.022+00:00",
+		},
 	}
 
 	is.Equal(expectedTransactions, transactions)
-
 }
