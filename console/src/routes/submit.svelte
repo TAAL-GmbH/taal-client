@@ -17,7 +17,6 @@
 
   function selectChange() {
     apiKey = selectedApiKey.api_key
-    console.log(apiKey)
   }
 
   let apiKey
@@ -181,14 +180,24 @@
 </div>
 <div class="field">
   <label for="file">File</label>
-  <input
-    type="file"
-    id="file"
-    name="file"
-    capture
-    accept="image/*, audio/*, application/json, application/pdf, video/*, text/*"
-    bind:files
-  />
+  <div class="file">
+    <label class="file-label">
+      <input class="file-input"
+        type="file"
+        id="file"
+        name="file"
+        capture
+        accept="image/*, audio/*, application/json, application/pdf, video/*, text/*"
+        bind:files
+      />
+      <span class="file-cta">
+        <span class="file-icon">
+          <i class="fas fa-upload" />
+        </span>
+        <span class="file-label"> Choose a file… </span>
+      </span>
+    </label>
+  </div>
 </div>
 <div class="field is-grouped">
   <div class="control">
