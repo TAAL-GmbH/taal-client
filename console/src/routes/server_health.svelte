@@ -1,16 +1,29 @@
 <script>
   import { onMount } from 'svelte'
-  let serverText
-  let serverClass
+  let srvStatusText
+  let srvStatusClass
 
-  function setServerRunning() {
-    serverText = 'Server running'
-    serverClass = 'button is-success'
+  let dbStatusText
+  let dbStatusClass
+
+  function setServerStatusRunning() {
+    srvStatusText = 'Server running'
+    srvStatusClass = 'button is-success'
   }
 
-  function setServerNotRunning() {
-    serverText = 'Server not running'
-    serverClass = 'button is-danger'
+  function setServerStatusNotRunning() {
+    srvStatusText = 'Server not running'
+    srvStatusClass = 'button is-danger'
+  }
+
+  function setDBStatusRunning() {
+    dbStatusText = 'DB running'
+    dbStatusClass = 'button is-success'
+  }
+
+  function setDBStatusNotRunning() {
+    dbStatusText = 'DB not running'
+    dbStatusClass = 'button is-danger'
   }
 
   onMount(() => {
@@ -18,24 +31,42 @@
       const r = fetch(`${BASE_URL}/api/v1/health`)
         .then((res) => {
           if (!res.ok) {
-            setServerNotRunning()
+            return res.text().then((text) => {
+              throw new Error(text)
+            })
           } else {
-            setServerRunning()
+            console.log('all is running')
+            setServerStatusRunning()
+            setDBStatusRunning()
           }
         })
         .catch((err) => {
-          setServerNotRunning()
+          try {
+            const errJson = JSON.parse(err.message)
+            
+            console.log('api is running but not db')
+            setServerStatusRunning()
+            setDBStatusNotRunning()            
+          } catch (error) {
+            console.log('api is not running at all')
+            setServerStatusNotRunning()
+            setDBStatusNotRunning()
+          }
         })
-    }, 1000)
+    }, 5000)
 
     return () => {
       clearInterval(interval)
     }
   })
-
 </script>
 
 <div class="fi">
   <label for="serverStatus">Server status: </label>
-  <button id="serverStatus" class={serverClass}>{serverText}</button>
+  <button id="serverStatus" class={srvStatusClass}>{srvStatusText}</button>
+</div>
+
+<div class="fi">
+  <label for="dbStatus">Database status: </label>
+  <button id="dbStatus" class={dbStatusClass}>{dbStatusText}</button>
 </div>
