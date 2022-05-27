@@ -24,4 +24,5 @@ const (
 	errWriteInsertTransaction                   = 25
 	errAPIKeysRevoke                            = 26
 	errGetTransactions                          = 27
+	errHearlthDB                                = 28
 )

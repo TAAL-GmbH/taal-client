@@ -80,3 +80,9 @@ func (r Repository) GetAllTransactions(ctx context.Context) ([]server.Transactio
 
 	return txs, nil
 }
+
+func (r Repository) Health(ctx context.Context) error {
+	_, err := r.db.QueryContext(ctx, `SELECT 1;`)
+
+	return err
+}

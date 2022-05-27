@@ -15,6 +15,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/libsv/go-bt"
+	"github.com/pkg/errors"
 )
 
 //go:generate moq -pkg service_test -out repository_mock_test.go . Repository
@@ -24,6 +25,7 @@ type Repository interface {
 	GetAllKeys(ctx context.Context) ([]Key, error)
 	InsertTransaction(ctx context.Context, tx Transaction) error
 	GetAllTransactions(ctx context.Context) ([]Transaction, error)
+	Health(ctx context.Context) error
 }
 
 type Server struct {
@@ -102,8 +104,14 @@ func New(address string, taal *client.Client, repo Repository) Server {
 	group.GET("/transactions", s.getTransactions)
 	group.GET("/transactions/info", s.getTransactions)
 
-	group.GET("/test", func(c echo.Context) error {
-		return c.String(http.StatusOK, "This is from the client")
+	group.GET("/health", func(c echo.Context) error {
+		err := s.repository.Health(context.Background())
+
+		if err != nil {
+			return s.sendError(c, http.StatusInternalServerError, errHearlthDB, errors.Wrap(err, "failed to call database"))
+		}
+
+		return c.String(http.StatusOK, "server is running")
 	})
 
 	e.GET("*", func(c echo.Context) error {
