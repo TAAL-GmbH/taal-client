@@ -9,6 +9,7 @@ import (
 	"taal-client/client"
 	"taal-client/console"
 	"taal-client/settings"
+	"taal-client/utils"
 
 	"github.com/bitcoinsv/bsvd/bsvec"
 	"github.com/labstack/echo/v4"
@@ -68,7 +69,8 @@ func New(address string, taal *client.Client, repo Repository) Server {
 	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			if settings.GetBool("debugServer") {
-				log.Printf("Server: %s: %s\n", c.Request().Method, c.Request().URL)
+				req := c.Request()
+				log.Printf("Server [%s]: %s %s\n", utils.GetSourceIP(req), req.Method, req.URL)
 			}
 			return next(c)
 		}
@@ -93,7 +95,7 @@ func New(address string, taal *client.Client, repo Repository) Server {
 	group.GET("/apikeys", s.getApiKeys)
 
 	group.GET("/settings", s.getSettings)
-	// group.PUT("/settings/:key/:value", s.putSetting)
+	group.PUT("/settings/:key/:val", s.putSetting)
 
 	group.POST("/transactions", s.write)
 	group.GET("/transactions/:txid", s.read)

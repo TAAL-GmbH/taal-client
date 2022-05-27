@@ -1,17 +1,4 @@
 <script>
-  // import { onMount } from "svelte";
-
-  // let name;
-
-  // onMount(async () => {
-  //   name = "N/A";
-
-  //   const response = await fetch(`${BASE_URL}/api/v1/test`);
-  //   const data = await response.text();
-
-  //   name = data;
-  // });
-
   import { Router, Route, Link } from 'svelte-routing'
   import Home from './routes/home.svelte'
   import Settings from './routes/settings.svelte'
@@ -35,7 +22,6 @@
 </script>
 
 <svelte:head>
-  <!-- <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" /> -->
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
