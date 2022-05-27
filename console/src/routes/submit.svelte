@@ -5,7 +5,20 @@
   import { onMount } from 'svelte'
   import { getNotificationsContext } from 'svelte-notifications'
 
+  let keys
+  let selectedApiKey
   const { addNotification } = getNotificationsContext()
+
+  onMount(async () => {
+    const r = await fetch(`${BASE_URL}/api/v1/apikeys`)
+    const data = await r.json()
+    keys = data.keys
+  })
+
+  function selectChange() {
+    apiKey = selectedApiKey.api_key
+    console.log(apiKey)
+  }
 
   let apiKey
   let taalClientURL = 'http://localhost:9500'
@@ -122,7 +135,17 @@
 <div class="field">
   <div id="input2" class="control">
     <label for="apiKey">API Key</label>
-    <input id="apiKey" class="input" type="text" bind:value={apiKey} />
+    <div class="select">
+      <select bind:value={selectedApiKey} on:change={selectChange}>
+        {#if keys}
+          {#each keys as key}
+            <option value={key}>
+              {key.api_key}
+            </option>
+          {/each}
+        {/if}
+      </select>
+    </div>
   </div>
 </div>
 <div class="field">
