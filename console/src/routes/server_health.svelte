@@ -53,7 +53,7 @@
             setDBStatusNotRunning()
           }
         })
-    }, 5000)
+    }, 1000)
 
     return () => {
       clearInterval(interval)
@@ -61,12 +61,12 @@
   })
 </script>
 
-<div class="fi">
+<div class="field">
   <label for="serverStatus">Server status: </label>
   <button id="serverStatus" class={srvStatusClass}>{srvStatusText}</button>
 </div>
 
-<div class="fi">
+<div class="field">
   <label for="dbStatus">Database status: </label>
   <button id="dbStatus" class={dbStatusClass}>{dbStatusText}</button>
 </div>
