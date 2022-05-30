@@ -1,10 +1,10 @@
 <script>
   import { onMount } from 'svelte'
   let srvStatusText
-  let srvStatusClass
+  let srvStatusClass = 'button is-light'
 
-  let dbStatusText
-  let dbStatusClass
+  let dbStatusText = 'loading'
+  let dbStatusClass = 'button is-light'
 
   function setServerStatusRunning() {
     srvStatusText = 'Server running'

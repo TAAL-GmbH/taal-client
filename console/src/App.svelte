@@ -1,9 +1,9 @@
 <script>
   import { Router, Route, Link } from 'svelte-routing'
-  import Home from './routes/home.svelte'
-  import Settings from './routes/settings.svelte'
-  import Transactions from './routes/transactions.svelte'
-  import Submit from './routes/submit.svelte'
+  import Home from './routes/home/home.svelte'
+  import Settings from './routes/settings/settings.svelte'
+  import TxHistory from './routes/tx_history/transactions.svelte'
+  import TxSubmit from './routes/tx_submit/submit.svelte'
   import Notifications from 'svelte-notifications'
 
   let isActive = false
@@ -73,9 +73,9 @@
   <main class="section">
     <Route path="/"><Home /></Route>
     <Route path="settings" component={Settings} />
-    <Route path="transactions" component={Transactions} />
+    <Route path="transactions" component={TxHistory} />
     <Notifications>
-      <Route path="submit" component={Submit} />
+      <Route path="submit" component={TxSubmit} />
     </Notifications>
    
   </main>
