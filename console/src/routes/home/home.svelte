@@ -1,5 +1,5 @@
 <script>
-    import Health from './server_health.svelte'
+    import Health from './health.svelte'
     import TransactionStats from './transaction_stats.svelte'
 </script>
 
