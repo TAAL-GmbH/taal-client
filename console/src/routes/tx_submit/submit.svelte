@@ -13,6 +13,7 @@
     const r = await fetch(`${BASE_URL}/api/v1/apikeys`)
     const data = await r.json()
     keys = data.keys
+    selectedApiKey = keys[0]
   })
 
   function selectChange() {
@@ -212,4 +213,7 @@
 <div>
   <label for="curl">{curlCommandLabel}</label>
   <div class="field" id="curl">{curlCommand}</div>
+</div>
+<div class="dropzone">
+
 </div>
