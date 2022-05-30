@@ -35,7 +35,6 @@
               throw new Error(text)
             })
           } else {
-            console.log('all is running')
             setServerStatusRunning()
             setDBStatusRunning()
           }
@@ -43,12 +42,9 @@
         .catch((err) => {
           try {
             const errJson = JSON.parse(err.message)
-            
-            console.log('api is running but not db')
             setServerStatusRunning()
             setDBStatusNotRunning()            
           } catch (error) {
-            console.log('api is not running at all')
             setServerStatusNotRunning()
             setDBStatusNotRunning()
           }
