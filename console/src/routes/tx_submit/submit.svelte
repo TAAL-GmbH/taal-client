@@ -9,17 +9,6 @@
   let selectedApiKey
   const { addNotification } = getNotificationsContext()
 
-  onMount(async () => {
-    const r = await fetch(`${BASE_URL}/api/v1/apikeys`)
-    const data = await r.json()
-    keys = data.keys
-    selectedApiKey = keys[0]
-  })
-
-  function selectChange() {
-    apiKey = selectedApiKey.api_key
-  }
-
   let apiKey
   let taalClientURL = 'http://localhost:9500'
   let tag
@@ -68,7 +57,16 @@
   onMount(async () => {
     tag = localStorage.getItem('tag')
     apiKey = localStorage.getItem('apiKey')
+
+    const r = await fetch(`${BASE_URL}/api/v1/apikeys`)
+    const data = await r.json()
+    keys = data.keys
+    selectedApiKey = keys[0]
   })
+
+  function selectChange() {
+    apiKey = selectedApiKey.api_key
+  }
 
   function showCurl(key, type, tag, data, url) {
     let curl = 'curl -X POST'
@@ -186,7 +184,8 @@
   <label for="file">File</label>
   <div class="file">
     <label class="file-label">
-      <input class="file-input"
+      <input
+        class="file-input"
         type="file"
         id="file"
         name="file"
@@ -213,7 +212,4 @@
 <div>
   <label for="curl">{curlCommandLabel}</label>
   <div class="field" id="curl">{curlCommand}</div>
-</div>
-<div class="dropzone">
-
 </div>
