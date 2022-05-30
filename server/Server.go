@@ -65,6 +65,7 @@ func New(address string, taal *client.Client, repo Repository) Server {
 			echo.HeaderAuthorization,
 			echo.HeaderXRequestedWith,
 			"X-Tag",
+			"Filename",
 		},
 	}))
 

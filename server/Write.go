@@ -12,6 +12,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+const HeaderFilename = "Filename"
+
 func (s Server) write(c echo.Context) error {
 	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
 	if authHeader == "" {
@@ -85,6 +87,7 @@ func (s Server) write(c echo.Context) error {
 		ID:        dataTx.GetTxID(),
 		ApiKey:    apiKey,
 		DataBytes: len(dataTx.ToBytes()),
+		Filename:  c.Request().Header.Get(HeaderFilename),
 	}
 	err = s.repository.InsertTransaction(ctx, tx)
 	if err != nil {

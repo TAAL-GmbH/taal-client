@@ -25,6 +25,7 @@
       <th>ID</th>
       <th>API Key used</th>
       <th>Data size [bytes]</th>
+      <th>Filename</th>
     </tr>
     {#each transactions as transaction}
       <Transaction {transaction} />

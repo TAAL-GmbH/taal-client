@@ -143,9 +143,10 @@ func TestInsertTransaction(t *testing.T) {
 	repo := repository.NewRepository(db, now)
 	ctx := context.Background()
 	tx := server.Transaction{
-		ID:        "12345abcde",
-		ApiKey:    "api_key_1",
+		ID:        "7890abcde",
+		ApiKey:    "api_key_3",
 		DataBytes: 100,
+		Filename:  "somepdf.pdf",
 	}
 	err := repo.InsertTransaction(ctx, tx)
 	is.NoErr(err)
@@ -153,11 +154,11 @@ func TestInsertTransaction(t *testing.T) {
 	txsFromDB, err := repo.GetAllTransactions(ctx)
 	is.NoErr(err)
 
-	is.Equal(1, len(txsFromDB))
+	is.Equal(3, len(txsFromDB))
 
 	tx.CreatedAt = time.Date(2022, 5, 1, 10, 0, 0, 0, time.UTC).Format(repository.ISO8601)
 
-	is.Equal(tx, txsFromDB[0])
+	is.Equal(tx, txsFromDB[2])
 }
 
 func TestGetTransactions(t *testing.T) {
@@ -180,12 +181,14 @@ func TestGetTransactions(t *testing.T) {
 			ApiKey:    "api_key_1",
 			DataBytes: 100,
 			CreatedAt: "2022-05-23 15:10:58.022+00:00",
+			Filename:  "textfile.txt",
 		},
 		{
 			ID:        "23456bcdef",
 			ApiKey:    "api_key_2",
 			DataBytes: 200,
 			CreatedAt: "2022-05-25 15:10:58.022+00:00",
+			Filename:  "somepicture.png",
 		},
 	}
 

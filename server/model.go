@@ -27,6 +27,7 @@ type Transaction struct {
 	ApiKey    string `db:"api_key" json:"api_key"`
 	DataBytes int    `db:"data_bytes" json:"data_bytes"`
 	CreatedAt string `db:"created_at" json:"created_at"`
+	Filename  string `db:"filename" json:"filename"`
 }
 
 type Transactions struct {

@@ -25,6 +25,7 @@
   let tagString = ''
   let mimeType = 'text/plain'
   let data
+  let filename = ''
 
   let inputDataDisabled = false
   let inputMimeTypeDisabled = false
@@ -41,6 +42,7 @@
   $: if (files != null) {
     file = files[0]
     mimeType = file.type
+    filename = file.name
 
     if (file.type.startsWith('text/')) {
       const fr = new FileReader()
@@ -92,6 +94,7 @@
         Authorization: 'Bearer ' + apiKey,
         'Content-Type': mimeType,
         'X-Tag': tagString,
+        'Filename': filename
       },
     })
       .then((res) => {
