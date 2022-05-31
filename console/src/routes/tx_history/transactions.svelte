@@ -4,8 +4,13 @@
 
   import { onMount } from 'svelte'
   import TransactionRows from './transaction_rows.svelte'
+  import Cards from './transaction_cards.svelte'
 
   let transactions
+  let classListViewButton = 'button is-success is-selected'
+  let classGridViewButton = 'button'
+
+  let listViewSelected = true
 
   onMount(async () => {
     await fetch(`${BASE_URL}/api/v1/transactions/info`)
@@ -14,12 +19,36 @@
         transactions = data.transactions
       })
   })
+
+  function clickListViewButton(e) {
+    classListViewButton = 'button is-success is-selected'
+    classGridViewButton = 'button'
+    listViewSelected = true
+  }
+
+  function clickGridViewButton(e) {
+    classListViewButton = 'button'
+    classGridViewButton = 'button is-success is-selected'
+    listViewSelected = false
+  }
 </script>
 
 <h1>Transactions</h1>
+<div class="buttons has-addons is-left">
+  <button class={classListViewButton} on:click={clickListViewButton}
+    >List view</button
+  >
+  <button class={classGridViewButton} on:click={clickGridViewButton}
+    >Grid view</button
+  >
+</div>
 
 {#if transactions}
- <TransactionRows {transactions} />
+  {#if listViewSelected}
+    <TransactionRows {transactions} />
+  {:else}
+    <Cards {transactions} />
+  {/if}
 {:else}
   <p class="loading">loading...</p>
 {/if}

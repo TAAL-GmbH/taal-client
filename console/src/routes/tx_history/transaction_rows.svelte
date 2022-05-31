@@ -1,6 +1,5 @@
 <script>
 import TransactionRow from './transaction_row.svelte'
-import DownloadButton from './download_button.svelte'
 export let transactions
 
 </script>
