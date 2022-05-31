@@ -1,6 +1,6 @@
 <script>
   import DownloadButton from './download_button.svelte'
-  import {GetFormatedTxDate, TruncateTxID} from './transaction_format_functions.svelte'
+  import {GetFormatedTxDate, TruncateTxID, TxDataSize} from './transaction_format_functions.svelte'
   export let transaction
  </script>
 
@@ -22,7 +22,7 @@
           {/if}
           <p class="subtitle is-6">API Key: {transaction.api_key}</p>
           <p class="subtitle is-6">
-            Data size [bytes]: {transaction.data_bytes}
+            Data size: {TxDataSize(transaction.data_bytes)}
           </p>
           <DownloadButton
             txFilename={transaction.filename}

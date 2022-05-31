@@ -11,7 +11,7 @@ export let transactions
         <th>Created At (UTC)</th>
         <th>ID</th>
         <th>API Key used</th>
-        <th>Data size [bytes]</th>
+        <th>Data size</th>
         <th>Filename</th>
       </tr>
     </thead>
