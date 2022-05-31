@@ -4,6 +4,7 @@
 
   import { onMount } from 'svelte'
   import { getNotificationsContext } from 'svelte-notifications'
+  import DragDrop from './DragDrop.svelte'
 
   let keys
   let selectedApiKey
@@ -257,6 +258,7 @@
   <label for="curl">{curlCommandLabel}</label>
   <div class="field" id="curl">{curlCommand}</div>
 </div>
+<DragDrop />
 
 <style>
   .pad {

@@ -22,10 +22,8 @@
 </script>
 
 <svelte:head>
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
-  />
+  <link rel="stylesheet" href="/css/bulma.min.css" />
+  <link rel="stylesheet" href="/css/fontawesome.min.css" />
 </svelte:head>
 
 <Router {url}>
@@ -64,7 +62,8 @@
         <Link to="/transactions" class="navbar-item" on:click={closeMenu}
           >Transactions History</Link
         >
-        <Link to="/submit" class="navbar-item" on:click={closeMenu}>Submit Transaction</Link
+        <Link to="/submit" class="navbar-item" on:click={closeMenu}
+          >Submit Transaction</Link
         >
       </div>
     </div>
@@ -77,7 +76,6 @@
     <Notifications>
       <Route path="submit" component={TxSubmit} />
     </Notifications>
-   
   </main>
 </Router>
 
