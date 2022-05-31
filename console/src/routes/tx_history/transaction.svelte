@@ -11,6 +11,8 @@
   let minutes
   let seconds
 
+  let contentType
+
   onMount(() => {
     date = new Date(transaction.created_at)
     year = date.getUTCFullYear()
@@ -23,9 +25,9 @@
 
   function truncate(str) {
     const n = 10
-    return str.length > n ? str.slice(0, 5) + "..." + str.slice(-5): str
+    return str.length > n ? str.slice(0, 5) + '...' + str.slice(-5) : str
   }
-  
+
   function download() {
     fetch(`${BASE_URL}/api/v1/transactions/${transaction.id}`, {
       method: 'GET',
@@ -37,11 +39,16 @@
         if (!response.ok) {
           throw new Error('Network response was not OK')
         }
+        contentType = response.headers.get('content-type')
         return response.blob()
       })
       .then((blob) => URL.createObjectURL(blob))
       .then((blobUrl) => {
-        if (transaction.filename != '') {
+        if (transaction.filename == '') {
+          console.log(contentType)
+
+          filename = transaction.id
+        } else {
           filename = transaction.filename
         }
 
