@@ -9,11 +9,13 @@
   let selectedApiKey
   const { addNotification } = getNotificationsContext()
 
+  const stdMimeType = 'text/plain'
+
   let apiKey
   let taalClientURL = 'http://localhost:9500'
   let tag
   let tagString = ''
-  let mimeType = 'text/plain'
+  let mimeType = stdMimeType
   let data
   let filename = ''
 
@@ -54,6 +56,14 @@
     fr.readAsArrayBuffer(file)
   }
 
+  $: if (files == null) {
+    data = ''
+    fileData = null
+    inputDataDisabled = false
+    inputMimeTypeDisabled = false
+    mimeType = stdMimeType
+  }
+
   onMount(async () => {
     tag = localStorage.getItem('tag')
     apiKey = localStorage.getItem('apiKey')
@@ -83,6 +93,10 @@
     curlCommandLabel = 'Curl command: '
   }
 
+  function reset() {
+    files = null
+  }
+
   function writeData() {
     let url = `${taalClientURL}/api/v1/transactions`
     showCurl(apiKey, mimeType, tagString, data, url)
@@ -93,7 +107,7 @@
         Authorization: 'Bearer ' + apiKey,
         'Content-Type': mimeType,
         'X-Tag': tagString,
-        'Filename': filename
+        Filename: filename,
       },
     })
       .then((res) => {
@@ -222,11 +236,18 @@
     </div>
   </div>
 </div>
-
-<div class="field is-grouped">
+<div class="columns">
+  <div class="column" />
+</div>
+<div class="field is-grouped is-grouped-left">
   <div class="control">
-    <button class="button is-link" on:click={writeData}
+    <button class="button is-primary" on:click={writeData}
       >Submit transaction</button
+    >
+  </div>
+  <div class="control">
+    <button class="button is-light" on:click={reset}
+      >Reset</button
     >
   </div>
 </div>
