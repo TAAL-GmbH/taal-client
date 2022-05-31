@@ -1,5 +1,11 @@
 <script>
-    export let id
+  export let id
 </script>
 
-<button id={id} class='button is-loading'></button>
+<button {id} class="button is-loading" />
+
+<style>
+  button {
+    min-width: 89px;
+  }
+</style>
