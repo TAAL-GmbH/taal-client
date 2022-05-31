@@ -21,6 +21,11 @@
     seconds = date.getUTCSeconds()
   })
 
+  function truncate(str) {
+    const n = 10
+    return str.length > n ? str.slice(0, 5) + "..." + str.slice(-5): str
+  }
+  
   function download() {
     fetch(`${BASE_URL}/api/v1/transactions/${transaction.id}`, {
       method: 'GET',
@@ -54,7 +59,7 @@
   <td>{year}-{month}-{day} {hours}:{minutes}:{seconds}</td>
   <td
     ><a href="https://www.whatsonchain.com/tx/{transaction.id}"
-      >{transaction.id}</a
+      >{truncate(transaction.id)}</a
     ></td
   >
   <td>{transaction.api_key}</td>
