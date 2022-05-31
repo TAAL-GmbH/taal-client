@@ -13,7 +13,7 @@
     ></td
   >
   <td>{transaction.api_key}</td>
-  <td>{TxDataSize(transaction.data_bytes)}</td>
+  <td align="right">{TxDataSize(transaction.data_bytes)}</td>
   <td>{TxFilename(transaction.filename)}</td>
   <td
     ><DownloadButton
