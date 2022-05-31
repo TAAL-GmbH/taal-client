@@ -141,104 +141,102 @@
   }
 </script>
 
-<div class="columns">
-  <div class="column">
-    <div class="field">
-      <div id="input2" class="control">
-        <label for="apiKey">API Key</label>
-        <div class="select">
-          <select bind:value={selectedApiKey} on:change={selectChange}>
-            {#if keys}
-              {#each keys as key}
-                <option value={key}>
-                  {key.api_key}
-                </option>
-              {/each}
-            {/if}
-          </select>
+<form class="panel">
+  <p class="panel-heading">Transaction parameters</p>
+  <div class="panel-body pad">
+    <div class="columns">
+      <div class="column">
+        <div class="field">
+          <div id="input2" class="control">
+            <label for="apiKey">API Key</label>
+            <div class="select">
+              <select bind:value={selectedApiKey} on:change={selectChange}>
+                {#if keys}
+                  {#each keys as key}
+                    <option value={key}>
+                      {key.api_key}
+                    </option>
+                  {/each}
+                {/if}
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <div id="input3" class="control">
+            <label for="tag">Tag (optional)</label>
+            <input id="tag" class="input" type="text" bind:value={tag} />
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="field">
+          <div id="input1" class="control">
+            <label for="url">TAAL Client URL</label>
+            <input id="url" class="input" type="text" bind:value={taalClientURL} />
+          </div>
+        </div>
+        <div class="field">
+          <div id="input5" class="control">
+            <label for="mimetype">MIME type</label>
+            <input
+              id="mimetype"
+              class="input"
+              type="text"
+              bind:value={mimeType}
+              disabled={inputMimeTypeDisabled}
+            />
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="column">
-    <div class="field">
-      <div id="input1" class="control">
-        <label for="url">TAAL Client URL</label>
-        <input id="url" class="input" type="text" bind:value={taalClientURL} />
+  <p class="panel-heading">Transaction data</p>
+  <div class="panel-body pad">
+    <div class="columns">
+      <div class="column">
+        <div class="field">
+          <div id="input4" class="control">
+            <label for="data">Text data</label>
+            <textarea
+              id="data"
+              class="input"
+              type="text"
+              placeholder="Enter text to send to blockchain"
+              bind:value={data}
+              disabled={inputDataDisabled}
+            />
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="field">
+          <label for="file">File</label>
+          <div class="file">
+            <label class="file-label">
+              <input
+                class="file-input"
+                type="file"
+                id="file"
+                name="file"
+                capture
+                accept="image/*, audio/*, application/json, application/pdf, video/*, text/*"
+                bind:files
+              />
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload" />
+                </span>
+                <span class="file-label"> Choose a file… </span>
+              </span>
+            </label>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</form>
 
-<div class="columns">
-  <div class="column">
-    <div class="field">
-      <div id="input3" class="control">
-        <label for="tag">Tag (optional)</label>
-        <input id="tag" class="input" type="text" bind:value={tag} />
-      </div>
-    </div>
-  </div>
-  <div class="column">
-    <div class="field">
-      <div id="input5" class="control">
-        <label for="mimetype">MIME type</label>
-        <input
-          id="mimetype"
-          class="input"
-          type="text"
-          bind:value={mimeType}
-          disabled={inputMimeTypeDisabled}
-        />
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="columns">
-  <div class="column">
-    <div class="field">
-      <div id="input4" class="control">
-        <label for="data">Data</label>
-        <textarea
-          id="data"
-          class="input"
-          type="text"
-          placeholder="Enter text to send to blockchain"
-          bind:value={data}
-          disabled={inputDataDisabled}
-        />
-      </div>
-    </div>
-  </div>
-  <div class="column">
-    <div class="field">
-      <label for="file">File</label>
-      <div class="file">
-        <label class="file-label">
-          <input
-            class="file-input"
-            type="file"
-            id="file"
-            name="file"
-            capture
-            accept="image/*, audio/*, application/json, application/pdf, video/*, text/*"
-            bind:files
-          />
-          <span class="file-cta">
-            <span class="file-icon">
-              <i class="fas fa-upload" />
-            </span>
-            <span class="file-label"> Choose a file… </span>
-          </span>
-        </label>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="columns">
-  <div class="column" />
-</div>
 <div class="field is-grouped is-grouped-left">
   <div class="control">
     <button class="button is-primary" on:click={writeData}
@@ -255,3 +253,9 @@
   <label for="curl">{curlCommandLabel}</label>
   <div class="field" id="curl">{curlCommand}</div>
 </div>
+
+<style>
+  .pad {
+    padding: 20px;
+  }
+</style>
