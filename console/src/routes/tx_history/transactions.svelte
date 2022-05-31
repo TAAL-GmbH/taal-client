@@ -21,7 +21,7 @@
 {#if transactions}
   <table class="table">
     <tr>
-      <th>Created At</th>
+      <th>Created At (UTC)</th>
       <th>ID</th>
       <th>API Key used</th>
       <th>Data size [bytes]</th>

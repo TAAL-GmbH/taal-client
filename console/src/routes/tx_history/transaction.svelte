@@ -1,7 +1,25 @@
 <script>
-  export let transaction
+  import { onMount } from 'svelte'
 
   let filename = 'Data'
+  export let transaction
+  let date = new Date()
+  let year
+  let month
+  let day
+  let hours
+  let minutes
+  let seconds
+
+  onMount(() => {
+    date = new Date(transaction.created_at)
+    year = date.getUTCFullYear()
+    month = date.getUTCMonth() + 1 // month is zero indexed
+    day = date.getUTCDate()
+    hours = date.getUTCHours()
+    minutes = date.getUTCMinutes()
+    seconds = date.getUTCSeconds()
+  })
 
   function download() {
     fetch(`${BASE_URL}/api/v1/transactions/${transaction.id}`, {
@@ -33,7 +51,7 @@
 </script>
 
 <tr>
-  <td>{transaction.created_at}</td>
+  <td>{year}-{month}-{day} {hours}:{minutes}:{seconds}</td>
   <td
     ><a href="https://www.whatsonchain.com/tx/{transaction.id}"
       >{transaction.id}</a
