@@ -3,7 +3,7 @@
   export let location
 
   import { onMount } from 'svelte'
-  import Transaction from './transaction.svelte'
+  import TransactionRows from './transaction_rows.svelte'
 
   let transactions
 
@@ -19,18 +19,7 @@
 <h1>Transactions</h1>
 
 {#if transactions}
-  <table class="table">
-    <tr>
-      <th>Created At (UTC)</th>
-      <th>ID</th>
-      <th>API Key used</th>
-      <th>Data size [bytes]</th>
-      <th>Filename</th>
-    </tr>
-    {#each transactions as transaction}
-      <Transaction {transaction} />
-    {/each}
-  </table>
+ <TransactionRows {transactions} />
 {:else}
   <p class="loading">loading...</p>
 {/if}
