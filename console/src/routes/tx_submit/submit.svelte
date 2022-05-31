@@ -173,7 +173,12 @@
         <div class="field">
           <div id="input1" class="control">
             <label for="url">TAAL Client URL</label>
-            <input id="url" class="input" type="text" bind:value={taalClientURL} />
+            <input
+              id="url"
+              class="input"
+              type="text"
+              bind:value={taalClientURL}
+            />
           </div>
         </div>
         <div class="field">
@@ -199,12 +204,13 @@
           <div id="input4" class="control">
             <label for="data">Text data</label>
             <textarea
+              class="textarea"
               id="data"
-              class="input"
               type="text"
               placeholder="Enter text to send to blockchain"
               bind:value={data}
               disabled={inputDataDisabled}
+              rows="3"
             />
           </div>
         </div>
@@ -244,9 +250,7 @@
     >
   </div>
   <div class="control">
-    <button class="button is-light" on:click={reset}
-      >Reset</button
-    >
+    <button class="button is-light" on:click={reset}>Reset</button>
   </div>
 </div>
 <div>
