@@ -31,6 +31,7 @@
   let fileData = null
 
   $: tagString = tag ? tag : ''
+  $: submitButtonIsDisabled = data == '' || mimeType == ''
 
   $: if (files != null) {
     file = files[0]
@@ -246,8 +247,10 @@
 
 <div class="field is-grouped is-grouped-left">
   <div class="control">
-    <button class="button is-primary" on:click={writeData}
-      >Submit transaction</button
+    <button
+      class="button is-primary"
+      on:click={writeData}
+      disabled={submitButtonIsDisabled}>Submit transaction</button
     >
   </div>
   <div class="control">
