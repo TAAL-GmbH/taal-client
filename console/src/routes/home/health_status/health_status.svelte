@@ -3,7 +3,7 @@
   export let id
   import Unhealthy from './unhealthy.svelte'
   import Healthy from './healthy.svelte'
-  import Pending from './pending.svelte'
+  import Loading from './loading.svelte'
 </script>
 
 <div class="field">
@@ -12,6 +12,6 @@
   {:else if status == 'unhealthy'}
     <Unhealthy id={id} statusText="Unhealthy" />
   {:else}
-    <Pending id={id} statusText="Pending" />
+    <Loading id={id}/>
   {/if}
 </div>
