@@ -17,13 +17,13 @@
           <p class="subtitle is-6">
             Created at: {GetFormatedTxDate(transaction.created_at)}
           </p>
-          {#if transaction.filename != ''}
-            <p class="subtitle is-6">Filename: {transaction.filename}</p>
-          {/if}
           <p class="subtitle is-6">API Key: {transaction.api_key}</p>
           <p class="subtitle is-6">
             Data size: {TxDataSize(transaction.data_bytes)}
           </p>
+          {#if transaction.filename != ''}
+            <p class="subtitle is-6">Filename: {transaction.filename}</p>
+          {/if}
           <DownloadButton
             txFilename={transaction.filename}
             txApiKey={transaction.api_key}

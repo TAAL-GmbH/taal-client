@@ -5,12 +5,12 @@ export let transactions
 </script>
 
 {#if transactions}
-  <table class="table">
+  <table class="table is-fullwidth">
     <thead>
       <tr>
-        <th>Created At (UTC)</th>
+        <th>Created at (UTC)</th>
         <th>ID</th>
-        <th>API Key used</th>
+        <th>API key used</th>
         <th>Data size</th>
         <th>Filename</th>
       </tr>
