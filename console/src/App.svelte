@@ -3,7 +3,7 @@
   import Home from './routes/home/home.svelte'
   import Settings from './routes/settings/settings.svelte'
   import TxHistory from './routes/tx_history/transactions.svelte'
-  import TxSubmit from './routes/tx_submit/submit.svelte'
+  import TxSubmit from './routes/submit.svelte'
   import Example from './routes/example.svelte'
   import Notifications from 'svelte-notifications'
 

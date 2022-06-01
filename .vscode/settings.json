@@ -13,6 +13,7 @@
     "jmoiron",
     "labstack",
     "libsv",
+    "localdata",
     "mattn",
     "mdbsvelte",
     "proxied",
