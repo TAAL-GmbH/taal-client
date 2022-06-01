@@ -8,28 +8,18 @@
   let files
 
   $: if (files) {
-    const a = []
+    const promises = [...files].map((f) => {
+      return readFile(f)
+    })
 
-    readFile(files[0])
-      .then((data) => {
-        a.push({
-          file: files[0],
-          data,
-        })
-        arr = Object.assign([], a)
-      })
-      .catch((err) => {
-        a.push({
-          file: files[0],
-          error: err,
-        })
-        arr = Object.assign([], a)
-      })
+    Promise.all(promises).then((values) => {
+      arr = Object.assign([], values)
+    })
   }
 
   let arr = []
 
-  $: console.log('aRR:', arr)
+  $: console.log('ARRAY OF FILES:', arr)
 
   let over = false
 
@@ -52,18 +42,7 @@
     const a = []
 
     for (let i = 0; i < fileList.length; i++) {
-      try {
-        const data = await readFile(fileList[i])
-        a.push({
-          file: fileList[i],
-          data,
-        })
-      } catch (err) {
-        a.push({
-          file: fileList[i],
-          error: err,
-        })
-      }
+      a.push(await readFile(fileList[i]))
     }
 
     arr = Object.assign([], a)
@@ -76,11 +55,17 @@
       reader.onload = () => {
         const data = reader.result
         let view = new Uint8Array(data)
-        resolve(view)
+        resolve({
+          file,
+          data: view,
+        })
       }
 
       reader.onerror = () => {
-        reject(reader.error)
+        resolve({
+          file,
+          error: reader.error,
+        })
       }
 
       reader.readAsArrayBuffer(file)
@@ -112,6 +97,7 @@
         id="file"
         name="file"
         capture
+        multiple
         accept="image/*, audio/*, application/json, application/pdf, video/*, text/*"
         bind:files
       />

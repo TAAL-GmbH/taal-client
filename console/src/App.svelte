@@ -4,6 +4,7 @@
   import Settings from './routes/settings/settings.svelte'
   import TxHistory from './routes/tx_history/transactions.svelte'
   import TxSubmit from './routes/tx_submit/submit.svelte'
+  import Example from './routes/example.svelte'
   import Notifications from 'svelte-notifications'
 
   let isActive = false
@@ -64,6 +65,9 @@
         <Link to="/submit" class="navbar-item" on:click={closeMenu}
           >Submit Transaction</Link
         >
+        <Link to="/example" class="navbar-item" on:click={closeMenu}
+          >Example</Link
+        >
       </div>
     </div>
   </nav>
@@ -74,6 +78,7 @@
     <Route path="transactions" component={TxHistory} />
     <Notifications>
       <Route path="submit" component={TxSubmit} />
+      <Route path="example" component={Example} />
     </Notifications>
   </main>
 </Router>
