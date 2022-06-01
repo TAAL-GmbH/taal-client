@@ -177,18 +177,17 @@ func TestGetTransactions(t *testing.T) {
 
 	expectedTransactions := []server.Transaction{
 		{
-			ID:        "12345abcde",
-			ApiKey:    "api_key_1",
-			DataBytes: 100,
-			CreatedAt: "2022-05-23 15:10:58.022+00:00",
-			Filename:  "textfile.txt",
-		},
-		{
 			ID:        "23456bcdef",
 			ApiKey:    "api_key_2",
 			DataBytes: 200,
 			CreatedAt: "2022-05-25 15:10:58.022+00:00",
 			Filename:  "somepicture.png",
+		}, {
+			ID:        "12345abcde",
+			ApiKey:    "api_key_1",
+			DataBytes: 100,
+			CreatedAt: "2022-05-23 15:10:58.022+00:00",
+			Filename:  "textfile.txt",
 		},
 	}
 

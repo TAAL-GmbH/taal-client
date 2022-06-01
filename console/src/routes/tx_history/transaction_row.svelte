@@ -1,5 +1,5 @@
 <script>
-  import {GetFormatedTxDate, TruncateTxID, TxDataSize, TxFilename, GetColor} from './transaction_format_functions.svelte'
+  import {GetFormatedTxTimestamp, TruncateTxID, TxDataSize, TxFilename, GetColor} from './transaction_format_functions.svelte'
   import DownloadButton from './download_button.svelte'
   export let transaction
   export let distinctAPIKeys
@@ -9,7 +9,7 @@
 </script>
 
 <tr>
-  <td>{GetFormatedTxDate(transaction.created_at)}</td>
+  <td>{GetFormatedTxTimestamp(transaction.created_at)}</td>
   <td
     ><a href="https://www.whatsonchain.com/tx/{transaction.id}"
       >{TruncateTxID(transaction.id)}</a

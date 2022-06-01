@@ -26,7 +26,15 @@
       .then((blobUrl) => {
         if (txFilename == '') {
           var extension = mime.getExtension(contentType)
-          filename = txID + '.' + extension
+
+          var filenameSuffix
+          if (extension == null) {
+            filenameSuffix = ''
+          } else {
+            filenameSuffix = '.' + extension
+          }
+
+          filename = txID + filenameSuffix
         } else {
           filename = txFilename
         }
