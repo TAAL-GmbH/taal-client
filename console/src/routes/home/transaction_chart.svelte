@@ -62,8 +62,6 @@
         ],
       },
     }
-    console.log(chartLabels)
-    console.log(chartValues)
 
     const config = {
       type: 'line',
@@ -74,7 +72,9 @@
           {
             label: 'Transactions',
             borderColor: 'rgb(255, 99, 132)',
+            lineTension: '0.2',
             data: chartValues,
+            fill: false,
           },
         ],
       },
