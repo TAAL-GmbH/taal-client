@@ -1,9 +1,9 @@
 <script>
   import chartjs from 'chart.js'
-  import { GetFormatedTxDate } from '../tx_history/transaction_format_functions.svelte'
 
   let valueLabels = {}
   export let transactions
+  let reverseTxs
 
   let chartValues = []
   let chartLabels = []
@@ -15,29 +15,64 @@
     return self.indexOf(value) === index
   }
 
+  export function GetDateFromISODateString(dateString) {
+    var date = new Date(dateString)
+    return date.toISOString().split('T')[0]
+  }
+
   $: if (transactions.length > 0) {
-    chartLabels = transactions
-      .reverse()
-      .map((tx) => GetFormatedTxDate(tx.created_at))
+    reverseTxs = transactions.reverse()
+    
+    chartLabels = reverseTxs
+      .map((tx) => GetDateFromISODateString(tx.created_at))
       .filter(unique)
 
     chartLabels.forEach((element) => {
       valueLabels[element] = 0
     })
 
-    transactions.forEach(
-      (tx) => valueLabels[GetFormatedTxDate(tx.created_at)]++
+    reverseTxs.forEach(
+      (tx) => valueLabels[GetDateFromISODateString(tx.created_at)]++
     )
     chartValues = Object.values(valueLabels)
 
+    const options = {
+      responsive: true,
+      title: {
+        display: false,
+        text: 'Transaction history',
+      },
+      scales: {
+        yAxes: [
+          {
+            ticks: {
+              suggestedMin: 0,
+              suggestedMax: 10,
+            },
+          },
+        ],
+        xAxes: [
+          {
+            type: 'time',
+            distribution: 'linear',
+            time: {
+              unit: 'day',
+            },
+          },
+        ],
+      },
+    }
+    console.log(chartLabels)
+    console.log(chartValues)
+
     const config = {
       type: 'line',
+      options: options,
       data: {
         labels: chartLabels,
         datasets: [
           {
             label: 'Transactions',
-            // backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(255, 99, 132)',
             data: chartValues,
           },
