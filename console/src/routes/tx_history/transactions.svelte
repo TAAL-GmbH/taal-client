@@ -41,7 +41,7 @@
   }
 </script>
 
-<h1>Transactions</h1>
+<h1>Transaction History</h1>
 <div class="buttons has-addons is-left">
   <button class={classListViewButton} on:click={clickListViewButton}
     >List view</button

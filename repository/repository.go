@@ -69,7 +69,7 @@ func (r Repository) InsertTransaction(ctx context.Context, tx server.Transaction
 }
 
 func (r Repository) GetAllTransactions(ctx context.Context) ([]server.Transaction, error) {
-	query := `SELECT * FROM transactions;`
+	query := `SELECT * FROM transactions ORDER BY created_at DESC;`
 
 	txs := make([]server.Transaction, 0)
 
