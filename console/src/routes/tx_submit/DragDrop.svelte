@@ -1,56 +1,72 @@
 <script>
+  // FontAwesome icon...
+  import Fa from 'svelte-fa'
+  import { faFile, faUpload } from '@fortawesome/free-solid-svg-icons'
+
   let dropZone
+
+  let files
+
+  $: if (files) {
+    const a = []
+
+    readFile(files[0])
+      .then((data) => {
+        a.push({
+          file: files[0],
+          data,
+        })
+        arr = Object.assign([], a)
+      })
+      .catch((err) => {
+        a.push({
+          file: files[0],
+          error: err,
+        })
+        arr = Object.assign([], a)
+      })
+  }
+
+  let arr = []
+
+  $: console.log('aRR:', arr)
 
   let over = false
 
   function handleDragEnter(e) {
+    e.preventDefault()
     over = true
-    console.log('You are dragging over the ' + e.target.getAttribute('id'))
   }
 
   function handleDragLeave(e) {
+    e.preventDefault()
     over = false
-    console.log('You left the ' + e.target.getAttribute('id'))
   }
 
   async function handleDragDrop(e) {
     e.preventDefault()
 
     const data = e.dataTransfer
+    const fileList = await data.files
 
-    console.log('DATA:', data)
+    const a = []
 
-    const files = data.files
-    console.log('FILES:', files)
-
-    const arr = [...files].map(async (file) => {
-      console.log(file)
-
-      const data = await readFile(file)
-      return {
-        file,
-        data,
+    for (let i = 0; i < fileList.length; i++) {
+      try {
+        const data = await readFile(fileList[i])
+        a.push({
+          file: fileList[i],
+          data,
+        })
+      } catch (err) {
+        a.push({
+          file: fileList[i],
+          error: err,
+        })
       }
-    })
-    // for (let i = 0; i < files.length; i++) {
-    //   console.log(files[i])
+    }
 
-    //   readFile(files[i])
-    //     .then((data) => {
-    //       arr.push({
-    //         file: files[i],
-    //         data,
-    //       })
-    //     })
-    //     .catch((err) => {
-    //       arr.push({
-    //         file: files[i],
-    //         error: err,
-    //       })
-    //     })
-    // }
-
-    console.log('ARRAY:', arr)
+    arr = Object.assign([], a)
   }
 
   function readFile(file) {
@@ -60,7 +76,6 @@
       reader.onload = () => {
         const data = reader.result
         let view = new Uint8Array(data)
-        console.log(new TextDecoder('utf-8').decode(view))
         resolve(view)
       }
 
@@ -75,7 +90,7 @@
 
 <section class="columns is-mobile is-centered">
   <div
-    class="column is-8 droparea {over === true ? 'over' : ''}"
+    class="column is-8 droparea {over ? 'over' : ''}"
     on:dragenter={handleDragEnter}
     on:dragleave={handleDragLeave}
     on:drop={handleDragDrop}
@@ -83,23 +98,30 @@
     id="drop_zone"
     ondragover="return false"
   >
-    <i class="fas fa-images fa-3x" />
-    <p>
+    <Fa icon={faFile} size="3x" />
+    <p class="top">
       Upload something with the file dialog or by dragging and dropping files
       onto the dashed region
     </p>
     <p class="control is-small">Only certain types will be allowed.</p>
 
-    <!-- <div class="field is-grouped is-grouped-left">
-      <div class="control">
-        <button class="button is-primary" on:click={writeData}
-          >Submit transaction</button
-        >
-      </div>
-      <div class="control">
-        <button class="button is-light" on:click={reset}>Reset</button>
-      </div>
-    </div> -->
+    <label class="file-label top">
+      <input
+        class="file-input"
+        type="file"
+        id="file"
+        name="file"
+        capture
+        accept="image/*, audio/*, application/json, application/pdf, video/*, text/*"
+        bind:files
+      />
+      <span class="file-cta">
+        <span class="file-icon">
+          <Fa icon={faUpload} />
+        </span>
+        <span class="file-label"> Choose a file… </span>
+      </span>
+    </label>
   </div>
 </section>
 
@@ -117,8 +139,7 @@
     border-radius: 15px;
   }
 
-  i {
-    flex-grow: 1;
+  .top {
     padding-top: 1rem;
   }
 

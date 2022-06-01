@@ -212,30 +212,6 @@
           </div>
         </div>
       </div>
-      <div class="column">
-        <div class="field">
-          <label for="file">File</label>
-          <div class="file">
-            <label class="file-label">
-              <input
-                class="file-input"
-                type="file"
-                id="file"
-                name="file"
-                capture
-                accept="image/*, audio/*, application/json, application/pdf, video/*, text/*"
-                bind:files
-              />
-              <span class="file-cta">
-                <span class="file-icon">
-                  <i class="fas fa-upload" />
-                </span>
-                <span class="file-label"> Choose a file… </span>
-              </span>
-            </label>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </form>
@@ -252,11 +228,15 @@
     <button class="button is-light" on:click={reset}>Reset</button>
   </div>
 </div>
+
+<div class="pad">
+  <DragDrop {writeData} {reset} />
+</div>
+
 <div>
   <label for="curl">{curlCommandLabel}</label>
   <div class="field" id="curl">{curlCommand}</div>
 </div>
-<DragDrop />
 
 <style>
   .pad {

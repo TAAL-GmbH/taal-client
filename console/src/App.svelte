@@ -23,7 +23,6 @@
 
 <svelte:head>
   <link rel="stylesheet" href="/css/bulma.min.css" />
-  <link rel="stylesheet" href="/css/fontawesome.min.css" />
 </svelte:head>
 
 <Router {url}>
