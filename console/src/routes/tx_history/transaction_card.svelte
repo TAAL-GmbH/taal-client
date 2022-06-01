@@ -1,6 +1,6 @@
 <script>
   import DownloadButton from './download_button.svelte'
-  import {GetFormatedTxDate, TruncateTxID, TxDataSize, GetColor} from './transaction_format_functions.svelte'
+  import {GetFormatedTxTimestamp, TruncateTxID, TxDataSize, GetColor} from './transaction_format_functions.svelte'
   export let transaction
   export let distinctAPIKeys
 
@@ -18,7 +18,7 @@
             >
           </p>
           <p class="subtitle is-6">
-            Created at: {GetFormatedTxDate(transaction.created_at)}
+            Created at: {GetFormatedTxTimestamp(transaction.created_at)}
           </p>
           <p style={color} class="subtitle is-6">API Key: {transaction.api_key}</p>
           <p class="subtitle is-6">

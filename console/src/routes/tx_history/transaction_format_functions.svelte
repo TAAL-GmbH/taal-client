@@ -1,5 +1,5 @@
 <script context="module">
-  export function GetFormatedTxDate(dateString) {
+  export function GetFormatedTxTimestamp(dateString) {
     var date = new Date(dateString)
     var year = date.getUTCFullYear()
     var month = date.getUTCMonth() + 1 // month is zero indexed
@@ -8,6 +8,14 @@
     var minutes = date.getUTCMinutes()
     var seconds = date.getUTCSeconds()
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
+  }
+
+  export function GetFormatedTxDate(dateString) {
+    var date = new Date(dateString)
+    var year = date.getUTCFullYear()
+    var month = date.getUTCMonth() + 1 // month is zero indexed
+    var day = date.getUTCDate()
+    return `${year}-${month}-${day}`
   }
 
   export function TruncateTxID(str) {
