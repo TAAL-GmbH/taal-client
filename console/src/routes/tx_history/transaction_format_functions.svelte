@@ -25,7 +25,6 @@
     }
 
     var color = 'background-color: hsl(' + colorFactor + ', 100%, 85%);'
-    console.log(color)
     return color
   }
   export function TxDataSize(dataSizeBytes) {
