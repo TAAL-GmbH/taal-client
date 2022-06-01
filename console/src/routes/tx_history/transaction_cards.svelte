@@ -1,13 +1,14 @@
 <script>
   import Card from './transaction_card.svelte'
   export let transactions
+  export let distinctAPIKeys
 </script>
 
 {#if transactions}
 <div class="columns is-multiline">
 
   {#each transactions as transaction}
-    <Card {transaction} />
+    <Card {transaction} {distinctAPIKeys} />
   {/each}
 </div>
 {:else}

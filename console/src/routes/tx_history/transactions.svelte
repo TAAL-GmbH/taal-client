@@ -12,11 +12,19 @@
 
   let listViewSelected = true
 
+  let distinctAPIKeys = []
+
+  function unique(value, index, self) {
+    return self.indexOf(value) === index
+  }
+
   onMount(async () => {
     await fetch(`${BASE_URL}/api/v1/transactions/info`)
       .then((r) => r.json())
       .then((data) => {
         transactions = data.transactions
+        var apiKeys = transactions.map((a) => a.api_key)
+        distinctAPIKeys = apiKeys.filter(unique)
       })
   })
 
@@ -45,12 +53,13 @@
 
 {#if transactions}
   {#if listViewSelected}
-    <TransactionRows {transactions} />
+    <TransactionRows {transactions} {distinctAPIKeys} />
   {:else}
-    <Cards {transactions} />
+    <Cards {transactions} {distinctAPIKeys} />
   {/if}
 {:else}
   <p class="loading">loading...</p>
+  <button class='button is-loading'></button>
 {/if}
 
 <style>

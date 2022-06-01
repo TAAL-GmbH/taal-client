@@ -1,6 +1,7 @@
 <script>
 import TransactionRow from './transaction_row.svelte'
 export let transactions
+export let distinctAPIKeys
 
 </script>
 
@@ -17,7 +18,7 @@ export let transactions
     </thead>
     <tbody>
       {#each transactions as transaction}
-        <TransactionRow {transaction} />
+        <TransactionRow {transaction} {distinctAPIKeys} />
       {/each}
     </tbody>
   </table>

@@ -1,7 +1,10 @@
 <script>
-  import {GetFormatedTxDate, TruncateTxID, TxDataSize, TxFilename} from './transaction_format_functions.svelte'
+  import {GetFormatedTxDate, TruncateTxID, TxDataSize, TxFilename, GetColor} from './transaction_format_functions.svelte'
   import DownloadButton from './download_button.svelte'
   export let transaction
+  export let distinctAPIKeys
+
+  let color = GetColor(transaction.api_key, distinctAPIKeys)
 
 </script>
 
@@ -12,7 +15,7 @@
       >{TruncateTxID(transaction.id)}</a
     ></td
   >
-  <td>{transaction.api_key}</td>
+  <td style={color}>{transaction.api_key}</td>
   <td align="right">{TxDataSize(transaction.data_bytes)}</td>
   <td>{TxFilename(transaction.filename)}</td>
   <td
