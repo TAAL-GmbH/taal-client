@@ -1,9 +1,11 @@
 <script>
   import { onMount } from 'svelte'
-  import {TxDataSize} from '../tx_history/transaction_format_functions.svelte'
-  let transactions
+  import { TxDataSize } from '../tx_history/transaction_format_functions.svelte'
+  import TransactionChart from './transaction_chart.svelte'
+
+  let transactions = []
   let nrOfTransactions = 0
-  let combinedSize = 0.0
+  let combinedSize = 0
 
   onMount(async () => {
     await fetch(`${BASE_URL}/api/v1/transactions/info`)
@@ -11,11 +13,10 @@
       .then((data) => {
         transactions = data.transactions
         nrOfTransactions = transactions.length
-
-        var dataSizes = transactions.map((a) => a.data_bytes)
-        dataSizes.forEach(element => {
+        var dataSizes = transactions.map((tx) => tx.data_bytes)
+        dataSizes.forEach((element) => {
           combinedSize += element
-        });
+        })
       })
   })
 </script>
@@ -23,4 +24,5 @@
 <div class="field">
   <h1>Total number of transactions: {nrOfTransactions}</h1>
   <h1>Total size of transaction data: {TxDataSize(combinedSize)}</h1>
+  <TransactionChart bind:transactions />
 </div>

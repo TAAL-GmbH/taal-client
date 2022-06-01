@@ -1,13 +1,19 @@
 <script>
-    import Health from './health.svelte'
-    import TransactionStats from './transaction_stats.svelte'
+  import Health from './health.svelte'
+  import TransactionStats from './transaction_stats.svelte'
 </script>
 
 <main>
-    <h1>Status</h1>
-    <Health/>
-    <h1>Transaction stats</h1>
-    <TransactionStats/>
+  <div class="columns">
+    <div class="column is-three-quarters">
+      <h1>Transaction stats</h1>
+      <TransactionStats />
+    </div>
+    <div class="column ">
+      <h1>Status</h1>
+      <Health />
+    </div>
+  </div>
 </main>
 
 <style>

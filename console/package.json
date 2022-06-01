@@ -30,6 +30,7 @@
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "bulma": "^0.9.4",
+    "chart.js": "^2.9.4",
     "mdbsvelte": "^1.0.12",
     "mime": "^3.0.0",
     "sirv-cli": "^2.0.0",
