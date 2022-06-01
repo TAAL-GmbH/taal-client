@@ -14,6 +14,7 @@ export let distinctAPIKeys
         <th>API key used</th>
         <th>Data size</th>
         <th>Filename</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
