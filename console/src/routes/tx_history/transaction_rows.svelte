@@ -1,23 +1,24 @@
 <script>
 import TransactionRow from './transaction_row.svelte'
 export let transactions
+export let distinctAPIKeys
 
 </script>
 
 {#if transactions}
-  <table class="table">
+  <table class="table is-fullwidth">
     <thead>
       <tr>
-        <th>Created At (UTC)</th>
+        <th>Created at (UTC)</th>
         <th>ID</th>
-        <th>API Key used</th>
+        <th>API key used</th>
         <th>Data size</th>
         <th>Filename</th>
       </tr>
     </thead>
     <tbody>
       {#each transactions as transaction}
-        <TransactionRow {transaction} />
+        <TransactionRow {transaction} {distinctAPIKeys} />
       {/each}
     </tbody>
   </table>

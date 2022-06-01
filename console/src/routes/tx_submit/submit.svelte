@@ -20,17 +20,16 @@
   let data
   let filename = ''
 
-  let inputDataDisabled = false
-  let inputMimeTypeDisabled = false
-
   let curlCommand = ''
   let curlCommandLabel = ''
 
-  let files
+  let files = null
   let file = null
   let fileData = null
 
   $: tagString = tag ? tag : ''
+  $: submitButtonIsDisabled = data == '' || mimeType == '' || apiKey == ''
+  $: inputDataDisabled = files != null
 
   $: if (files != null) {
     file = files[0]
@@ -47,9 +46,6 @@
       data = `< ${file.name} >`
     }
 
-    inputDataDisabled = true
-    inputMimeTypeDisabled = true
-
     const fr = new FileReader()
     fr.onload = function () {
       fileData = fr.result
@@ -60,8 +56,6 @@
   $: if (files == null) {
     data = ''
     fileData = null
-    inputDataDisabled = false
-    inputMimeTypeDisabled = false
     mimeType = stdMimeType
   }
 
@@ -96,6 +90,8 @@
 
   function reset() {
     files = null
+    data = ''
+    mimeType = stdMimeType
   }
 
   function writeData() {
@@ -190,7 +186,7 @@
               class="input"
               type="text"
               bind:value={mimeType}
-              disabled={inputMimeTypeDisabled}
+              disabled={inputDataDisabled}
             />
           </div>
         </div>
@@ -222,8 +218,10 @@
 
 <div class="field is-grouped is-grouped-left">
   <div class="control">
-    <button class="button is-primary" on:click={writeData}
-      >Submit transaction</button
+    <button
+      class="button is-primary"
+      on:click={writeData}
+      disabled={submitButtonIsDisabled}>Submit transaction</button
     >
   </div>
   <div class="control">

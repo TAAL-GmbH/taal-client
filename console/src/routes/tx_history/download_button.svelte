@@ -1,6 +1,9 @@
 <script>
   let contentType
   let filename
+
+  import mime from 'mime'
+
   export let txID
   export let txApiKey
   export let txFilename
@@ -22,11 +25,10 @@
       .then((blob) => URL.createObjectURL(blob))
       .then((blobUrl) => {
         if (txFilename == '') {
-          console.log(contentType)
-
-          filename = txID
+          var extension = mime.getExtension(contentType)
+          filename = txID + '.' + extension
         } else {
-          filename =txFilename
+          filename = txFilename
         }
 
         var a = document.createElement('a')

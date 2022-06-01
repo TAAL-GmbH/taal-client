@@ -44,6 +44,8 @@
             position: 'bottom-left',
             type: 'success',
           })
+
+          closeModal()
           return res.json()
         }
       })

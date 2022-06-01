@@ -15,6 +15,18 @@
     return str.length > n ? str.slice(0, 5) + '...' + str.slice(-5) : str
   }
 
+  export function GetColor(apiKey, distinctAPIKeys) {
+    var colorFactor = 0
+    if (distinctAPIKeys.length > 1) {
+      var index = distinctAPIKeys.indexOf(apiKey)
+      var part = 360 / distinctAPIKeys.length
+
+      colorFactor = index * part
+    }
+
+    var color = 'background-color: hsl(' + colorFactor + ', 100%, 85%);'
+    return color
+  }
   export function TxDataSize(dataSizeBytes) {
     var nrOfDigits = dataSizeBytes.toString().length
     if (nrOfDigits >= 10) {
@@ -43,7 +55,5 @@
     }
 
     return filename
-
   }
-
 </script>
