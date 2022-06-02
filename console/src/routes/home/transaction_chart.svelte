@@ -23,7 +23,7 @@
   }
 
   $: if (transactions.length > 0) {
-    reverseTxs = transactions.reverse()
+    reverseTxs = transactions.reverse() // Order of time axis is ascending
 
     chartLabels = reverseTxs
       .map((tx) => GetDateFromISODateString(tx.created_at))
@@ -68,7 +68,7 @@
             },
             ticks: {
               fontSize: fontSize,
-            }
+            },
           },
         ],
       },
@@ -81,7 +81,7 @@
         labels: chartLabels,
         datasets: [
           {
-            label: 'Transactions',
+            label: 'Transactions per day',
             borderColor: 'rgb(255, 99, 132)',
             lineTension: '0.2',
             data: chartValues,
