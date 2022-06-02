@@ -91,7 +91,7 @@
     } else if (data) {
       curl += `  -d '${data}' \\\n"`
     }
-    curl += `${url}`
+    curl += `${url}/api/v1/write`
 
     curlCommand = curl
   }
