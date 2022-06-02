@@ -39,7 +39,8 @@ export default {
   },
   plugins: [
     replace({
-      BASE_URL: production ? JSON.stringify('') : JSON.stringify('http://localhost:9500')
+      BASE_URL: production ? JSON.stringify('') : JSON.stringify('http://localhost:9500'),
+      preventAssignment: true
     }),
 
     svelte({

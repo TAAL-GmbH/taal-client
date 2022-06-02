@@ -211,7 +211,7 @@ func (c *Client) SubmitTransactions(apiKey string, feeTx *bt.Tx, dataTx *bt.Tx) 
 	return nil
 }
 
-func (c *Client) ReadTransaction(apiKey string, transactionID string) (io.ReadCloser, string, error) {
+func (c *Client) ReadTransaction(ctx context.Context, apiKey string, transactionID string) (io.ReadCloser, string, error) {
 
 	req, err := http.NewRequest(
 		http.MethodGet,
@@ -222,8 +222,6 @@ func (c *Client) ReadTransaction(apiKey string, transactionID string) (io.ReadCl
 		return nil, "", fmt.Errorf("failed to create request: %w", err)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
-	defer cancel()
 	req = req.WithContext(ctx)
 
 	req.Header.Set("Authorization", apiKey)

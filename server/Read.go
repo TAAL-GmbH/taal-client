@@ -16,7 +16,7 @@ func (s Server) read(c echo.Context) error {
 
 	apiKey := strings.Replace(authHeader, "Bearer ", "", 1)
 
-	readerCloser, contentType, err := s.taal.ReadTransaction(apiKey, c.Param("txid"))
+	readerCloser, contentType, err := s.taal.ReadTransaction(c.Request().Context(), apiKey, c.Param("txid"))
 	if err != nil {
 		return s.sendError(c, http.StatusBadRequest, errReadTx, errors.Wrap(err, "failed to get transaction"))
 	}

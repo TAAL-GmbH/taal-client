@@ -4,7 +4,11 @@
 
   import { onMount } from 'svelte'
   import { getNotificationsContext } from 'svelte-notifications'
-  import DragDrop from './DragDrop.svelte'
+  import Clipboard from 'svelte-clipboard'
+
+  // FontAwesome icon...
+  import Fa from 'svelte-fa'
+  import { faCopy } from '@fortawesome/free-solid-svg-icons'
 
   let keys
   let selectedApiKey
@@ -14,18 +18,19 @@
 
   let apiKey
   let taalClientURL = 'http://localhost:9500'
-  let tag
+  let tag = ''
   let tagString = ''
   let mimeType = stdMimeType
   let data
   let filename = ''
 
   let curlCommand = ''
-  let curlCommandLabel = ''
 
   let files = null
   let file = null
   let fileData = null
+
+  $: showCurl(apiKey, mimeType, tagString, data, taalClientURL)
 
   $: tagString = tag ? tag : ''
   $: submitButtonIsDisabled = data == '' || mimeType == '' || apiKey == ''
@@ -60,7 +65,9 @@
   }
 
   onMount(async () => {
-    tag = localStorage.getItem('tag')
+    if (localStorage.getItem('tag') !== 'null') {
+      tag = localStorage.getItem('tag')
+    }
     apiKey = localStorage.getItem('apiKey')
 
     const r = await fetch(`${BASE_URL}/api/v1/apikeys`)
@@ -74,18 +81,19 @@
   }
 
   function showCurl(key, type, tag, data, url) {
-    let curl = 'curl -X POST'
-    if (key) curl += ` -H 'Authorization: Bearer ${key}'`
-    if (type) curl += ` -H 'Content-Type: ${type}'`
-    if (tag) curl += ` -H 'X-Tag: ${tag}'`
+    let curl = 'curl \\\n  -X POST \\\n'
+    if (key) curl += `  -H 'Authorization: Bearer ${key}' \\\n`
+    if (type) curl += `  -H 'Content-Type: ${type}' \\\n`
+    if (tag) curl += `  -H 'X-Tag: ${tag}' \\\n`
 
     if (file) {
-      curl += ` --data-binary @${file.name}`
-    } else if (data) curl += ` -d "${data}"`
-    curl += ` ${url}`
+      curl += `  --data-binary @${file.name} \\\n`
+    } else if (data) {
+      curl += `  -d '${data}' \\\n"`
+    }
+    curl += `${url}`
 
     curlCommand = curl
-    curlCommandLabel = 'Curl command: '
   }
 
   function reset() {
@@ -212,6 +220,54 @@
           </div>
         </div>
       </div>
+      <div class="column">
+        <div class="field">
+          <label for="file">File</label>
+          <div class="file">
+            <label class="file-label">
+              <input
+                class="file-input"
+                type="file"
+                id="file"
+                name="file"
+                capture
+                accept="image/*, audio/*, application/json, application/pdf, video/*, text/*"
+                bind:files
+              />
+              <span class="file-cta">
+                <span class="file-icon">
+                  <i class="fas fa-upload" />
+                </span>
+                <span class="file-label"> Choose a file… </span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<form class="panel">
+  <p class="panel-heading">
+    cURL command
+    <Clipboard
+      text={curlCommand}
+      let:copy
+      on:copy={() => {
+        console.log('Has Copied')
+      }}
+    >
+      <button class="button is-small" on:click={copy}
+        ><Fa icon={faCopy} />
+      </button>
+    </Clipboard>
+  </p>
+  <div class="panel-body pad">
+    <div class="columns">
+      <div class="column">
+        <pre class="field" id="curl">{curlCommand}</pre>
+      </div>
     </div>
   </div>
 </form>
@@ -228,18 +284,14 @@
     <button class="button is-light" on:click={reset}>Reset</button>
   </div>
 </div>
-
-<div class="pad">
-  <DragDrop {writeData} {reset} />
-</div>
-
-<div>
-  <label for="curl">{curlCommandLabel}</label>
-  <div class="field" id="curl">{curlCommand}</div>
-</div>
+<div id="clipboard" />
 
 <style>
   .pad {
     padding: 20px;
+  }
+
+  pre {
+    background: none;
   }
 </style>
