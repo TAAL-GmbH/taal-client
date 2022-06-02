@@ -2,29 +2,44 @@
   import { onMount } from 'svelte'
   import Fa from 'svelte-fa'
   import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons'
+  import Input from './Input.svelte'
 
   import { listen } from 'svelte/internal'
 
   let settings = {}
+
+  onMount(async () => {
+    const res = await fetch(`${BASE_URL}/api/v1/settings`)
+    settings = await res.json()
+
+    console.log('SETTINGS', JSON.stringify(settings, null, 2))
+  })
+
   let showPassword = false
 
   function toggleShowPassword() {
     showPassword = !showPassword
   }
 
-  onMount(async () => {
-    const res = await fetch(`${BASE_URL}/api/v1/settings`)
-    settings = await res.json()
-  })
-
   function toggleDebugServer() {
     settings.debugServer = !settings.debugServer
-    saveSetting('debugServer')
+    saveSetting('debugServer', settings.debugServer)
   }
 
-  async function saveSetting(key, val) {
+  function updateSetting(key, value) {
+    saveSetting(key, value)
+      .then(() => {
+        console.log('Saved', key, value)
+        settings[key] = value
+      })
+      .catch((err) => {
+        console.log('ERROR', err)
+      })
+  }
+
+  async function saveSetting(key, value) {
     try {
-      await fetch(`${BASE_URL}/api/v1/settings/${key}/${settings[key]}`, {
+      await fetch(`${BASE_URL}/api/v1/settings/${key}/${value}`, {
         method: 'PUT',
       })
 
@@ -49,75 +64,29 @@
 <form class="panel">
   <p class="panel-heading">Server settings</p>
   <div class="panel-body pad">
-    <div class="field is-horizontal">
-      <div class="field-label is-normal has-text-left">
-        <label for="listenAddress" class="label">Listen address:</label>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <p class="control">
-            <input
-              id="listenAddress"
-              class="input"
-              type="text"
-              placeholder="localhost:9500"
-              value={settings.listenAddress}
-            />
-          </p>
-        </div>
-      </div>
-    </div>
-    <p class="content is-small">
-      TaalClient will listen on the specified address. The default is
-      "localhost:9500" To bind to all interfaces on your machine, omit the host
-      part and only specify the port, for example ":9500".
-    </p>
+    <Input
+      label="Listen address"
+      description="TaalClient will listen on the specified address. The default is localhost:9500. To bind to all interfaces on your machine, omit the host part and only specify the port, for example &quot;:9500&quot;."
+      value={settings.listenAddress}
+      placeholder="localhost:9500"
+      updateFn={updateSetting.bind(this, 'listenAddress')}
+    />
 
-    <div class="field is-horizontal">
-      <div class="field-label is-normal has-text-left">
-        <label for="taalUrl" class="label">Taal URL:</label>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <p class="control">
-            <input
-              id="taalUrl"
-              class="input"
-              type="text"
-              placeholder="https://api.taal.com"
-              value={settings.taalUrl}
-            />
-          </p>
-        </div>
-      </div>
-    </div>
-    <p class="content is-small">
-      TaalClient communicates with Taal API servers which are hosted at
-      https://api.taal.com.
-    </p>
+    <Input
+      label="Taal URL"
+      description="TaalClient communicates with Taal API servers which are hosted at https://api.taal.com."
+      value={settings.taalUrl}
+      placeholder="https://api.taal.com"
+      updateFn={updateSetting.bind(this, 'taalUrl')}
+    />
 
-    <div class="field is-horizontal">
-      <div class="field-label is-normal has-text-left">
-        <label for="timeout" class="label">Taal timeout:</label>
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <p class="control">
-            <input
-              id="timeout"
-              class="input"
-              type="text"
-              placeholder="10s"
-              value={settings.taalTimeout}
-            />
-          </p>
-        </div>
-      </div>
-    </div>
-    <p class="content is-small">
-      The default timeout is 10s (10 seconds). This settings can be provided a
-      milliseconds (ms), seconds (s) or minutes (m).
-    </p>
+    <Input
+      label="Taal timeout"
+      description="The default timeout is 10s (10 seconds). This settings can be provided a milliseconds (ms), seconds (s) or minutes (m)."
+      value={settings.taalTimeout}
+      placeholder="10s"
+      updateFn={updateSetting.bind(this, 'taalTimeout')}
+    />
 
     <div class="field is-horizontal">
       <div class="field-label is-normal has-text-left">
@@ -182,100 +151,45 @@
     </div>
 
     {#if settings.dbType === 'sqlite'}
-      <div class="field is-horizontal">
-        <div class="field-label is-normal has-text-left">
-          <label for="filename" class="label">Filename:</label>
-        </div>
-        <div class="field-body">
-          <div class="field">
-            <p class="control">
-              <input
-                id="filename"
-                class="input"
-                type="text"
-                placeholder="./taal_client.db"
-                value={settings.dbFilename}
-              />
-            </p>
-          </div>
-        </div>
-      </div>
+      <Input
+        label="Filename"
+        description=""
+        value={settings.dbFilename}
+        placeholder="./taal_client.db"
+        updateFn={updateSetting.bind(this, 'dbFilename')}
+      />
     {:else}
-      <div class="field is-horizontal">
-        <div class="field-label is-normal has-text-left">
-          <label for="host" class="label">Host:</label>
-        </div>
-        <div class="field-body">
-          <div class="field">
-            <p class="control">
-              <input
-                id="host"
-                class="input"
-                type="text"
-                placeholder="localhost"
-                value={settings.dbHost}
-              />
-            </p>
-          </div>
-        </div>
-      </div>
+      <Input
+        label="Host"
+        description=""
+        value={settings.dbHost}
+        placeholder="localhost"
+        updateFn={updateSetting.bind(this, 'dbHost')}
+      />
 
-      <div class="field is-horizontal">
-        <div class="field-label is-normal has-text-left">
-          <label for="port" class="label">Port:</label>
-        </div>
-        <div class="field-body">
-          <div class="field">
-            <p class="control">
-              <input
-                id="port"
-                class="input"
-                type="text"
-                placeholder="5432"
-                value={settings.dbPort}
-              />
-            </p>
-          </div>
-        </div>
-      </div>
+      <Input
+        label="Port"
+        description=""
+        value={settings.dbPort}
+        placeholder="5432"
+        updateFn={updateSetting.bind(this, 'dbPort')}
+      />
 
-      <div class="field is-horizontal">
-        <div class="field-label is-normal has-text-left">
-          <label for="name" class="label">Database name:</label>
-        </div>
-        <div class="field-body">
-          <div class="field">
-            <p class="control">
-              <input
-                id="name"
-                class="input"
-                type="text"
-                placeholder="taal_client"
-                value={settings.dbName}
-              />
-            </p>
-          </div>
-        </div>
-      </div>
+      <Input
+        label="Database name"
+        description=""
+        value={settings.dbName}
+        placeholder="taal_client"
+        updateFn={updateSetting.bind(this, 'dbName')}
+      />
 
-      <div class="field is-horizontal">
-        <div class="field-label is-normal has-text-left">
-          <label for="username" class="label">Username:</label>
-        </div>
-        <div class="field-body">
-          <div class="field">
-            <p class="control">
-              <input
-                id="username"
-                class="input"
-                type="text"
-                placeholder="database username"
-                value={settings.dbUsername}
-              />
-            </p>
-          </div>
-        </div>
-      </div>
+      <Input
+        label="Username"
+        description=""
+        value={settings.dbUsername}
+        placeholder="database username"
+        updateFn={updateSetting.bind(this, 'dbUsername')}
+      />
 
       <div class="field is-horizontal">
         <div class="field-label is-normal has-text-left">
@@ -295,6 +209,7 @@
                 type={showPassword ? 'text' : 'password'}
                 placeholder="database password"
                 value={settings.dbPassword}
+                on:input={updateSetting.bind(this, 'dbPassword')}
               />
             </p>
           </div>
