@@ -122,7 +122,7 @@
   }
 
   function writeData() {
-    debugger
+
     const url = `${BASE_URL}/api/v1/transactions`
 
     arr.forEach((a) => {
