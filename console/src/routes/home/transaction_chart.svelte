@@ -15,6 +15,8 @@
     return self.indexOf(value) === index
   }
 
+  const fontSize = 18
+
   export function GetDateFromISODateString(dateString) {
     var date = new Date(dateString)
     return date.toISOString().split('T')[0]
@@ -22,7 +24,7 @@
 
   $: if (transactions.length > 0) {
     reverseTxs = transactions.reverse()
-    
+
     chartLabels = reverseTxs
       .map((tx) => GetDateFromISODateString(tx.created_at))
       .filter(unique)
@@ -47,7 +49,13 @@
           {
             ticks: {
               suggestedMin: 0,
-              suggestedMax: 10,
+              suggestedMax: 7,
+              fontSize: fontSize,
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Number of transactions',
+              fontSize: fontSize,
             },
           },
         ],
@@ -58,13 +66,16 @@
             time: {
               unit: 'day',
             },
+            ticks: {
+              fontSize: fontSize,
+            }
           },
         ],
       },
     }
 
     const config = {
-      type: 'line',
+      type: 'bar',
       options: options,
       data: {
         labels: chartLabels,
