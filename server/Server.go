@@ -98,7 +98,7 @@ func New(address string, taal *client.Client, repo Repository) Server {
 	group.GET("/apikeys", s.getApiKeys)
 
 	group.GET("/settings", s.getSettings)
-	group.PUT("/settings/:key/:val", s.putSetting)
+	group.PUT("/settings", s.putSetting)
 
 	group.POST("/transactions", s.write)
 	group.GET("/transactions/:txid", s.read)

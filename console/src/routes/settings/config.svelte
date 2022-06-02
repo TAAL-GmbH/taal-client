@@ -39,8 +39,15 @@
 
   async function saveSetting(key, value) {
     try {
-      await fetch(`${BASE_URL}/api/v1/settings/${key}/${value}`, {
+      await fetch(`${BASE_URL}/api/v1/settings`, {
         method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          key,
+          value,
+        }),
       })
 
       addNotification({

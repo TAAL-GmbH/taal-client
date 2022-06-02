@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	lineRegex = regexp.MustCompile(`^(\s*)(\w+)(\s*=\s*)(\w+){0,1}(\s*)(#.*)*$`)
+	lineRegex = regexp.MustCompile(`^(\s*)(\S+)(\s*=\s*)(\S+){0,1}(\s*)(#.*)*$`)
 )
 
 func (s Server) getSettings(c echo.Context) error {
@@ -26,15 +26,22 @@ func (s Server) getSettings(c echo.Context) error {
 	return c.Blob(http.StatusOK, echo.MIMEApplicationJSON, b)
 }
 
-func (s Server) putSetting(c echo.Context) error {
-	key := c.Param("key")
-	val := c.Param("val")
+type setting struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
 
-	if err := updateSettings(key, val); err != nil {
+func (s Server) putSetting(c echo.Context) error {
+	set := new(setting)
+	if err := c.Bind(set); err != nil {
+		return s.sendError(c, http.StatusInternalServerError, 21, err)
+	}
+
+	if err := updateSettings(set.Key, set.Value); err != nil {
 		return s.sendError(c, http.StatusInternalServerError, 22, err)
 	}
 
-	settings.Set(key, val)
+	settings.Set(set.Key, set.Value)
 
 	return c.String(http.StatusOK, "OK")
 }
@@ -68,6 +75,8 @@ func updateSettings(key, value string) error {
 
 	written := false
 	_ = written
+
+	value = strings.TrimSpace(value)
 
 	scanner := bufio.NewScanner(r)
 
