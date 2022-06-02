@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte'
 
-  import HealthStatus from './health_status/health_status.svelte'
+  import HealthStatus from './health_status.svelte'
 
   let serverStatus = statusPending
   let dbStatus = statusPending

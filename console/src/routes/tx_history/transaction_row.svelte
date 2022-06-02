@@ -9,16 +9,16 @@
 </script>
 
 <tr>
-  <td>{GetFormatedTxTimestamp(transaction.created_at)}</td>
-  <td
+  <td class="is-vcentered">{GetFormatedTxTimestamp(transaction.created_at)}</td>
+  <td class="is-vcentered"
     ><a href="https://www.whatsonchain.com/tx/{transaction.id}"
       >{TruncateTxID(transaction.id)}</a
     ></td
   >
-  <td style={color}>{transaction.api_key}</td>
-  <td align="right">{TxDataSize(transaction.data_bytes)}</td>
-  <td>{TxFilename(transaction.filename)}</td>
-  <td
+  <td class="is-vcentered" style={color}>{transaction.api_key}</td>
+  <td class="is-vcentered" align="right">{TxDataSize(transaction.data_bytes)}</td>
+  <td class="is-vcentered">{TxFilename(transaction.filename)}</td>
+  <td class="is-vcentered"
     ><DownloadButton
       txFilename={transaction.filename}
       txApiKey={transaction.api_key}
