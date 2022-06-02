@@ -42,10 +42,10 @@
 </script>
 
 <div class="field">
-  <label for="serverStatus">Server status: </label>
+  <label for="serverStatus">Server</label>
   <HealthStatus id="serverStatus" status={serverStatus} />
 </div>
 <div class="field">
-  <label for="dbStatus">DB status: </label>
+  <label for="dbStatus">DB Connection</label>
   <HealthStatus id="dbStatus" status={dbStatus} />
 </div>
