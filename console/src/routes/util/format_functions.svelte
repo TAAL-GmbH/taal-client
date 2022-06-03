@@ -41,6 +41,11 @@
     return numberWithCommas(dataSizeBytes) + ' B'
   }
 
+  export function GetDateFromISODateString(dateString) {
+    var date = new Date(dateString)
+    return date.toISOString().split('T')[0]
+  }
+  
   function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }

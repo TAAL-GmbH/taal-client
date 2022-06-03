@@ -1,6 +1,6 @@
 <script>
   import DownloadButton from './download_button.svelte'
-  import {GetFormatedTxTimestamp, TruncateTxID, TxDataSize, GetColor} from './transaction_format_functions.svelte'
+  import {GetFormatedTxTimestamp, TruncateTxID, TxDataSize, GetColor} from '../util/format_functions.svelte'
   export let transaction
   export let distinctAPIKeys
 

@@ -1,8 +1,11 @@
 <script>
   import chartjs from 'chart.js'
   import { onMount } from 'svelte'
+  import {GetDateFromISODateString} from '../util/format_functions.svelte'
 
   export let transactions
+  export let valueFunction = () =>{}
+  export let valueLabel = ''
 
   let chartValues = []
   let chartLabels = []
@@ -33,7 +36,7 @@
           },
           scaleLabel: {
             display: true,
-            labelString: 'Number of transactions',
+            labelString: valueLabel,
             fontSize: fontSize,
           },
         },
@@ -54,11 +57,6 @@
   }
 
   const fontSize = 18
-
-  export function GetDateFromISODateString(dateString) {
-    var date = new Date(dateString)
-    return date.toISOString().split('T')[0]
-  }
 
   onMount(() => {
     var today = new Date()
@@ -112,9 +110,7 @@
         valueLabels[element] = 0
       })
 
-      reverseTxs.forEach(
-        (tx) => valueLabels[GetDateFromISODateString(tx.created_at)]++
-      )
+      valueFunction(reverseTxs, valueLabels)
       chartValues = Object.values(valueLabels)
     }
 
@@ -126,4 +122,4 @@
   $: OnTransactionsChange(transactions)
 </script>
 
-<canvas bind:this={chartCanvas} id="transactionsChart" />
+<canvas width="200" height="60" bind:this={chartCanvas} id="transactionsChart" />
