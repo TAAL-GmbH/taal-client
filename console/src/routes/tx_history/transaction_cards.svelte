@@ -8,7 +8,7 @@
 <div class="columns is-multiline">
 
   {#each transactions as transaction}
-    <Card {transaction} {distinctAPIKeys} />
+    <Card transaction={transaction} distinctAPIKeys={distinctAPIKeys} />
   {/each}
 </div>
 {:else}

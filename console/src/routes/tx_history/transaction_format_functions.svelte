@@ -20,7 +20,7 @@
       colorFactor = index * part
     }
 
-    var color = 'background-color: hsl(' + colorFactor + ', 100%, 85%);'
+    var color = 'background-color: hsl(' + colorFactor + ', 100%, 90%);'
     return color
   }
   export function TxDataSize(dataSizeBytes) {
