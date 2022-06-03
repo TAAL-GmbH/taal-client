@@ -5,8 +5,7 @@
   import TransactionRows from './transaction_rows.svelte'
   import Cards from './transaction_cards.svelte'
   import TransactionsInfo from '../util/transactions_info.svelte'
-  import {setButtonClassIsSuccess} from '../util/control_functions.svelte'
-
+  import { setButtonClassIsSuccess } from '../util/control_functions.svelte'
 
   let transactions
   let distinctAPIKeys = []

@@ -1,11 +1,21 @@
 <script>
-  import {GetFormatedTxTimestamp, TruncateTxID, TxDataSize, TxFilename, GetColor} from '../util/format_functions.svelte'
+  import {
+    GetFormatedTxTimestamp,
+    TruncateTxID,
+    TxDataSize,
+    TxFilename,
+    GetColor,
+  } from '../util/format_functions.svelte'
   import DownloadButton from './download_button.svelte'
   export let transaction
   export let distinctAPIKeys
 
-  let color = GetColor(transaction.api_key, distinctAPIKeys)
+  let color
+  function OnDistinctKeyChange(distinctKeys) {
+    color = GetColor(transaction.api_key, distinctKeys)
+  }
 
+  $: OnDistinctKeyChange(distinctAPIKeys)
 </script>
 
 <tr>
@@ -16,7 +26,9 @@
     ></td
   >
   <td class="is-vcentered" style={color}>{transaction.api_key}</td>
-  <td class="is-vcentered" align="right">{TxDataSize(transaction.data_bytes)}</td>
+  <td class="is-vcentered" align="right"
+    >{TxDataSize(transaction.data_bytes)}</td
+  >
   <td class="is-vcentered">{TxFilename(transaction.filename)}</td>
   <td class="is-vcentered"
     ><DownloadButton
