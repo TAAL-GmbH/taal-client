@@ -45,6 +45,7 @@
     <TransactionChart
       valueLabel="Number of transactions in time"
       valueFunction={countElements}
+      datasetLabel="# Tx"
       bind:transactions
     />
   </div>
@@ -53,10 +54,12 @@
     <TransactionChart
       valueLabel="Transaction size [byte]"
       valueFunction={sumDataSize}
+      datasetLabel="Tx data size"
       bind:transactions
     />
   </div>
 </div>
+
 <style>
   h1 {
     font-size: 1em;

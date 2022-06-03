@@ -6,6 +6,7 @@
   export let transactions
   export let valueFunction = () =>{}
   export let valueLabel = ''
+  export let datasetLabel = ''
 
   let chartValues = []
   let chartLabels = []
@@ -76,7 +77,7 @@
         labels: initialChartLabels,
         datasets: [
           {
-            label: 'Transactions per day',
+            label: datasetLabel,
             borderColor: 'rgb(255, 99, 132)',
             lineTension: '0.2',
             data: initialChartValues,
