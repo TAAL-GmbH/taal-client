@@ -25,4 +25,6 @@ const (
 	errAPIKeysRevoke                            = 26
 	errGetTransactions                          = 27
 	errHearlthDB                                = 28
+	errGetTransactionsHoursBackMustBeInteger    = 29
+	errGetTransactionsHoursBackMustBePositive   = 30
 )

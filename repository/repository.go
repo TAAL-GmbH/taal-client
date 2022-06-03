@@ -68,12 +68,15 @@ func (r Repository) InsertTransaction(ctx context.Context, tx server.Transaction
 	return err
 }
 
-func (r Repository) GetAllTransactions(ctx context.Context) ([]server.Transaction, error) {
-	query := `SELECT * FROM transactions ORDER BY created_at DESC;`
+func (r Repository) GetAllTransactions(ctx context.Context, hoursBack int) ([]server.Transaction, error) {
+	now := r.now()
+
+	timeBack := now.Add(-1 * time.Duration(hoursBack) * time.Hour).UTC().Format(ISO8601)
+	query := `SELECT * FROM transactions WHERE created_at >= ? ORDER BY created_at DESC;`
 
 	txs := make([]server.Transaction, 0)
 
-	err := r.db.SelectContext(ctx, &txs, query)
+	err := r.db.SelectContext(ctx, &txs, query, timeBack)
 	if err != nil {
 		return nil, err
 	}
