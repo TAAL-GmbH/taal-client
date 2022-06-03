@@ -1,4 +1,5 @@
 <script>
+  import {setButtonClassIsSuccess} from './control_functions.svelte'
   export let transactions = []
 
   let filterButtonClasses = [
@@ -12,17 +13,6 @@
   const hours30d = 720
 
   let hoursBack = hours24h
-
-  function setButtonClassIsSuccess(setIndex, buttonArray) {
-    for (let index = 0; index < buttonArray.length; index++) {
-      if (index == setIndex) {
-        buttonArray[index] = 'button is-success'
-        continue
-      }
-      buttonArray[index] = 'button'
-    }
-    return buttonArray
-  }
 
   function click24Hours(e) {
     hoursBack = hours24h
