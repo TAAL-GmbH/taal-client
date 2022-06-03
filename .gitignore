@@ -6,3 +6,5 @@ taal-client
 node_modules/
 repository.db
 localdata/
+settings.conf.old
+settings.conf.tmp
