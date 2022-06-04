@@ -2,54 +2,52 @@
   // svelte-ignore unused-export-let
   export let location
 
-  import { onMount } from 'svelte'
   import TransactionRows from './transaction_rows.svelte'
   import Cards from './transaction_cards.svelte'
+  import TransactionsInfo from '../util/transactions_info.svelte'
+  import { setButtonClassIsSuccess } from '../util/control_functions.svelte'
 
   let transactions
-  let classListViewButton = 'button is-success is-selected'
-  let classGridViewButton = 'button'
-
-  let listViewSelected = true
-
   let distinctAPIKeys = []
+
+  let viewButtonClasses = ['button is-success is-selected', 'button']
+  let listViewSelected = true
 
   function unique(value, index, self) {
     return self.indexOf(value) === index
   }
 
-  onMount(async () => {
-    await fetch(`${BASE_URL}/api/v1/transactions/info`)
-      .then((r) => r.json())
-      .then((data) => {
-        transactions = data.transactions
-        var apiKeys = transactions.map((a) => a.api_key)
-        distinctAPIKeys = apiKeys.filter(unique)
-      })
-  })
-
   function clickListViewButton(e) {
-    classListViewButton = 'button is-success is-selected'
-    classGridViewButton = 'button'
     listViewSelected = true
+    viewButtonClasses = setButtonClassIsSuccess(0, viewButtonClasses)
   }
 
   function clickGridViewButton(e) {
-    classListViewButton = 'button'
-    classGridViewButton = 'button is-success is-selected'
     listViewSelected = false
+    viewButtonClasses = setButtonClassIsSuccess(1, viewButtonClasses)
   }
+
+  function onChangeTransactions(transactions) {
+    if (transactions == null) {
+      return
+    }
+    var apiKeys = transactions.map((a) => a.api_key)
+    distinctAPIKeys = apiKeys.filter(unique)
+  }
+
+  $: onChangeTransactions(transactions)
 </script>
 
 <h1>Transaction History</h1>
 <div class="buttons has-addons is-left">
-  <button class={classListViewButton} on:click={clickListViewButton}
+  <button class={viewButtonClasses[0]} on:click={clickListViewButton}
     >List view</button
   >
-  <button class={classGridViewButton} on:click={clickGridViewButton}
+  <button class={viewButtonClasses[1]} on:click={clickGridViewButton}
     >Grid view</button
   >
 </div>
+<TransactionsInfo bind:transactions />
 
 {#if transactions}
   {#if listViewSelected}
@@ -59,7 +57,7 @@
   {/if}
 {:else}
   <p class="loading">loading...</p>
-  <button class='button is-loading'></button>
+  <button class="button is-loading" />
 {/if}
 
 <style>
@@ -67,5 +65,9 @@
     font-size: 1.4em;
     font-weight: bold;
     display: block;
+  }
+
+  button {
+    min-width: 100px;
   }
 </style>

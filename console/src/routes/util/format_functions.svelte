@@ -20,7 +20,7 @@
       colorFactor = index * part
     }
 
-    var color = 'background-color: hsl(' + colorFactor + ', 100%, 85%);'
+    var color = 'background-color: hsl(' + colorFactor + ', 100%, 90%);'
     return color
   }
   export function TxDataSize(dataSizeBytes) {
@@ -41,6 +41,11 @@
     return numberWithCommas(dataSizeBytes) + ' B'
   }
 
+  export function GetDateFromISODateString(dateString) {
+    var date = new Date(dateString)
+    return date.toISOString().split('T')[0]
+  }
+  
   function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }

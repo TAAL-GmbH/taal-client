@@ -19,7 +19,7 @@ export let distinctAPIKeys
     </thead>
     <tbody>
       {#each transactions as transaction}
-        <TransactionRow {transaction} {distinctAPIKeys} />
+        <TransactionRow transaction={transaction} distinctAPIKeys={distinctAPIKeys} />
       {/each}
     </tbody>
   </table>

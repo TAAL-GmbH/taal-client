@@ -24,7 +24,7 @@ type Repository interface {
 	GetKey(ctx context.Context, apiKey string) (Key, error)
 	GetAllKeys(ctx context.Context) ([]Key, error)
 	InsertTransaction(ctx context.Context, tx Transaction) error
-	GetAllTransactions(ctx context.Context) ([]Transaction, error)
+	GetAllTransactions(ctx context.Context, hoursBack int) ([]Transaction, error)
 	Health(ctx context.Context) error
 }
 
@@ -102,7 +102,6 @@ func New(address string, taal *client.Client, repo Repository) Server {
 
 	group.POST("/transactions", s.write)
 	group.GET("/transactions/:txid", s.read)
-	group.GET("/transactions", s.getTransactions)
 	group.GET("/transactions/info", s.getTransactions)
 
 	group.GET("/health", func(c echo.Context) error {

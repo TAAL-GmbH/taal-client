@@ -5,7 +5,7 @@
 
 <main>
   <div class="columns">
-    <div class="column is-three-quarters">
+    <div class="column is-four-fifths">
       <h1>Transaction stats</h1>
       <TransactionStats />
     </div>
@@ -23,3 +23,4 @@
     display: block;
   }
 </style>
+
