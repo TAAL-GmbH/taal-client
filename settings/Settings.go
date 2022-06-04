@@ -27,31 +27,10 @@ func init() {
 	settings["taalTimeout"] = "10s"
 	settings["dbType"] = "sqlite"
 	settings["dbFilename"] = "./taal_client.db"
-	settings["dbHost"] = "localhost"
-	settings["dbPort"] = "5432"
-	settings["dbName"] = "dbname"
-	settings["dbUsername"] = "username"
-	settings["dbPassword"] = "password"
 
 	// Now overwrite with any settings from settings.conf
 	readSettingsFile()
 
-	// Now overwrite settings with any specified environment variables...
-	if listen := os.Getenv("LISTEN"); listen != "" {
-		settings["listenAddress"] = listen
-	}
-
-	if url := os.Getenv("TAAL_URL"); url != "" {
-		settings["taalUrl"] = url
-	}
-
-	if timeout := os.Getenv("TAAL_TIMEOUT"); timeout != "" {
-		settings["taalTimeout"] = timeout
-	}
-
-	if debugTransactions := os.Getenv("DEBUG"); debugTransactions != "" {
-		settings["debugTransactions"] = debugTransactions
-	}
 }
 
 func GetJSON() ([]byte, error) {

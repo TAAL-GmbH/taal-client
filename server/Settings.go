@@ -126,6 +126,12 @@ func updateSettings(key, value string) error {
 		}
 	}
 
+	if !written {
+		if _, err := w.WriteString(fmt.Sprintf("%s=%s\n", key, value)); err != nil {
+			return fmt.Errorf("Could not write to temp file: %v", err)
+		}
+	}
+
 	if err := w.Close(); err != nil {
 		return fmt.Errorf("Could not close temp file: %v", err)
 	}

@@ -5,5 +5,5 @@ import (
 )
 
 func TestUpdateSettings(t *testing.T) {
-	updateSettings("dbType", "bob")
+	updateSettings("test", "false")
 }

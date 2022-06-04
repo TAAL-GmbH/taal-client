@@ -29,6 +29,18 @@
     originalValue = currentValue
     updateFn(currentValue)
   }
+
+  function handleKeypress(e) {
+    if (!e) e = window.event
+    var keyCode = e.code || e.key
+    if (keyCode == 'Enter') {
+      handleSave()
+      return false
+    } else if (keyCode == 'Escape') {
+      handleReset()
+      return false
+    }
+  }
 </script>
 
 <div class="field is-horizontal">
@@ -44,6 +56,7 @@
           type="text"
           {placeholder}
           bind:value={currentValue}
+          on:keypress={handleKeypress}
         />
         {#if currentValue !== originalValue}
           <span

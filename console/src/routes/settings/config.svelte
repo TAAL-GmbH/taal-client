@@ -1,74 +1,88 @@
 <script>
   import { onMount } from 'svelte'
+  import { getNotificationsContext } from 'svelte-notifications'
+
   import Fa from 'svelte-fa'
-  import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons'
+  import {
+    faLock,
+    faLockOpen,
+    faSpaghettiMonsterFlying,
+  } from '@fortawesome/free-solid-svg-icons'
   import Input from './Input.svelte'
 
-  import { listen } from 'svelte/internal'
+  const { addNotification } = getNotificationsContext()
 
   let settings = {}
 
-  onMount(async () => {
-    const res = await fetch(`${BASE_URL}/api/v1/settings`)
-    settings = await res.json()
-
-    console.log('SETTINGS', JSON.stringify(settings, null, 2))
+  onMount(() => {
+    fetch(`${BASE_URL}/api/v1/settings`)
+      .then((res) => res.json())
+      .then((data) => {
+        settings = data
+        console.log('SETTINGS', JSON.stringify(settings, null, 2))
+      })
+      .catch((err) => console.log(err))
   })
 
-  let showPassword = false
-
-  function toggleShowPassword() {
-    showPassword = !showPassword
+  function handleDBChange(event) {
+    updateSetting('dbType', event.currentTarget.value)
   }
 
   function toggleDebugServer() {
-    settings.debugServer = !settings.debugServer
-    saveSetting('debugServer', settings.debugServer)
+    if (settings.debugServer === 'true') {
+      settings.debugServer = 'false'
+    } else {
+      settings.debugServer = 'true'
+    }
+    updateSetting('debugServer', settings.debugServer)
+  }
+
+  function toggleDebugTransactions() {
+    if (settings.debugTransactions === 'true') {
+      settings.debugTransactions = 'false'
+    } else {
+      settings.debugTransactions = 'true'
+    }
+    updateSetting('debugTransactions', settings.debugTransactions)
   }
 
   function updateSetting(key, value) {
-    saveSetting(key, value)
-      .then(() => {
-        console.log('Saved', key, value)
+    fetch(`${BASE_URL}/api/v1/settings`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        key,
+        value,
+      }),
+    })
+      .then((res) => {
         settings[key] = value
+
+        addNotification({
+          text: `Setting updated successfully`,
+          position: 'bottom-left',
+          type: 'success',
+          removeAfter: 1000,
+        })
       })
       .catch((err) => {
-        console.log('ERROR', err)
-      })
-  }
+        const errJson = JSON.parse(err.message)
+        addNotification({
+          text: `Error: ${errJson.error}`,
+          position: 'bottom-left',
+          type: 'warning',
+          removeAfter: 2000,
+        })
 
-  async function saveSetting(key, value) {
-    try {
-      await fetch(`${BASE_URL}/api/v1/settings`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          key,
-          value,
-        }),
+        console.log(err)
       })
-
-      addNotification({
-        text: `Setting updated successfully`,
-        position: 'bottom-left',
-        type: 'success',
-      })
-    } catch (err) {
-      const errJson = JSON.parse(err.message)
-      addNotification({
-        text: `Error: ${errJson.error}`,
-        position: 'bottom-left',
-        type: 'warning',
-      })
-
-      console.log(err)
-    }
   }
 </script>
 
-<form class="panel">
+<form class="panel" autocomplete="off">
+  <input autocomplete="false" name="hidden" type="text" style="display:none;" />
   <p class="panel-heading">Server settings</p>
   <div class="panel-body pad">
     <Input
@@ -105,13 +119,17 @@
             <label class="check">
               <input
                 type="checkbox"
-                checked={settings.debugServer}
+                checked={settings.debugServer === 'true'}
                 on:change={toggleDebugServer}
               />
               Server
             </label>
             <label class="check">
-              <input type="checkbox" checked={settings.debugTransactions} />
+              <input
+                type="checkbox"
+                checked={settings.debugTransactions === 'true'}
+                on:change={toggleDebugTransactions}
+              />
               Transactions
             </label>
           </p>
@@ -126,7 +144,8 @@
   </div>
 </form>
 
-<form class="panel">
+<form class="panel" autocomplete="off">
+  <input autocomplete="false" name="hidden" type="text" style="display:none;" />
   <p class="panel-heading">Database settings</p>
   <div class="panel-body pad">
     <div class="field is-horizontal">
@@ -139,16 +158,20 @@
             <label class="radio">
               <input
                 type="radio"
-                bind:group={settings.dbType}
+                name="dbType"
+                checked={settings.dbType === 'sqlite'}
                 value={'sqlite'}
+                on:change={handleDBChange}
               />
               Local
             </label>
             <label class="radio">
               <input
                 type="radio"
-                bind:group={settings.dbType}
-                value={'postges'}
+                name="dbType"
+                checked={settings.dbType === 'postgres'}
+                value={'postgres'}
+                on:change={handleDBChange}
               />
               Remote
             </label>
@@ -191,37 +214,18 @@
       />
 
       <Input
-        label="Username"
+        label="Role"
         description=""
         value={settings.dbUsername}
-        placeholder="database username"
         updateFn={updateSetting.bind(this, 'dbUsername')}
       />
 
-      <div class="field is-horizontal">
-        <div class="field-label is-normal has-text-left">
-          <label for="password" class="label"
-            >Password:
-            <span class="icon is-small is-right" on:click={toggleShowPassword}>
-              <Fa icon={showPassword ? faLockOpen : faLock} />
-            </span>
-          </label>
-        </div>
-        <div class="field-body">
-          <div class="field">
-            <p class="control">
-              <input
-                id="password"
-                class="input"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="database password"
-                value={settings.dbPassword}
-                on:input={updateSetting.bind(this, 'dbPassword')}
-              />
-            </p>
-          </div>
-        </div>
-      </div>
+      <Input
+        label="Password"
+        description=""
+        value={settings.dbPassword}
+        updateFn={updateSetting.bind(this, 'dbPassword')}
+      />
     {/if}
   </div>
 </form>
