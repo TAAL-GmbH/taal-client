@@ -8,3 +8,4 @@ repository.db
 localdata/
 settings.conf.old
 settings.conf.tmp
+__debug_bin

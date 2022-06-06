@@ -5,15 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Start",
+      "name": "main.go",
       "type": "go",
       "request": "launch",
-      "mode": "debug",
-      "remotePath": "",
-      "program": "${workspaceFolder}/main.go",
-      "cwd": "${workspaceFolder}",
-      "args": [""],
-      "showLog": true
+      "mode": "auto",
+      "program": "${workspaceFolder}/main.go"
     }
   ]
 }

@@ -12,6 +12,7 @@
 
   let keys
   let isActive
+  let loading = true
 
   function showModal() {
     isActive = true
@@ -22,9 +23,15 @@
   }
 
   onMount(async () => {
-    const r = await fetch(`${BASE_URL}/api/v1/apikeys`)
-    const data = await r.json()
-    keys = data.keys
+    try {
+      const r = await fetch(`${BASE_URL}/api/v1/apikeys`)
+      const data = await r.json()
+      keys = data.keys
+    } catch (err) {
+      console.log(err)
+    } finally {
+      loading = false
+    }
   })
 
   let apiKey = ''
@@ -87,7 +94,7 @@
         {/each}
       </table>
     {:else}
-      <p class="loading">loading...</p>
+      <p class="loading">Loading...</p>
     {/if}
   </div>
 </div>

@@ -2,7 +2,9 @@ package server
 
 import (
 	"context"
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -50,7 +52,19 @@ func (s Server) write(c echo.Context) error {
 		}
 	}()
 
-	opReturnOutput, err := buildOpReturnOutput(c.Request().Header.Get("x-tag"), mimeType, reqBody)
+	var payload []byte
+	switch c.Request().Header.Get("x-mode") {
+	case "hash":
+		hash := sha256.Sum256(reqBody)
+		payload = []byte(hex.EncodeToString(hash[:]))
+	case "encrypt":
+		return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.New("Not implemented"))
+	default:
+	case "raw":
+		payload = reqBody
+	}
+
+	opReturnOutput, err := buildOpReturnOutput(c.Request().Header.Get("x-tag"), mimeType, payload)
 	if err != nil {
 		return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.Wrap(err, "failed to create op return output"))
 	}

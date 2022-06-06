@@ -65,6 +65,7 @@ func New(address string, taal *client.Client, repo Repository) Server {
 			echo.HeaderAuthorization,
 			echo.HeaderXRequestedWith,
 			"X-Tag",
+			"X-Mode",
 			"Filename",
 		},
 	}))
@@ -108,7 +109,7 @@ func New(address string, taal *client.Client, repo Repository) Server {
 		err := s.repository.Health(context.Background())
 
 		if err != nil {
-			return s.sendError(c, http.StatusInternalServerError, errHearlthDB, errors.Wrap(err, "failed to call database"))
+			return s.sendError(c, http.StatusInternalServerError, errHealthDB, errors.Wrap(err, "failed to call database"))
 		}
 
 		return c.String(http.StatusOK, "server is running")

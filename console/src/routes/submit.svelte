@@ -87,7 +87,6 @@
   let autoSubmit
 
   let keys
-  let selectedApiKey
   const { addNotification } = getNotificationsContext()
 
   let apiKey
@@ -104,17 +103,15 @@
     if (localStorage.getItem('tag') !== 'null') {
       tag = localStorage.getItem('tag')
     }
-    apiKey = localStorage.getItem('apiKey')
+
+    const lastKey = localStorage.getItem('apiKey')
 
     res = await fetch(`${BASE_URL}/api/v1/apikeys`)
     const data = await res.json()
     keys = data.keys
-    selectedApiKey = apiKey || keys[0]
-  })
 
-  function selectChange() {
-    apiKey = selectedApiKey.api_key
-  }
+    apiKey = lastKey || keys[0].api_key
+  })
 
   function reset() {
     files = null
@@ -122,7 +119,6 @@
   }
 
   function writeData() {
-
     const url = `${BASE_URL}/api/v1/transactions`
 
     arr.forEach((a) => {
@@ -133,6 +129,10 @@
 
       if (tagString) {
         headers['X-Tag'] = tagString
+      }
+
+      if (mode !== 'raw') {
+        headers['X-Mode'] = mode
       }
 
       fetch(url, {
@@ -182,10 +182,10 @@
           <div id="input2" class="control">
             <label class="label" for="apiKey">API Key</label>
             <div class="select">
-              <select bind:value={selectedApiKey} on:change={selectChange}>
+              <select bind:value={apiKey}>
                 {#if keys}
                   {#each keys as key}
-                    <option value={key}>
+                    <option value={key.api_key}>
                       {key.api_key}
                     </option>
                   {/each}
