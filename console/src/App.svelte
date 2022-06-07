@@ -75,8 +75,8 @@
   <main class="section">
     <Route path="/"><Home /></Route>
     <Route path="settings" component={Settings} />
+    <Route path="transactions" component={TxHistory} />
     <Notifications>
-      <Route path="transactions" component={TxHistory} />
       <Route path="submit" component={TxSubmit} />
       <Route path="example" component={Example} />
     </Notifications>
