@@ -85,7 +85,6 @@
           <th>Created</th>
           <th>API Key</th>
           <th>Address</th>
-          <th />
         </tr>
         {#each keys as key}
           <Notifications>
