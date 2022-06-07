@@ -51,6 +51,9 @@ func (s Server) write(c echo.Context) error {
 			log.Printf("WARN: failed to close request body: %s", err.Error())
 		}
 	}()
+	if len(reqBody) == 0 {
+		return s.sendError(c, http.StatusBadRequest, errWriteEmptyBody, errors.New("empty body"))
+	}
 
 	var payload []byte
 	switch c.Request().Header.Get("x-mode") {
@@ -60,7 +63,6 @@ func (s Server) write(c echo.Context) error {
 	case "encrypt":
 		return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.New("Not implemented"))
 	default:
-	case "raw":
 		payload = reqBody
 	}
 
