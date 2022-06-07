@@ -14,9 +14,8 @@
           return res.text().then((text) => {
             throw new Error(text)
           })
-        } else {
-          return res.json()
         }
+        return res.json()
       })
       .catch((err) => {
         const errJson = JSON.parse(err.message)
