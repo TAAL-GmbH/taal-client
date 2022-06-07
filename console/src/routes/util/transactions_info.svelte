@@ -1,7 +1,9 @@
 <script>
-  import {setButtonClassIsSuccess} from './control_functions.svelte'
+  import { setButtonClassIsSuccess } from './control_functions.svelte'
   export let transactions = []
+  import { getNotificationsContext } from 'svelte-notifications'
 
+  const { addNotification } = getNotificationsContext()
   let filterButtonClasses = [
     'button is-success is-selected',
     'button',
@@ -38,9 +40,28 @@
     }
 
     fetch(`${BASE_URL}/api/v1/transactions/info?hours_back=${hoursBack}`)
-      .then((r) => r.json())
+      .then((res) => {
+        if (!res.ok) {
+          return res.text().then((text) => {
+            throw new Error(text)
+          })
+        }
+
+        return res.json()
+      })
       .then((data) => {
         transactions = data.transactions
+      })
+      .catch((err) => {
+        const errJson = JSON.parse(err.message)
+        addNotification({
+          text: `Error: ${errJson.error}`,
+          position: 'bottom-left',
+          type: 'warning',
+          removeAfter: 2000,
+        })
+
+        console.log(err)
       })
   }
   $: onChangeHoursBack(hoursBack)
