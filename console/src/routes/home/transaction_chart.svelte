@@ -123,4 +123,4 @@
   $: OnTransactionsChange(transactions)
 </script>
 
-<canvas width="200" height="60" bind:this={chartCanvas} id="transactionsChart" />
+<canvas width="200" height="40" bind:this={chartCanvas} id="transactionsChart" />
