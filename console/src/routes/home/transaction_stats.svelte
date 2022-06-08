@@ -46,7 +46,7 @@
   <div class="field">
     <h1>Number of transactions: {nrOfTransactions}</h1>
     <TransactionChart
-      valueLabel="Number of transactions in time"
+      valueLabel="Nr of transactions"
       valueFunction={countElements}
       datasetLabel="# Tx"
       bind:transactions

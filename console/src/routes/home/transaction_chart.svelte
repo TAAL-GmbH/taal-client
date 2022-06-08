@@ -1,10 +1,10 @@
 <script>
   import chartjs from 'chart.js'
   import { onMount } from 'svelte'
-  import {GetDateFromISODateString} from '../util/format_functions.svelte'
+  import { GetDateFromISODateString } from '../util/format_functions.svelte'
 
   export let transactions
-  export let valueFunction = () =>{}
+  export let valueFunction = () => {}
   export let valueLabel = ''
   export let datasetLabel = ''
 
@@ -30,6 +30,9 @@
     scales: {
       yAxes: [
         {
+          afterUpdate: function (axis) {
+            axis.width = 100
+          },
           ticks: {
             suggestedMin: 0,
             suggestedMax: 7,
