@@ -24,10 +24,6 @@ func GetPostgreSqlDB() (*sqlx.DB, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to open PostgreSQL DB")
 	}
-	err = sqlDB.Ping()
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to ping PostgreSQL DB")
-	}
 
 	return sqlx.NewDb(sqlDB, "postgres"), nil
 }

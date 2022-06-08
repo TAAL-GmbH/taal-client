@@ -72,7 +72,7 @@ func (r Repository) GetAllTransactions(ctx context.Context, hoursBack int) ([]se
 	now := r.now()
 
 	timeBack := now.Add(-1 * time.Duration(hoursBack) * time.Hour).UTC().Format(ISO8601)
-	query := `SELECT * FROM transactions WHERE created_at >= ? ORDER BY created_at DESC;`
+	query := `SELECT * FROM transactions WHERE created_at >= $1 ORDER BY created_at DESC;`
 
 	txs := make([]server.Transaction, 0)
 

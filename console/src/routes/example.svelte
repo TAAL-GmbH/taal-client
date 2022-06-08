@@ -125,16 +125,16 @@
           return res.text().then((text) => {
             throw new Error(text)
           })
-        } else {
-          addNotification({
-            text: `Transaction submitted successfully`,
-            position: 'bottom-left',
-            type: 'success',
-            removeAfter: 1000,
-          })
-
-          return res.json()
         }
+        
+        addNotification({
+          text: `Transaction submitted successfully`,
+          position: 'bottom-left',
+          type: 'success',
+          removeAfter: 1000,
+        })
+
+        return res.json()
       })
       .catch((err) => {
         const errJson = JSON.parse(err.message)

@@ -74,31 +74,9 @@ func main() {
 	var db *sqlx.DB
 	var err error
 
-	if settings.Get("dbType") == "postgres" {
-
-		db, err = database.GetPostgreSqlDB()
-		if err != nil {
-			log.Fatalf("could not open postgres database: %v", err)
-			return
-		}
-
-		err = database.RunMigrationsPostgreSQL(db)
-		if err != nil {
-			log.Fatalf("postgres database migration failed: %v", err)
-			return
-		}
-	} else {
-		db, err = database.GetSQLiteDB(dbFolder, sqLiteDBFilename)
-		if err != nil {
-			log.Fatalf("could not open sqlite database: %v", err)
-			return
-		}
-
-		err = database.RunMigrationsSQLite(db)
-		if err != nil {
-			log.Fatalf("sqlite database migration failed: %v", err)
-			return
-		}
+	db, err = getSqlDb(settings.Get("dbType"))
+	if err != nil {
+		log.Printf("WARN: could not get DB: %v", err)
 	}
 
 	defer db.Close()
@@ -107,6 +85,39 @@ func main() {
 	if err != nil {
 		log.Fatalf("app terminated with error: %v", err)
 	}
+}
+
+func getSqlDb(dbType string) (*sqlx.DB, error) {
+	var db *sqlx.DB
+	var err error
+
+	switch dbType {
+	case "postgres":
+		db, err = database.GetPostgreSqlDB()
+		if err != nil {
+			return nil, errors.Wrap(err, "could not open postgres database")
+		}
+
+		err = database.RunMigrationsPostgreSQL(db)
+		if err != nil {
+			return db, errors.Wrap(err, "postgres database migration failed")
+		}
+	case "sqlite":
+		db, err = database.GetSQLiteDB(dbFolder, sqLiteDBFilename)
+		if err != nil {
+			return nil, errors.Wrap(err, "could not open sqlite database")
+		}
+
+		err = database.RunMigrationsSQLite(db)
+		if err != nil {
+			return nil, errors.Wrap(err, "sqlite database migration failed")
+		}
+
+	default:
+		return nil, errors.Errorf("invalid db type given %s", dbType)
+	}
+
+	return db, err
 }
 
 func startServer(db *sqlx.DB) error {

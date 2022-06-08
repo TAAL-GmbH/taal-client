@@ -3,6 +3,7 @@
   import TransactionChart from './transaction_chart.svelte'
   import { GetDateFromISODateString } from '../util/format_functions.svelte'
   import TransactionsInfo from '../util/transactions_info.svelte'
+  import Notifications from 'svelte-notifications'
 
   let transactions
   let nrOfTransactions = 0
@@ -39,7 +40,9 @@
 </script>
 
 <div class="field">
-  <TransactionsInfo bind:transactions />
+  <Notifications>
+    <TransactionsInfo bind:transactions />
+  </Notifications>
   <div class="field">
     <h1>Number of transactions: {nrOfTransactions}</h1>
     <TransactionChart

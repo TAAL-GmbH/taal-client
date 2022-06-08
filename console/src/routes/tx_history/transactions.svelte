@@ -6,6 +6,7 @@
   import Cards from './transaction_cards.svelte'
   import TransactionsInfo from '../util/transactions_info.svelte'
   import { setButtonClassIsSuccess } from '../util/control_functions.svelte'
+  import Notifications from 'svelte-notifications'
 
   let transactions
   let distinctAPIKeys = []
@@ -47,8 +48,9 @@
     >Grid view</button
   >
 </div>
-<TransactionsInfo bind:transactions />
-
+<Notifications>
+  <TransactionsInfo bind:transactions />
+</Notifications>
 {#if transactions}
   {#if listViewSelected}
     <TransactionRows {transactions} {distinctAPIKeys} />
