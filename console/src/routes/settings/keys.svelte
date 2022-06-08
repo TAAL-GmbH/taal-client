@@ -21,16 +21,38 @@
     isActive = false
   }
 
-  onMount(async () => {
-    try {
-      const r = await fetch(`${BASE_URL}/api/v1/apikeys`)
-      const data = await r.json()
-      keys = data.keys
-    } catch (err) {
-      console.log(err)
-    } finally {
-      loading = false
-    }
+  onMount(() => {
+    fetch(`${BASE_URL}/api/v1/apikeys`)
+      .then((res) => {
+        if (!res.ok) {
+          return res.text().then((text) => {
+            throw new Error(text)
+          })
+        }
+
+        return res.json()
+      })
+      .then((data) => {
+        keys = data.keys
+      })
+      .catch((err) => {
+        var errMessage = ''
+        try {
+          const errJson = JSON.parse(err.message)
+          errMessage = errJson.error
+        } catch (error) {
+          errMessage = err
+        }
+
+        addNotification({
+          text: `Failed to load api keys: ${errMessage}`,
+          position: 'bottom-left',
+          type: 'warning',
+          removeAfter: 2000,
+        })
+
+        console.log(errMessage)
+      })
   })
 
   let apiKey = ''
@@ -89,8 +111,6 @@
           <Key {key} />
         {/each}
       </table>
-    {:else}
-      <p class="loading">Loading...</p>
     {/if}
   </div>
 </div>
