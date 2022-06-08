@@ -24,6 +24,7 @@
     if (transactions == null) {
       return
     }
+    combinedSize = 0
     nrOfTransactions = transactions.length
     var dataSizes = transactions.map((tx) => tx.data_bytes)
 
