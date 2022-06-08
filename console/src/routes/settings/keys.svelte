@@ -21,7 +21,7 @@
     isActive = false
   }
 
-  onMount(() => {
+  function getApiKeys() {
     fetch(`${BASE_URL}/api/v1/apikeys`)
       .then((res) => {
         if (!res.ok) {
@@ -53,6 +53,10 @@
 
         console.log(errMessage)
       })
+  }
+
+  onMount(() => {
+    getApiKeys()
   })
 
   let apiKey = ''
@@ -74,6 +78,8 @@
           })
 
           closeModal()
+          getApiKeys()
+
           return res.json()
         }
       })
