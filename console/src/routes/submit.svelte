@@ -92,6 +92,7 @@
   let apiKey
   let tag = ''
   let tagString = ''
+  let mode = 'raw'
 
   $: tagString = tag ? tag : ''
   $: submitButtonIsDisabled = files == [] && apiKey == ''
