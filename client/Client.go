@@ -237,7 +237,7 @@ func (c *Client) ReadTransaction(ctx context.Context, apiKey string, transaction
 			return nil, "", fmt.Errorf("failed to read response: %v", err)
 		}
 
-		return nil, "", fmt.Errorf("failed to submit %s", string(bodyBytes))
+		return nil, "", fmt.Errorf("failed to read %s", string(bodyBytes))
 	}
 
 	return resp.Body, resp.Header.Get("content-type"), nil

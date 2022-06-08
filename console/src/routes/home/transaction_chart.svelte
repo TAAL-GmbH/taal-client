@@ -1,10 +1,10 @@
 <script>
   import chartjs from 'chart.js'
   import { onMount } from 'svelte'
-  import {GetDateFromISODateString} from '../util/format_functions.svelte'
+  import { GetDateFromISODateString } from '../util/format_functions.svelte'
 
   export let transactions
-  export let valueFunction = () =>{}
+  export let valueFunction = () => {}
   export let valueLabel = ''
   export let datasetLabel = ''
 
@@ -30,6 +30,9 @@
     scales: {
       yAxes: [
         {
+          afterUpdate: function (axis) {
+            axis.width = 100
+          },
           ticks: {
             suggestedMin: 0,
             suggestedMax: 7,
@@ -123,4 +126,4 @@
   $: OnTransactionsChange(transactions)
 </script>
 
-<canvas width="200" height="60" bind:this={chartCanvas} id="transactionsChart" />
+<canvas width="200" height="40" bind:this={chartCanvas} id="transactionsChart" />
