@@ -1,33 +1,6 @@
 <script>
-  import { getNotificationsContext } from 'svelte-notifications'
-
-  const { addNotification } = getNotificationsContext()
-
   export let key
 
-  function revoke() {
-    fetch(`${BASE_URL}/api/v1/apikeys/${key}`, {
-      method: 'DELETE',
-    })
-      .then((res) => {
-        if (!res.ok) {
-          return res.text().then((text) => {
-            throw new Error(text)
-          })
-        }
-        return res.json()
-      })
-      .catch((err) => {
-        const errJson = JSON.parse(err.message)
-        addNotification({
-          text: `Error: ${errJson.error}`,
-          position: 'bottom-left',
-          type: 'warning',
-        })
-
-        console.log(err)
-      })
-  }
 </script>
 
 <tr>

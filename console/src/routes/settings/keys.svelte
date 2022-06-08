@@ -4,7 +4,6 @@
   import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
   import Key from './key.svelte'
-  import Notifications from 'svelte-notifications'
 
   import { getNotificationsContext } from 'svelte-notifications'
 
@@ -87,9 +86,7 @@
           <th>Address</th>
         </tr>
         {#each keys as key}
-          <Notifications>
-            <Key {key} />
-          </Notifications>
+          <Key {key} />
         {/each}
       </table>
     {:else}
