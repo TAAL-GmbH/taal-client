@@ -10,22 +10,43 @@
   export let transaction
   export let distinctAPIKeys
 
-  let color
+  // FontAwesome icon...
+  import Fa from 'svelte-fa'
+  import { faCopy } from '@fortawesome/free-solid-svg-icons'
+
+  let backgroundColor
+
   function OnDistinctKeyChange(distinctKeys) {
-    color = GetColor(transaction.api_key, distinctKeys)
+    backgroundColor = GetColor(transaction.api_key, distinctKeys)
   }
 
   $: OnDistinctKeyChange(distinctAPIKeys)
+
+  function copyToClipboard() {
+    navigator.clipboard.writeText(transaction.id)
+  }
 </script>
 
 <tr>
   <td class="is-vcentered">{GetFormatedTxTimestamp(transaction.created_at)}</td>
-  <td class="is-vcentered"
-    ><a href="https://www.whatsonchain.com/tx/{transaction.id}"
-      >{TruncateTxID(transaction.id)}</a
-    ></td
-  >
-  <td class="is-vcentered" style={color}>{transaction.api_key}</td>
+  <td class="is-vcentered">
+    <button
+      id="copyButton"
+      class="button is-small is-vcentered "
+      on:click|preventDefault={copyToClipboard}
+    >
+      <Fa icon={faCopy} color="silver" />
+    </button>
+    <a href="https://www.whatsonchain.com/tx/{transaction.id}">
+      <span class="is-vcentered">
+        {TruncateTxID(transaction.id)}
+      </span>
+    </a>
+  </td>
+  <td class="is-vcentered">
+    <span class="dot" style={backgroundColor} />
+    {transaction.api_key}
+  </td>
   <td class="is-vcentered" align="right"
     >{TxDataSize(transaction.data_bytes)}</td
   >
@@ -38,3 +59,21 @@
     /></td
   >
 </tr>
+
+<style>
+  .dot {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
+  }
+
+  #copyButton {
+    display: inline-block;
+    border: none;
+    padding-top: 1px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+</style>
