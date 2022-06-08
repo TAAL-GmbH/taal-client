@@ -128,6 +128,7 @@
       const headers = {
         Authorization: 'Bearer ' + apiKey,
         'Content-Type': a.file.type,
+        Filename: a.file.name,
       }
 
       if (tagString) {
@@ -152,6 +153,7 @@
               throw new Error(text)
             })
           }
+
           addNotification({
             text: `Transaction submitted successfully`,
             position: 'bottom-left',
@@ -172,6 +174,8 @@
           })
         })
     })
+
+    reset()
   }
 </script>
 
@@ -223,10 +227,10 @@
               <input type="checkbox" bind:checked={hashOnly} />
               Hash data (do not store original media)
             </label>
-            <label class="check">
+            <!-- <label class="check">
               <input type="checkbox" checked={autoSubmit} />
               Auto submit
-            </label>
+            </label> -->
           </p>
         </div>
       </div>
@@ -286,7 +290,7 @@
         <div class="control">
           <button
             class="button is-primary"
-            on:click={writeData}
+            on:click|preventDefault={writeData}
             disabled={submitButtonIsDisabled}
             >{arr.length === 0
               ? 'Submit'
