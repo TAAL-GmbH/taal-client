@@ -1,5 +1,11 @@
 .history
 build/
 keys/
+keys_archive/
 taal-client
 node_modules/
+repository.db
+localdata/
+settings.conf.old
+settings.conf.tmp
+__debug_bin

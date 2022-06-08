@@ -5,32 +5,11 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Start",
+      "name": "main.go",
       "type": "go",
       "request": "launch",
-      "mode": "debug",
-      "remotePath": "",
-      "program": "${workspaceFolder}/main.go",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "LISTEN": "localhost:9500",
-        "XXXTAAL_URL": "http://localhost:9004",
-        "TAAL_TIMEOUT": "10m",
-        "DEBUG": "1",
-      },
-      "args": ["start"],
-      "showLog": true
-    },{
-      "name": "Register",
-      "type": "go",
-      "request": "launch",
-      "mode": "debug",
-      "remotePath": "",
-      "program": "${workspaceFolder}/main.go",
-      "cwd": "${workspaceFolder}",
-      "env": {},
-      "args": ["register", "testnet_1b13ef42af601bd8e8445e9ba01607a0"],
-      "showLog": true
+      "mode": "auto",
+      "program": "${workspaceFolder}/main.go"
     }
   ]
 }

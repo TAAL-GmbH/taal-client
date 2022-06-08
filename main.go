@@ -1,34 +1,49 @@
 package main
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
+	"context"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
+
+	"github.com/bitcoinsv/bsvd/chaincfg"
+	"github.com/bitcoinsv/bsvutil"
+	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 
 	"taal-client/client"
-	"taal-client/config"
+	"taal-client/database"
+	"taal-client/repository"
 	"taal-client/server"
+	"taal-client/settings"
+)
 
-	"github.com/bitcoinsv/bsvd/bsvec"
+const (
+	dbFolder         = "localdata"
+	sqLiteDBFilename = "db"
 )
 
 func usage() {
 	fmt.Println(`
 Usage
 -----
-taal-client register <api-key>
-  Creates a private key which is held locally, and sends the public key to Taal to be linked to an existing API key.
 
-taal-client start
+taal-client
   Starts listening for requests on :9500.  This value can be changed with the LISTEN environment variable.
 
   All requests will be sent to https://tapi.taal.com by default unless overridden with the TAAL_URL environment variable.
 
-	DEBUG = 1 will log all transactions to console
+  DEBUG = 1 will log all transactions to console
+  
+  By default taal-client uses a local data storage
+
+  CONNECT_TO_DB = 1 means that the client will connect to an external database. Currently only PostgreSQL databases are supported.
+  In that case the connection is configured with HOST, DBNAME, USERNAME, PASSWORD, PORT.
+
+  "taal-client help" shows this description
 
 Environment variables
 ---------------------
@@ -36,18 +51,89 @@ Environment variables
   TAAL_URL
   TAAL_TIMEOUT
   DEBUG
+  CONNECT_TO_DB
+  HOST
+  DBNAME
+  USERNAME
+  PASSWORD
+  PORT
 
 Example
 -------
-  DEBUG=1 LISTEN=localhost:8080 TAAL_URL=http://localhost:4000 TAAL_TIMEOUT=1m ./taal_client start
+  DEBUG=1 LISTEN=localhost:8080 TAAL_URL=http://localhost:4000 TAAL_TIMEOUT=1m ./taal_client
   
 	`)
-
-	os.Exit(1)
 }
 
-func start(conf *config.Config, taal *client.Client) {
-	// taal-client start
+func main() {
+	if len(os.Args) == 2 && os.Args[1] == "help" {
+		usage()
+		os.Exit(1)
+	}
+
+	var db *sqlx.DB
+	var err error
+
+	db, err = getSqlDb(settings.Get("dbType"))
+	if err != nil {
+		log.Printf("WARN: could not get DB: %v", err)
+	}
+
+	defer db.Close()
+
+	err = startServer(db)
+	if err != nil {
+		log.Fatalf("app terminated with error: %v", err)
+	}
+}
+
+func getSqlDb(dbType string) (*sqlx.DB, error) {
+	var db *sqlx.DB
+	var err error
+
+	switch dbType {
+	case "postgres":
+		db, err = database.GetPostgreSqlDB()
+		if err != nil {
+			return nil, errors.Wrap(err, "could not open postgres database")
+		}
+
+		err = database.RunMigrationsPostgreSQL(db)
+		if err != nil {
+			return db, errors.Wrap(err, "postgres database migration failed")
+		}
+	case "sqlite":
+		db, err = database.GetSQLiteDB(dbFolder, sqLiteDBFilename)
+		if err != nil {
+			return nil, errors.Wrap(err, "could not open sqlite database")
+		}
+
+		err = database.RunMigrationsSQLite(db)
+		if err != nil {
+			return nil, errors.Wrap(err, "sqlite database migration failed")
+		}
+
+	default:
+		return nil, errors.Errorf("invalid db type given %s", dbType)
+	}
+
+	return db, err
+}
+
+func startServer(db *sqlx.DB) error {
+	timeout, err := settings.GetDuration("taalTimeout")
+	if err != nil {
+		log.Fatalf("taal_timeout of %q is invalid: %v", timeout, err)
+	}
+
+	client := client.New(settings.Get("taalUrl"), timeout)
+	repo := repository.NewRepository(db, time.Now)
+
+	// move keys from the key json files to the database. Once all active customers ran this code it can be removed
+	ctx := context.Background()
+	moveKeysToDB(ctx, repo)
+
+	server := server.New(settings.Get("listenAddress"), client, repo)
 
 	stopServer := make(chan bool, 1)
 	stop := make(chan os.Signal, 1)
@@ -58,75 +144,59 @@ func start(conf *config.Config, taal *client.Client) {
 		stopServer <- true
 	}()
 
-	s := server.New(conf.ListenAddress, taal)
-
-	if err := s.Start(stopServer); err != nil {
-		log.Fatalf("app terminated with error: %v", err)
+	if err := server.Start(stopServer); err != nil {
+		return errors.Wrap(err, "failed to start server")
 	}
+
+	return nil
 }
 
-func register(conf *config.Config, taal *client.Client) {
-	// taal-client register <api-key>
-	apiKey := os.Args[2]
-
-	privateKey, err := config.GetPrivateKey(apiKey)
+func moveKeysToDB(ctx context.Context, repo repository.Repository) error {
+	// Check if there are configKeys in the configKeys folder. If yes, then store them in the DB
+	// Move existing keys to an archive
+	configKeys, err := settings.GetKeysFromJson()
 	if err != nil {
-		if os.IsNotExist(err) {
-			// The file is not there, so we can continue registration
-		} else {
-			fmt.Printf("failed to check apiKey existence: %s", err)
-			os.Exit(1)
+		return errors.Wrap(err, "failed to get keys from json files")
+	}
+	if len(configKeys) > 0 {
+		for _, configKey := range configKeys {
+
+			key, err := getKeyFromConfigKey(configKey)
+			if err != nil {
+				return errors.Wrap(err, "failed to get key from config key")
+			}
+
+			err = repo.InsertKey(ctx, key)
+			if err != nil {
+				return errors.Wrap(err, "failed to insert keys from json files into DB")
+			}
 		}
 	}
 
-	if privateKey != nil {
-		fmt.Println("apikey has already been registered")
-		os.Exit(1)
-	}
-
-	privateKey, err = bsvec.NewPrivateKey(bsvec.S256())
+	err = os.Rename("keys", "keys_archive")
 	if err != nil {
-		fmt.Printf("failed to generate new private key: %s", err)
-		os.Exit(1)
+		return errors.Wrap(err, "failed to move config keys to archive folder")
 	}
 
-	h := sha256.Sum256([]byte(apiKey))
-
-	signature, err := privateKey.Sign(h[:])
-	if err != nil {
-		fmt.Printf("failed to sign private key with api key: %s", err)
-		os.Exit(1)
-	}
-
-	signatureStr := hex.EncodeToString(signature.Serialize())
-	publicKeyStr := hex.EncodeToString(privateKey.PubKey().SerializeCompressed())
-
-	err = taal.Register(signatureStr, publicKeyStr, apiKey)
-	if err != nil {
-		fmt.Printf("failed to register: %s", err)
-		os.Exit(1)
-	}
-
-	err = config.StorePrivateKey(apiKey, privateKey)
-	if err != nil {
-		fmt.Printf("failed to write private key: %s", err)
-		os.Exit(1)
-	}
-
-	fmt.Println("Registration successful")
-	os.Exit(0)
+	return nil
 }
 
-func main() {
-	conf := config.Load()
-
-	taal := client.New(conf.TaalUrl, conf.TaalTimeOut)
-
-	if len(os.Args) == 2 && os.Args[1] == "start" {
-		start(conf, taal)
-	} else if len(os.Args) == 3 && os.Args[1] == "register" {
-		register(conf, taal)
-	} else {
-		usage()
+func getKeyFromConfigKey(configKey settings.JsonStruct) (server.Key, error) {
+	privateKey, err := server.GetPrivateKey(configKey.PrivateKey)
+	if err != nil {
+		return server.Key{}, nil
 	}
+
+	pubKeyAddress, err := bsvutil.NewAddressPubKey(privateKey.PubKey().SerializeCompressed(), &chaincfg.MainNetParams)
+	if err != nil {
+		return server.Key{}, errors.Wrap(err, "unable to create address")
+	}
+
+	key := server.Key{
+		ApiKey:     configKey.ApiKey,
+		PublicKey:  configKey.PublicKey,
+		PrivateKey: configKey.PrivateKey,
+		Address:    pubKeyAddress.EncodeAddress(),
+	}
+	return key, nil
 }

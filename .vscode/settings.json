@@ -1,8 +1,27 @@
 {
   "cSpell.words": [
+    "apikey",
+    "apikeys",
     "bitcoinsv",
     "bsvd",
     "bsvec",
-    "libsv"
+    "bsvutil",
+    "bulma",
+    "chaincfg",
+    "chartjs",
+    "dbname",
+    "feesrequired",
+    "fortawesome",
+    "httpfs",
+    "jmoiron",
+    "labstack",
+    "libsv",
+    "localdata",
+    "mattn",
+    "mdbsvelte",
+    "proxied",
+    "sirv",
+    "sqlx",
+    "sslmode"
   ]
 }

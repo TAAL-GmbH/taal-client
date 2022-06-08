@@ -2,28 +2,38 @@ package server
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
-	"strings"
+	"net/url"
 
 	"taal-client/client"
-	"taal-client/config"
 	"taal-client/console"
+	"taal-client/settings"
+	"taal-client/utils"
 
 	"github.com/bitcoinsv/bsvd/bsvec"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/libsv/go-bt"
+	"github.com/pkg/errors"
 )
 
+//go:generate moq -pkg service_test -out repository_mock_test.go . Repository
+type Repository interface {
+	InsertKey(ctx context.Context, key Key) error
+	GetKey(ctx context.Context, apiKey string) (Key, error)
+	GetAllKeys(ctx context.Context) ([]Key, error)
+	InsertTransaction(ctx context.Context, tx Transaction) error
+	GetAllTransactions(ctx context.Context, hoursBack int) ([]Transaction, error)
+	Health(ctx context.Context) error
+}
+
 type Server struct {
-	server  *echo.Echo
-	address string
-	taal    *client.Client
+	server     *echo.Echo
+	address    string
+	taal       *client.Client
+	repository Repository
 }
 
 type successResponse struct {
@@ -37,7 +47,7 @@ type errorResponse struct {
 	Err    string `json:"error"`
 }
 
-func New(address string, taal *client.Client) Server {
+func New(address string, taal *client.Client, repo Repository) Server {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
@@ -56,21 +66,54 @@ func New(address string, taal *client.Client) Server {
 			echo.HeaderAuthorization,
 			echo.HeaderXRequestedWith,
 			"X-Tag",
+			"X-Mode",
+			"Filename",
 		},
 	}))
 
+	e.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			if settings.GetBool("debugServer") {
+				req := c.Request()
+				log.Printf("Server [%s]: %s %s\n", utils.GetSourceIP(req), req.Method, req.URL)
+			}
+			return next(c)
+		}
+	})
+
 	s := Server{
-		server:  e,
-		address: address,
-		taal:    taal,
+		server:     e,
+		address:    address,
+		taal:       taal,
+		repository: repo,
 	}
 
 	group := e.Group("/api/v1")
+
+	// Deprecated: Endpoint paths don't adhere to REST design principles because they are verbs
 	group.POST("/write", s.write)
 	group.GET("/read/:txid", s.read)
+	group.POST("/register/:apikey", s.register)
 
-	group.GET("/test", func(c echo.Context) error {
-		return c.String(http.StatusOK, "This is from the client")
+	group.DELETE("/apikeys/:apikey", s.revoke)
+	group.POST("/apikeys/:apikey", s.register)
+	group.GET("/apikeys", s.getApiKeys)
+
+	group.GET("/settings", s.getSettings)
+	group.PUT("/settings", s.putSetting)
+
+	group.POST("/transactions", s.write)
+	group.GET("/transactions/:txid", s.read)
+	group.GET("/transactions/info", s.getTransactions)
+
+	group.GET("/health", func(c echo.Context) error {
+		err := s.repository.Health(context.Background())
+
+		if err != nil {
+			return s.sendError(c, http.StatusInternalServerError, errHealthDB, errors.Wrap(err, "failed to call database"))
+		}
+
+		return c.String(http.StatusOK, "server is running")
 	})
 
 	e.GET("*", func(c echo.Context) error {
@@ -89,10 +132,16 @@ func (s Server) Start(stopServer chan bool) error {
 		}
 	}()
 
-	log.Printf("INFO: starting on %s", s.address)
+	log.Printf("INFO: Service starting on %s", s.address)
 	log.Printf("INFO: Requests will be proxied to %q", s.taal.Url)
-	log.Printf("INFO: Console available at http://localhost:9500")
-	log.Printf("INFO: Example interface available at http://localhost:9500/example")
+
+	// Try to parse the s.address.  If an error occurs, we will insert "localhost"
+	_, err := url.Parse(s.address)
+	if err != nil {
+		log.Printf("INFO: Console available at http://localhost%s", s.address)
+	} else {
+		log.Printf("INFO: Console available at http://%s", s.address)
+	}
 
 	if err := s.server.Start(s.address); err != nil && err != http.ErrServerClosed {
 		log.Printf("ERROR: HTTP server failed: %v", err)
@@ -100,93 +149,6 @@ func (s Server) Start(stopServer chan bool) error {
 	}
 
 	return nil
-}
-
-func (s Server) write(c echo.Context) error {
-	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
-	if authHeader == "" {
-		return s.sendError(c, http.StatusUnauthorized, 1, errors.New("missing authorization"))
-	}
-
-	apiKey := strings.Replace(authHeader, "Bearer ", "", 1)
-
-	privateKey, err := config.GetPrivateKey(apiKey)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return s.sendError(c, http.StatusUnauthorized, 1, errors.New("unknown apikey"))
-		}
-		return s.sendError(c, http.StatusInternalServerError, 1, errors.New("failed to read apikey data"))
-	}
-
-	mimeType := c.Request().Header.Get(echo.HeaderContentType)
-	if mimeType == "" {
-		return s.sendError(c, http.StatusBadRequest, 10, errors.New("empty mimetype"))
-	}
-
-	if c.Request().Body == nil {
-		return s.sendError(c, http.StatusBadRequest, 11, errors.New("empty body"))
-	}
-
-	reqBody, err := ioutil.ReadAll(c.Request().Body)
-	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, 12, fmt.Errorf("could not read body: %w", err))
-	}
-	defer func() {
-		err = c.Request().Body.Close()
-		if err != nil {
-			log.Printf("WARN: failed to close request body: %s", err.Error())
-		}
-	}()
-
-	opReturnOutput, err := buildOpReturnOutput(c.Request().Header.Get("x-tag"), mimeType, reqBody)
-	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, 14, fmt.Errorf("failed to create op return output: %w", err))
-	}
-
-	feesRequired := true
-	if c.Request().Header.Get("x-feesrequired") == "false" {
-		feesRequired = false
-	}
-
-	feeTx, dataTx, err := s.taal.GetTransactionsTemplate(apiKey, len(opReturnOutput.ToBytes()), feesRequired)
-	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, 13, fmt.Errorf("failed to get transactions: %w", err))
-	}
-
-	dataTx.Inputs[0].PreviousTxSatoshis = feeTx.GetOutputs()[0].Satoshis
-	dataTx.Inputs[0].PreviousTxScript = feeTx.GetOutputs()[0].LockingScript
-
-	dataTx.AddOutput(opReturnOutput)
-
-	err = signTx(privateKey, dataTx)
-	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, 15, fmt.Errorf("failed to sign transaction: %w", err))
-	}
-
-	// fmt.Printf("DATA TX:\n%x\n", dataTx.ToBytes())
-
-	err = s.taal.SubmitTransactions(apiKey, feeTx, dataTx)
-	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, 16, fmt.Errorf("failed to submit transactions: %w", err))
-	}
-
-	return s.sendSuccess(c, http.StatusCreated, dataTx.GetTxID())
-}
-
-func (s Server) read(c echo.Context) error {
-	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
-	if authHeader == "" {
-		return s.sendError(c, http.StatusUnauthorized, 1, errors.New("missing authorization"))
-	}
-
-	apiKey := strings.Replace(authHeader, "Bearer ", "", 1)
-
-	readerCloser, contentType, err := s.taal.ReadTransaction(apiKey, c.Param("txid"))
-	if err != nil {
-		return s.sendError(c, http.StatusBadRequest, 13, fmt.Errorf("failed to get transaction: %w", err))
-	}
-
-	return c.Stream(http.StatusOK, contentType, readerCloser)
 }
 
 func signTx(pk *bsvec.PrivateKey, tx *bt.Tx) error {
