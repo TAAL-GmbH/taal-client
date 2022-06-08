@@ -64,7 +64,6 @@
 
       reader.onload = () => {
         const data = reader.result
-        // let view = new Uint8Array(data)
         resolve({
           file,
           data,

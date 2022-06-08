@@ -116,6 +116,7 @@
         'Content-Type': mimeType,
         'X-Tag': tag,
         Filename: filename,
+        'X-Mode': mode,
       },
     })
       .then((res) => {
@@ -126,7 +127,7 @@
             throw new Error(text)
           })
         }
-        
+
         addNotification({
           text: `Transaction submitted successfully`,
           position: 'bottom-left',
