@@ -82,9 +82,11 @@
     })
   }
 
-  let encrypt
-  let hashOnly
-  let autoSubmit
+  // let encrypt
+  let hashOnly = false
+  let autoSubmit = false
+
+  $: if (hashOnly) mode = 'hash'
 
   let keys
   const { addNotification } = getNotificationsContext()
@@ -132,7 +134,7 @@
         headers['X-Tag'] = tagString
       }
 
-      if (mode !== 'raw') {
+      if (mode === 'hash') {
         headers['X-Mode'] = mode
       }
 
@@ -154,20 +156,20 @@
             text: `Transaction submitted successfully`,
             position: 'bottom-left',
             type: 'success',
-            removeAfter: 2000,
+            removeAfter: 1000,
           })
 
           return res.json()
         })
         .catch((err) => {
+          console.log(err)
           const errJson = JSON.parse(err.message)
           addNotification({
             text: `Error: ${errJson.error}`,
             position: 'bottom-left',
             type: 'warning',
+            removeAfter: 2000,
           })
-
-          console.log(err)
         })
     })
   }
@@ -218,7 +220,7 @@
               Encrypt data
             </label> -->
             <label class="check">
-              <input type="checkbox" checked={hashOnly} />
+              <input type="checkbox" bind:checked={hashOnly} />
               Hash data (do not store original media)
             </label>
             <label class="check">
@@ -280,21 +282,20 @@
           {/each}
         </div>
       </div>
-    </div>
-
-    <div class="field is-grouped is-grouped-left">
-      <div class="control">
-        <button
-          class="button is-primary"
-          on:click={writeData}
-          disabled={submitButtonIsDisabled}
-          >{arr.length === 0
-            ? 'Submit'
-            : `Submit ${arr.length} transaction(s)`}</button
-        >
-      </div>
-      <div class="control">
-        <button class="button is-light" on:click={reset}>Reset</button>
+      <div class="field is-grouped is-grouped-left">
+        <div class="control">
+          <button
+            class="button is-primary"
+            on:click={writeData}
+            disabled={submitButtonIsDisabled}
+            >{arr.length === 0
+              ? 'Submit'
+              : `Submit ${arr.length} transaction(s)`}</button
+          >
+        </div>
+        <div class="control">
+          <button class="button is-light" on:click={reset}>Reset</button>
+        </div>
       </div>
     </div>
   </form>
