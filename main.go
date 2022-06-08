@@ -76,7 +76,7 @@ func main() {
 
 	db, err = getSqlDb(settings.Get("dbType"))
 	if err != nil {
-		log.Fatalf("could not get DB: %v", err)
+		log.Printf("WARN: could not get DB: %v", err)
 	}
 
 	defer db.Close()
@@ -100,7 +100,7 @@ func getSqlDb(dbType string) (*sqlx.DB, error) {
 
 		err = database.RunMigrationsPostgreSQL(db)
 		if err != nil {
-			return nil, errors.Wrap(err, "postgres database migration failed")
+			return db, errors.Wrap(err, "postgres database migration failed")
 		}
 	case "sqlite":
 		db, err = database.GetSQLiteDB(dbFolder, sqLiteDBFilename)
