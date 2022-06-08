@@ -213,10 +213,10 @@
       <div class="field-body">
         <div class="field">
           <p id="debug" class="control">
-            <label class="check">
+            <!-- <label class="check">
               <input type="checkbox" checked={encrypt} on:change={encrypt} />
               Encrypt data
-            </label>
+            </label> -->
             <label class="check">
               <input type="checkbox" checked={hashOnly} />
               Hash data (do not store original media)

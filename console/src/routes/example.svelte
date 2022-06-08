@@ -257,7 +257,7 @@
               <select id="mode" bind:value={mode}>
                 <option value="raw"> raw </option>
                 <option value="hash"> hash </option>
-                <option value="encrypt"> encrypt </option>
+                <!-- <option value="encrypt"> encrypt </option> -->
               </select>
             </div>
           </div>
