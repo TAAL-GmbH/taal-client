@@ -49,23 +49,17 @@ mkdir -p build/windows
 mkdir -p build/linux
 mkdir -p build/raspian
 
-if [[ $BUILD == "" ]]; then
-  FILENAME=${PROG_NAME}_${GIT_COMMIT}
-else
-  FILENAME=${PROG_NAME}_${GIT_COMMIT}_${BUILD}
-fi
+env GOOS=darwin GOARCH=amd64 go build -o build/darwin/${PROG_NAME}_intel -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+env GOOS=darwin GOARCH=arm64 go build -o build/darwin/${PROG_NAME}_arm -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+lipo -create -output build/darwin/$PROG_NAME build/darwin/${PROG_NAME}_intel build/darwin/${PROG_NAME}_arm
 
-env GOOS=darwin GOARCH=amd64 go build -o build/darwin/${FILENAME}_intel -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-env GOOS=darwin GOARCH=arm64 go build -o build/darwin/${FILENAME}_arm -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-lipo -create -output build/darwin/$FILENAME build/darwin/${FILENAME}_intel build/darwin/${FILENAME}_arm
-
-env GOOS=linux GOARCH=amd64 go build -o build/linux/$FILENAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-env GOOS=linux GOARCH=arm go build -o build/raspian/$FILENAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-env GOOS=windows GOARCH=386 go build -o build/windows/$FILENAME.exe -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+env GOOS=linux GOARCH=amd64 go build -o build/linux/$PROG_NAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+env GOOS=linux GOARCH=arm go build -o build/raspian/$PROG_NAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+env GOOS=windows GOARCH=386 go build -o build/windows/$PROG_NAME.exe -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 
 if [[ "$?" == "0" ]]; then
   echo $GIT_COMMIT > build/commit.dat
-  echo "${PROG_NAME}: Built $FILENAME"
+  echo "${PROG_NAME}: Built $PROG_NAME"
 else
   echo "${PROG_NAME}: Build FAILED"
 fi

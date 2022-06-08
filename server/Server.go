@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 
 	"taal-client/client"
 	"taal-client/console"
@@ -133,7 +134,14 @@ func (s Server) Start(stopServer chan bool) error {
 
 	log.Printf("INFO: Service starting on %s", s.address)
 	log.Printf("INFO: Requests will be proxied to %q", s.taal.Url)
-	log.Printf("INFO: Console available at http://%s", s.address)
+
+	// Try to parse the s.address.  If an error occurs, we will insert "localhost"
+	_, err := url.Parse(s.address)
+	if err != nil {
+		log.Printf("INFO: Console available at http://localhost%s", s.address)
+	} else {
+		log.Printf("INFO: Console available at http://%s", s.address)
+	}
 
 	if err := s.server.Start(s.address); err != nil && err != http.ErrServerClosed {
 		log.Printf("ERROR: HTTP server failed: %v", err)

@@ -38,7 +38,7 @@ After starting the TaalClient with ```taal-client``` you can then write data to 
 ```c
 curl --location --request POST 'http://localhost:9500/api/v1/write' \
 --header 'X-Tag: AN_OPTIONAL_TAG' \
---header 'X-Mode: <raw|hash|encrypt>' \
+--header 'X-Mode: <raw|hash>' \
 --header 'Authorization: Bearer <APIKey>' \
 --header 'Content-Type: application/json' \
 --data '{
@@ -68,3 +68,23 @@ curl --location --request GET 'http://localhost:9500/api/v1/read/<txid>' \
 --header 'Authorization: Bearer <APIKey>'
 ```
 
+
+## Linux notes
+
+Before running the taal-client binary, make sure it is executable by running
+
+```
+chmod 755 taal-client
+```
+
+
+## Mac users
+
+
+chmod 755
+
+![Mac1](./assets/mac1.png)
+
+![Mac2](./assets/mac2.png)
+
+![Mac3](./assets/mac3.png)

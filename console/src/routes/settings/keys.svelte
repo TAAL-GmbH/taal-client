@@ -4,7 +4,6 @@
   import { faPlus } from '@fortawesome/free-solid-svg-icons'
 
   import Key from './key.svelte'
-  import Notifications from 'svelte-notifications'
 
   import { getNotificationsContext } from 'svelte-notifications'
 
@@ -22,16 +21,42 @@
     isActive = false
   }
 
-  onMount(async () => {
-    try {
-      const r = await fetch(`${BASE_URL}/api/v1/apikeys`)
-      const data = await r.json()
-      keys = data.keys
-    } catch (err) {
-      console.log(err)
-    } finally {
-      loading = false
-    }
+  function getApiKeys() {
+    fetch(`${BASE_URL}/api/v1/apikeys`)
+      .then((res) => {
+        if (!res.ok) {
+          return res.text().then((text) => {
+            throw new Error(text)
+          })
+        }
+
+        return res.json()
+      })
+      .then((data) => {
+        keys = data.keys
+      })
+      .catch((err) => {
+        var errMessage = ''
+        try {
+          const errJson = JSON.parse(err.message)
+          errMessage = errJson.error
+        } catch (error) {
+          errMessage = err
+        }
+
+        addNotification({
+          text: `Failed to load api keys: ${errMessage}`,
+          position: 'bottom-left',
+          type: 'warning',
+          removeAfter: 2000,
+        })
+
+        console.log(errMessage)
+      })
+  }
+
+  onMount(() => {
+    getApiKeys()
   })
 
   let apiKey = ''
@@ -53,6 +78,8 @@
           })
 
           closeModal()
+          getApiKeys()
+
           return res.json()
         }
       })
@@ -85,16 +112,11 @@
           <th>Created</th>
           <th>API Key</th>
           <th>Address</th>
-          <th />
         </tr>
         {#each keys as key}
-          <Notifications>
-            <Key {key} />
-          </Notifications>
+          <Key {key} />
         {/each}
       </table>
-    {:else}
-      <p class="loading">Loading...</p>
     {/if}
   </div>
 </div>

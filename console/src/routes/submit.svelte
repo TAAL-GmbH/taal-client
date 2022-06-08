@@ -82,9 +82,11 @@
     })
   }
 
-  let encrypt
-  let hashOnly
-  let autoSubmit
+  // let encrypt
+  let hashOnly = false
+  let autoSubmit = false
+
+  $: if (hashOnly) mode = 'hash'
 
   let keys
   const { addNotification } = getNotificationsContext()
@@ -92,6 +94,7 @@
   let apiKey
   let tag = ''
   let tagString = ''
+  let mode = 'raw'
 
   $: tagString = tag ? tag : ''
   $: submitButtonIsDisabled = files == [] && apiKey == ''
@@ -125,13 +128,14 @@
       const headers = {
         Authorization: 'Bearer ' + apiKey,
         'Content-Type': a.file.type,
+        Filename: a.file.name,
       }
 
       if (tagString) {
         headers['X-Tag'] = tagString
       }
 
-      if (mode !== 'raw') {
+      if (mode === 'hash') {
         headers['X-Mode'] = mode
       }
 
@@ -148,28 +152,30 @@
             return res.text().then((text) => {
               throw new Error(text)
             })
-          } else {
-            addNotification({
-              text: `Transaction submitted successfully`,
-              position: 'bottom-left',
-              type: 'success',
-              removeAfter: 2000,
-            })
-
-            return res.json()
           }
+
+          addNotification({
+            text: `Transaction submitted successfully`,
+            position: 'bottom-left',
+            type: 'success',
+            removeAfter: 1000,
+          })
+
+          return res.json()
         })
         .catch((err) => {
+          console.log(err)
           const errJson = JSON.parse(err.message)
           addNotification({
             text: `Error: ${errJson.error}`,
             position: 'bottom-left',
             type: 'warning',
+            removeAfter: 2000,
           })
-
-          console.log(err)
         })
     })
+
+    reset()
   }
 </script>
 
@@ -213,18 +219,18 @@
       <div class="field-body">
         <div class="field">
           <p id="debug" class="control">
-            <label class="check">
+            <!-- <label class="check">
               <input type="checkbox" checked={encrypt} on:change={encrypt} />
               Encrypt data
-            </label>
+            </label> -->
             <label class="check">
-              <input type="checkbox" checked={hashOnly} />
+              <input type="checkbox" bind:checked={hashOnly} />
               Hash data (do not store original media)
             </label>
-            <label class="check">
+            <!-- <label class="check">
               <input type="checkbox" checked={autoSubmit} />
               Auto submit
-            </label>
+            </label> -->
           </p>
         </div>
       </div>
@@ -280,21 +286,20 @@
           {/each}
         </div>
       </div>
-    </div>
-
-    <div class="field is-grouped is-grouped-left">
-      <div class="control">
-        <button
-          class="button is-primary"
-          on:click={writeData}
-          disabled={submitButtonIsDisabled}
-          >{arr.length === 0
-            ? 'Submit'
-            : `Submit ${arr.length} transaction(s)`}</button
-        >
-      </div>
-      <div class="control">
-        <button class="button is-light" on:click={reset}>Reset</button>
+      <div class="field is-grouped is-grouped-left">
+        <div class="control">
+          <button
+            class="button is-primary"
+            on:click|preventDefault={writeData}
+            disabled={submitButtonIsDisabled}
+            >{arr.length === 0
+              ? 'Submit'
+              : `Submit ${arr.length} transaction(s)`}</button
+          >
+        </div>
+        <div class="control">
+          <button class="button is-light" on:click={reset}>Reset</button>
+        </div>
       </div>
     </div>
   </form>
