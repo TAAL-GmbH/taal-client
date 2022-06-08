@@ -67,6 +67,7 @@ func New(address string, taal *client.Client, repo Repository) Server {
 			echo.HeaderXRequestedWith,
 			"X-Tag",
 			"X-Mode",
+			"X-Key",
 			"Filename",
 		},
 	}))

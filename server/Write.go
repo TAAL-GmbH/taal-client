@@ -61,9 +61,29 @@ func (s Server) write(c echo.Context) error {
 		hash := sha256.Sum256(reqBody)
 		payload = []byte(hex.EncodeToString(hash[:]))
 	case "encrypt":
-		return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.New("Not implemented"))
+		//key := c.Request().Header.Get("x-key")
+		key := "123"
+		if key == "" {
+			return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.New("missing encryption key"))
+		}
+		encryptedString := Encrypt(string(reqBody), key)
+		decryptedString := Decrypt(encryptedString, key)
+		if decryptedString != string(reqBody) {
+			return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.New("decrypted body is wrong"))
+		}
+		payload = []byte(encryptedString)
 	default:
-		payload = reqBody
+		//payload = reqBody
+		key := "123"
+		if key == "" {
+			return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.New("missing encryption key"))
+		}
+		encryptedString := Encrypt(string(reqBody), key)
+		decryptedString := Decrypt(encryptedString, key)
+		if decryptedString != string(reqBody) {
+			return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.New("decrypted body is wrong"))
+		}
+		payload = []byte(encryptedString)
 	}
 
 	opReturnOutput, err := buildOpReturnOutput(c.Request().Header.Get("x-tag"), mimeType, payload)
