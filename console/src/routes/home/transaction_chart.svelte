@@ -2,26 +2,21 @@
   import chartjs, { CategoryScale } from 'chart.js'
   import { onMount } from 'svelte'
 
-  export let labelFormatFunc = (label) => {
-    return { label: label, unit: '' }
+  export let labelFormatCallbackFunc = (label) => {
+    return label
   }
-  export let valueLabel = ''
+  export let yAxisLabel = ''
   export let datasetLabel = ''
 
-  export let chartValues = []
-  export let chartLabels = []
+  export let yValues = []
+  export let xValues = []
 
-  let unit = ''
   let ctx
   let chart
   let chartCanvas
 
   const options = {
     responsive: true,
-    title: {
-      display: false,
-      text: 'Transaction history',
-    },
     scales: {
       yAxes: [
         {
@@ -33,15 +28,11 @@
             suggestedMin: 0,
             suggestedMax: 7,
             fontSize: fontSize,
-            callback: function (label, index, labels) {
-              var labelUnit = labelFormatFunc(label)
-              unit = labelUnit.unit
-              return labelUnit.label
-            },
+            callback: labelFormatCallbackFunc,
           },
           scaleLabel: {
             display: true,
-            labelString: valueLabel,
+            labelString: yAxisLabel,
             fontSize: fontSize,
           },
         },
@@ -82,17 +73,17 @@
     chart = new chartjs(ctx, config)
   })
 
-  function OnTransactionsChange(chartValues, chartLabels, valueLabel) {
+  function OnTransactionsChange(yValues, xValues, yAxisLabel) {
     if (chart == null) {
       return
     }
-    chart.data.labels = chartLabels
-    chart.data.datasets[0].data = chartValues
-    chart.options.scales.yAxes[0].scaleLabel.labelString = valueLabel
+    chart.data.labels = xValues
+    chart.data.datasets[0].data = yValues
+    chart.options.scales.yAxes[0].scaleLabel.labelString = yAxisLabel
     chart.update()
   }
 
-  $: OnTransactionsChange(chartValues, chartLabels, valueLabel)
+  $: OnTransactionsChange(yValues, xValues, yAxisLabel)
 </script>
 
 <canvas

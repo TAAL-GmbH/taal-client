@@ -18,10 +18,9 @@
   let initialChartValues
   let initialChartLabels
 
-  let chartLabels
-  let chartValuesDataSize
-  let chartValuesDataSizeTest
-  let chartValuesNrOfTxs
+  let xValues
+  let yValuesDataSize
+  let yValuesNrOfTxs
 
   onMount(() => {
     var today = new Date()
@@ -35,8 +34,8 @@
     initialChartValues = [0, 0]
   })
 
-  function formatDataSize(label) {
-    var nrOfDigits = label.toString().length
+  function formatDataSize(dataSizeValue) {
+    var nrOfDigits = dataSizeValue.toString().length
     var unit = ''
     var divisionFactor = 1
     if (nrOfDigits >= 10) {
@@ -55,8 +54,11 @@
       unit = 'kB'
     }
 
-    // return label / divisionFactor
-    return { label: label / divisionFactor, unit: unit }
+    return { value: dataSizeValue / divisionFactor, unit: unit }
+  }
+  function formatDataSizeCallBackFunc(label, index, labels) {
+    var labelUnit = formatDataSize(label)
+    return labelUnit.value
   }
 
   function unique(value, index, self) {
@@ -86,12 +88,12 @@
       statCombinedSize += element
     })
 
-    var labelUnit = formatDataSize(statCombinedSize)
-    dataSizeYLabel = 'Transaction size [' + labelUnit.unit + ']'
+    var dataSizeFormat = formatDataSize(statCombinedSize)
+    dataSizeYLabel = 'Transaction size [' + dataSizeFormat.unit + ']'
 
-    chartLabels = initialChartLabels
-    chartValuesDataSize = initialChartValues
-    chartValuesNrOfTxs = initialChartValues
+    xValues = initialChartLabels
+    yValuesDataSize = initialChartValues
+    yValuesNrOfTxs = initialChartValues
 
     if (transactions.length > 0) {
       var reverseTxs = []
@@ -99,20 +101,20 @@
       var valueLabelsNrOfTxs = {}
       reverseTxs = transactions.reverse() // Order of time axis is ascending
 
-      chartLabels = reverseTxs
+      xValues = reverseTxs
         .map((tx) => GetDateFromISODateString(tx.created_at))
         .filter(unique)
 
-      chartLabels.forEach((element) => {
+      xValues.forEach((element) => {
         valueLabelsDataSize[element] = 0
         valueLabelsNrOfTxs[element] = 0
       })
 
       sumDataSize(reverseTxs, valueLabelsDataSize)
-      chartValuesDataSize = Object.values(valueLabelsDataSize)
+      yValuesDataSize = Object.values(valueLabelsDataSize)
 
       countElements(reverseTxs, valueLabelsNrOfTxs)
-      chartValuesNrOfTxs = Object.values(valueLabelsNrOfTxs)
+      yValuesNrOfTxs = Object.values(valueLabelsNrOfTxs)
     }
   }
 
@@ -126,19 +128,19 @@
   <div class="field">
     <h1>Number of transactions: {statNrOfTransactions}</h1>
     <TransactionChart
-      valueLabel="Nr of transactions"
-      bind:chartLabels
-      bind:chartValues={chartValuesNrOfTxs}
+      yAxisLabel="Nr of transactions"
+      bind:xValues
+      bind:yValues={yValuesNrOfTxs}
       datasetLabel="# Tx"
     />
   </div>
   <div class="field">
     <h1>Combined data size of transactions: {TxDataSize(statCombinedSize)}</h1>
     <TransactionChart
-      bind:valueLabel={dataSizeYLabel}
-      bind:chartLabels
-      bind:chartValues={chartValuesDataSize}
-      labelFormatFunc={formatDataSize}
+      bind:yAxisLabel={dataSizeYLabel}
+      bind:xValues
+      bind:yValues={yValuesDataSize}
+      labelFormatCallbackFunc={formatDataSizeCallBackFunc}
       datasetLabel="Tx data size"
     />
   </div>
