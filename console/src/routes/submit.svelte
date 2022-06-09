@@ -9,11 +9,41 @@
   import Fa from 'svelte-fa'
   import { faFile, faUpload } from '@fortawesome/free-solid-svg-icons'
 
-  let settings = {}
+  const { addNotification } = getNotificationsContext()
+
+  let keys
+  let apiKey
+
+  let tag = ''
 
   let dropZone
 
   let files
+  let mode
+  let secret
+  let loading = true
+  // let autoSubmit = false
+
+  let arr = []
+  let over = false
+
+  $: if (tag && tag.length > 0) {
+    localStorage.setItem('tag', tag)
+  } else if (!loading) {
+    localStorage.removeItem('tag')
+  }
+
+  $: if (mode && mode.length > 0) {
+    localStorage.setItem('mode', mode)
+  } else if (!loading) {
+    localStorage.removeItem('mode')
+  }
+
+  $: if (secret && secret.length > 0) {
+    localStorage.setItem('secret', secret)
+  } else if (!loading) {
+    localStorage.removeItem('secret')
+  }
 
   $: if (files) {
     const promises = [...files].map((f) => {
@@ -25,11 +55,27 @@
     })
   }
 
-  let arr = []
+  $: submitButtonIsDisabled = files == [] && apiKey == ''
 
-  $: console.log('ARRAY OF FILES:', arr)
+  onMount(async () => {
+    const lastTag = localStorage.getItem('tag')
+    tag = lastTag || ''
 
-  let over = false
+    const lastKey = localStorage.getItem('apiKey')
+
+    const lastMode = localStorage.getItem('mode')
+    const lastSecret = localStorage.getItem('secret')
+
+    const r = await fetch(`${BASE_URL}/api/v1/apikeys`)
+    const data = await r.json()
+    keys = data.keys
+
+    apiKey = lastKey || keys[0].api_key
+    mode = lastMode || 'raw'
+    secret = lastSecret || ''
+
+    loading = false
+  })
 
   function handleDragEnter(e) {
     e.preventDefault()
@@ -60,7 +106,7 @@
 
   function readFile(file) {
     return new Promise((resolve, reject) => {
-      let reader = new FileReader()
+      const reader = new FileReader()
 
       reader.onload = () => {
         const data = reader.result
@@ -81,40 +127,6 @@
     })
   }
 
-  // let encrypt
-  let hashOnly = false
-  let autoSubmit = false
-
-  $: if (hashOnly) mode = 'hash'
-
-  let keys
-  const { addNotification } = getNotificationsContext()
-
-  let apiKey
-  let tag = ''
-  let tagString = ''
-  let mode = 'raw'
-
-  $: tagString = tag ? tag : ''
-  $: submitButtonIsDisabled = files == [] && apiKey == ''
-
-  onMount(async () => {
-    let res = await fetch(`${BASE_URL}/api/v1/settings`)
-    settings = await res.json()
-
-    if (localStorage.getItem('tag') !== 'null') {
-      tag = localStorage.getItem('tag')
-    }
-
-    const lastKey = localStorage.getItem('apiKey')
-
-    res = await fetch(`${BASE_URL}/api/v1/apikeys`)
-    const data = await res.json()
-    keys = data.keys
-
-    apiKey = lastKey || keys[0].api_key
-  })
-
   function reset() {
     files = null
     arr = []
@@ -127,15 +139,10 @@
       const headers = {
         Authorization: 'Bearer ' + apiKey,
         'Content-Type': a.file.type,
+        'X-Tag': tag,
         Filename: a.file.name,
-      }
-
-      if (tagString) {
-        headers['X-Tag'] = tagString
-      }
-
-      if (mode === 'hash') {
-        headers['X-Mode'] = mode
+        'X-Mode': mode,
+        'X-Key': secret,
       }
 
       fetch(url, {
@@ -211,67 +218,76 @@
       </div>
     </div>
 
-    <div class="field is-horizontal">
-      <div class="field-label is-normal has-text-left">
-        <label for="debug" class="label">Options:</label>
-      </div>
-      <div class="field-body">
+    <div class="columns">
+      <div class="column">
         <div class="field">
-          <p id="debug" class="control">
-            <!-- <label class="check">
-              <input type="checkbox" checked={encrypt} on:change={encrypt} />
-              Encrypt data
-            </label> -->
-            <label class="check">
-              <input type="checkbox" bind:checked={hashOnly} />
-              Hash data (do not store original media)
-            </label>
-            <!-- <label class="check">
-              <input type="checkbox" checked={autoSubmit} />
-              Auto submit
-            </label> -->
-          </p>
+          <div id="input" class="control">
+            <label class="label" for="mode">Mode</label>
+            <div class="select">
+              <select id="mode" bind:value={mode}>
+                <option value="raw">raw</option>
+                <option value="hash">hash</option>
+                <option value="encrypt">encrypt</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
+      {#if mode === 'encrypt'}
+        <div class="column">
+          <div class="field">
+            <div id="input3" class="control">
+              <label class="label" for="secret">Secret</label>
+              <input
+                id="secret"
+                class="input"
+                type="text"
+                placeholder="This is required in encryption mode"
+                bind:value={secret}
+              />
+            </div>
+          </div>
+        </div>
+      {/if}
     </div>
-  </div>
 
-  <section class="columns is-mobile is-centered">
-    <div
-      class="column is-8 droparea {over ? 'over' : ''}"
-      on:dragenter={handleDragEnter}
-      on:dragleave={handleDragLeave}
-      on:drop={handleDragDrop}
-      bind:this={dropZone}
-      id="drop_zone"
-      ondragover="return false"
-    >
-      <Fa icon={faFile} size="3x" />
-      <p class="top">
-        Upload something with the file dialog or by dragging and dropping files
-        onto the dashed region
-      </p>
+    <section class="columns is-mobile is-centered">
+      <div
+        class="column is-8 droparea {over ? 'over' : ''}"
+        on:dragenter={handleDragEnter}
+        on:dragleave={handleDragLeave}
+        on:drop={handleDragDrop}
+        bind:this={dropZone}
+        id="drop_zone"
+        ondragover="return false"
+      >
+        <Fa icon={faFile} size="3x" />
+        <p class="top">
+          Upload something with the file dialog or by dragging and dropping
+          files onto the dashed region
+        </p>
 
-      <label class="file-label top">
-        <input
-          class="file-input"
-          type="file"
-          id="file"
-          name="file"
-          capture
-          multiple
-          accept="image/*, audio/*, application/json, application/pdf, video/*, text/*"
-          bind:files
-        />
-        <span class="file-cta">
-          <span class="file-icon">
-            <Fa icon={faUpload} />
+        <label class="file-label top">
+          <input
+            class="file-input"
+            type="file"
+            id="file"
+            name="file"
+            capture
+            multiple
+            accept="image/*, audio/*, application/json, application/pdf, video/*, text/*"
+            bind:files
+          />
+          <span class="file-cta">
+            <span class="file-icon">
+              <Fa icon={faUpload} />
+            </span>
+            <span class="file-label"> Choose a file… </span>
           </span>
-          <span class="file-label"> Choose a file… </span>
-        </span>
-      </label>
-    </div>
-  </section>
+        </label>
+      </div>
+    </section>
+  </div>
 </form>
 
 {#if arr.length > 0}

@@ -7,33 +7,48 @@
 
   // FontAwesome icon...
   import Fa from 'svelte-fa'
-  import { faCopy } from '@fortawesome/free-solid-svg-icons'
-
-  let keys
-  let apiKey
+  import { faCopy, faUpload } from '@fortawesome/free-solid-svg-icons'
 
   const { addNotification } = getNotificationsContext()
 
   const stdMimeType = 'text/plain'
 
-  let taalClientURL = 'http://localhost:9500'
+  let taalClientURL = BASE_URL
+
+  let keys
+  let apiKey
   let tag
   let mimeType = stdMimeType
   let data
   let filename = ''
-  let mode = 'raw'
-
-  $: if (tag && tag.length > 0) {
-    localStorage.setItem('tag', tag)
-  }
-
+  let mode
+  let secret
+  let loading = true
   let curlCommand = ''
 
   let files = null
   let file = null
   let fileData = null
 
-  $: showCurl(apiKey, mimeType, tag, mode, data, taalClientURL)
+  $: if (tag && tag.length > 0) {
+    localStorage.setItem('tag', tag)
+  } else if (!loading) {
+    localStorage.removeItem('tag')
+  }
+
+  $: if (mode && mode.length > 0) {
+    localStorage.setItem('mode', mode)
+  } else if (!loading) {
+    localStorage.removeItem('mode')
+  }
+
+  $: if (secret && secret.length > 0) {
+    localStorage.setItem('secret', secret)
+  } else if (!loading) {
+    localStorage.removeItem('secret')
+  }
+
+  $: showCurl(apiKey, mimeType, tag, mode, secret, data, taalClientURL)
 
   $: submitButtonIsDisabled = data == '' || mimeType == '' || apiKey == ''
   $: inputDataDisabled = files != null
@@ -72,22 +87,39 @@
 
     const lastKey = localStorage.getItem('apiKey')
 
+    const lastMode = localStorage.getItem('mode')
+    const lastSecret = localStorage.getItem('secret')
+
     const r = await fetch(`${BASE_URL}/api/v1/apikeys`)
     const data = await r.json()
     keys = data.keys
+
     apiKey = lastKey || keys[0].api_key
+    mode = lastMode || 'raw'
+    secret = lastSecret || ''
+
+    loading = false
   })
 
   function copyToClipboard() {
     navigator.clipboard.writeText(curlCommand)
   }
 
-  function showCurl(key, type, tag, mode, data, url) {
+  function showCurl(key, type, tag, mode, secret, data, url) {
     let curl = 'curl \\\n  -X POST \\\n'
     if (key) curl += `  -H 'Authorization: Bearer ${key}' \\\n`
     if (type) curl += `  -H 'Content-Type: ${type}' \\\n`
     if (tag) curl += `  -H 'X-Tag: ${tag}' \\\n`
-    if (mode !== 'raw') curl += `  -H 'X-Mode: ${mode}' \\\n`
+    switch (mode) {
+      case 'hash':
+        curl += `  -H 'X-Mode: ${mode}' \\\n`
+        break
+
+      case 'encrypt':
+        curl += `  -H 'X-Mode: ${mode}' \\\n`
+        curl += `  -H 'X-Key: ${secret}' \\\n`
+        break
+    }
 
     if (file) {
       curl += `  --data-binary @${file.name} \\\n`
@@ -106,7 +138,7 @@
   }
 
   function writeData() {
-    let url = `${taalClientURL}/api/v1/transactions`
+    const url = `${BASE_URL}/api/v1/transactions`
 
     fetch(url, {
       method: 'POST',
@@ -117,6 +149,7 @@
         'X-Tag': tag,
         Filename: filename,
         'X-Mode': mode,
+        'X-Key': secret,
       },
     })
       .then((res) => {
@@ -241,9 +274,9 @@
               />
               <span class="file-cta">
                 <span class="file-icon">
-                  <i class="fas fa-upload" />
+                  <Fa icon={faUpload} />
                 </span>
-                <span class="file-label"> Choose a file… </span>
+                <span class="file-label">Choose a file… </span>
               </span>
             </label>
           </div>
@@ -256,12 +289,26 @@
             <label class="label" for="mode">Mode</label>
             <div class="select">
               <select id="mode" bind:value={mode}>
-                <option value="raw"> raw </option>
-                <option value="hash"> hash </option>
-                <!-- <option value="encrypt"> encrypt </option> -->
+                <option value="raw">raw</option>
+                <option value="hash">hash</option>
+                <option value="encrypt">encrypt</option>
               </select>
             </div>
           </div>
+          {#if mode === 'encrypt'}
+            <div class="field">
+              <div id="input3" class="control">
+                <label class="label" for="secret">Secret</label>
+                <input
+                  id="secret"
+                  class="input"
+                  type="text"
+                  placeholder="This is required in encryption mode"
+                  bind:value={secret}
+                />
+              </div>
+            </div>
+          {/if}
         </div>
       </div>
     </div>
