@@ -4,70 +4,48 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"encoding/hex"
+	"crypto/sha256"
 	"fmt"
 	"io"
 )
 
-func Encrypt(stringToEncrypt string, keyString string) (encryptedString string) {
-
-	//Since the key is in string, we need to convert decode it to bytes
-	key, _ := hex.DecodeString(keyString)
-	plaintext := []byte(stringToEncrypt)
-
-	//Create a new Cipher Block from the key
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		panic(err.Error())
+func pad(buf []byte, size int) ([]byte, error) {
+	bufLen := len(buf)
+	padLen := size - bufLen%size
+	padded := make([]byte, bufLen+padLen)
+	copy(padded, buf)
+	for i := 0; i < padLen; i++ {
+		padded[bufLen+i] = byte(padLen)
 	}
-
-	//Create a new GCM - https://en.wikipedia.org/wiki/Galois/Counter_Mode
-	//https://golang.org/pkg/crypto/cipher/#NewGCM
-	aesGCM, err := cipher.NewGCM(block)
-	if err != nil {
-		panic(err.Error())
-	}
-
-	//Create a nonce. Nonce should be from GCM
-	nonce := make([]byte, aesGCM.NonceSize())
-	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-		panic(err.Error())
-	}
-
-	//Encrypt the data using aesGCM.Seal
-	//Since we don't want to save the nonce somewhere else in this case, we add it as a prefix to the encrypted data. The first nonce argument in Seal is the prefix.
-	ciphertext := aesGCM.Seal(nonce, nonce, plaintext, nil)
-	return fmt.Sprintf("%x", ciphertext)
+	return padded, nil
 }
 
-func Decrypt(encryptedString string, keyString string) (decryptedString string) {
-
-	key, _ := hex.DecodeString(keyString)
-	enc, _ := hex.DecodeString(encryptedString)
-
-	//Create a new Cipher Block from the key
-	block, err := aes.NewCipher(key)
+func Encrypt(plainText []byte, key []byte) ([]byte, error) {
+	h := sha256.New()
+	h.Write(key)
+	keyHash := h.Sum(nil)
+	plainText, err := pad(plainText, aes.BlockSize)
 	if err != nil {
-		panic(err.Error())
+		return nil, fmt.Errorf(`plainText: "%s" has error`, plainText)
+	}
+	if len(plainText)%aes.BlockSize != 0 {
+		err := fmt.Errorf(`plainText: "%s" has the wrong block size`, plainText)
+		return nil, err
 	}
 
-	//Create a new GCM
-	aesGCM, err := cipher.NewGCM(block)
+	block, err := aes.NewCipher(keyHash)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 
-	//Get the nonce size
-	nonceSize := aesGCM.NonceSize()
-
-	//Extract the nonce from the encrypted data
-	nonce, ciphertext := enc[:nonceSize], enc[nonceSize:]
-
-	//Decrypt the data
-	plaintext, err := aesGCM.Open(nil, nonce, ciphertext, nil)
-	if err != nil {
-		panic(err.Error())
+	cipherText := make([]byte, aes.BlockSize+len(plainText))
+	iv := cipherText[:aes.BlockSize]
+	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+		return nil, err
 	}
 
-	return fmt.Sprintf("%s", plaintext)
+	mode := cipher.NewCBCEncrypter(block, iv)
+	mode.CryptBlocks(cipherText[aes.BlockSize:], plainText)
+
+	return cipherText, nil
 }
