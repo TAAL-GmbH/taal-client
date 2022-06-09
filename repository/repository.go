@@ -84,6 +84,36 @@ func (r Repository) GetAllTransactions(ctx context.Context, hoursBack int) ([]se
 	return txs, nil
 }
 
+func (r Repository) GetTransactionsStats(ctx context.Context, hoursBack int) ([]server.TransactionInfo, error) {
+	now := r.now()
+
+	timeBack := now.Add(-1 * time.Duration(hoursBack) * time.Hour).UTC().Format(ISO8601)
+	query := `SELECT SUBSTR(created_at, 0, $1) AS timestamp, count(*) as count, sum(data_bytes) AS data_bytes FROM transactions WHERE created_at > $2 GROUP BY timestamp ORDER BY timestamp DESC;`
+
+	txs := make([]TransactionInfo, 0)
+
+	err := r.db.SelectContext(ctx, &txs, query, 11, timeBack)
+	if err != nil {
+		return nil, err
+	}
+
+	txInfos := make([]server.TransactionInfo, len(txs))
+
+	for i, tx := range txs {
+		timestamp, err := time.Parse("2006-01-02", tx.Timestamp)
+		if err != nil {
+			return nil, err
+		}
+		txInfos[i] = server.TransactionInfo{
+			Timestamp: timestamp,
+			Count:     tx.Count,
+			DataBytes: tx.DataBytes,
+		}
+	}
+
+	return txInfos, nil
+}
+
 func (r Repository) Health(ctx context.Context) error {
 	return r.db.Ping()
 }

@@ -17,21 +17,9 @@ require (
 )
 
 require (
-	github.com/aead/siphash v1.0.1 // indirect
-	github.com/bitcoinsv/bsvlog v0.0.0-20181216181007-cb81b076bf2e // indirect
-	github.com/btcsuite/go-socks v0.0.0-20170105172521-4720035b7bfd // indirect
-	github.com/btcsuite/goleveldb v1.0.0 // indirect
-	github.com/btcsuite/snappy-go v1.0.0 // indirect
-	github.com/btcsuite/websocket v0.0.0-20150119174127-31079b680792 // indirect
-	github.com/btcsuite/winsvc v1.0.0 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
-	github.com/jessevdk/go-flags v1.5.0 // indirect
-	github.com/jrick/logrotate v1.0.0 // indirect
-	github.com/kkdai/bstream v1.0.0 // indirect
 	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect

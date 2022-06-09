@@ -26,6 +26,7 @@ type Repository interface {
 	GetAllKeys(ctx context.Context) ([]Key, error)
 	InsertTransaction(ctx context.Context, tx Transaction) error
 	GetAllTransactions(ctx context.Context, hoursBack int) ([]Transaction, error)
+	GetTransactionsStats(ctx context.Context, hoursBack int) ([]TransactionInfo, error)
 	Health(ctx context.Context) error
 }
 
