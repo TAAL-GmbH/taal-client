@@ -147,7 +147,7 @@
         Authorization: 'Bearer ' + apiKey,
         'Content-Type': mimeType,
         'X-Tag': tag,
-        Filename: filename,
+        'X-Filename': filename,
         'X-Mode': mode,
         'X-Key': secret,
       },

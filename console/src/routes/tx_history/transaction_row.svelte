@@ -12,7 +12,7 @@
 
   // FontAwesome icon...
   import Fa from 'svelte-fa'
-  import { faCopy } from '@fortawesome/free-solid-svg-icons'
+  import { faCopy, faKey } from '@fortawesome/free-solid-svg-icons'
 
   let backgroundColor
 
@@ -61,8 +61,13 @@
       txFilename={transaction.filename}
       txApiKey={transaction.api_key}
       txID={transaction.id}
-    /></td
-  >
+    />
+    {#if transaction.secret}
+      <span class="key">
+        <Fa icon={faKey} />
+      </span>
+    {/if}
+  </td>
 </tr>
 
 <style>
@@ -72,6 +77,11 @@
     border-radius: 50%;
     display: inline-block;
     margin-right: 5px;
+  }
+
+  .key {
+    display: inline-block;
+    padding: 10px;
   }
 
   #copyButton {

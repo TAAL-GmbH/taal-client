@@ -1,0 +1,1 @@
+ALTER TABLE transactions ADD COLUMN secret TEXT NOT NULL DEFAULT '';

@@ -26,6 +26,7 @@ type Repository interface {
 	GetAllKeys(ctx context.Context) ([]Key, error)
 	InsertTransaction(ctx context.Context, tx Transaction) error
 	GetAllTransactions(ctx context.Context, hoursBack int) ([]Transaction, error)
+	GetTransaction(ctx context.Context, txid string) (*Transaction, error)
 	Health(ctx context.Context) error
 }
 
@@ -68,7 +69,7 @@ func New(address string, taal *client.Client, repo Repository) Server {
 			"X-Tag",
 			"X-Mode",
 			"X-Key",
-			"Filename",
+			"X-Filename",
 		},
 	}))
 
