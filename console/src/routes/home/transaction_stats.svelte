@@ -11,16 +11,12 @@
   let statCombinedSize = 0
   let dataSizeYLabel = 'Transaction size [B]'
 
-  function countElements(txs, valueLabels) {
-    txs.forEach((tx) => valueLabels[GetDateFromISODateString(tx.created_at)]++)
-  }
-
   let initialChartValues
   let initialChartLabels
 
   let xValues
-  let yValuesDataSize
   let yValuesNrOfTxs
+  let yValuesDataSize
 
   onMount(() => {
     var today = new Date()
@@ -38,6 +34,7 @@
     var nrOfDigits = dataSizeValue.toString().length
     var unit = ''
     var divisionFactor = 1
+    var formattedValue = dataSizeValue
     if (nrOfDigits >= 10) {
       // size >= 1 GB
       divisionFactor = 1000000000
@@ -54,7 +51,8 @@
       unit = 'kB'
     }
 
-    return { value: dataSizeValue / divisionFactor, unit: unit }
+    formattedValue = dataSizeValue / divisionFactor
+    return { value: formattedValue, unit: unit }
   }
   function formatDataSizeCallBackFunc(label, index, labels) {
     var labelUnit = formatDataSize(label)
@@ -72,12 +70,29 @@
     )
   }
 
+  function countElements(txs, valueLabels) {
+    txs.forEach((tx) => valueLabels[GetDateFromISODateString(tx.created_at)]++)
+  }
+
+  function getYValuesGroupedByXValues(txs, xValues, func) {
+    var valueLabels = {}
+
+    xValues.forEach((element) => {
+      valueLabels[element] = 0
+    })
+
+    func(txs, valueLabels)
+    return Object.values(valueLabels)
+  }
+
   function OnTransactionsChange(transactions) {
     if (transactions == null) {
       return
     }
-    statCombinedSize = 0
+
     statNrOfTransactions = transactions.length
+
+    statCombinedSize = 0
     var dataSizes = transactions.map((tx) => tx.data_bytes)
 
     if (dataSizes.length == 0) {
@@ -97,24 +112,13 @@
 
     if (transactions.length > 0) {
       var reverseTxs = []
-      var valueLabelsDataSize = {}
-      var valueLabelsNrOfTxs = {}
       reverseTxs = transactions.reverse() // Order of time axis is ascending
-
       xValues = reverseTxs
         .map((tx) => GetDateFromISODateString(tx.created_at))
         .filter(unique)
 
-      xValues.forEach((element) => {
-        valueLabelsDataSize[element] = 0
-        valueLabelsNrOfTxs[element] = 0
-      })
-
-      sumDataSize(reverseTxs, valueLabelsDataSize)
-      yValuesDataSize = Object.values(valueLabelsDataSize)
-
-      countElements(reverseTxs, valueLabelsNrOfTxs)
-      yValuesNrOfTxs = Object.values(valueLabelsNrOfTxs)
+      yValuesNrOfTxs = getYValuesGroupedByXValues(reverseTxs, xValues, countElements)
+      yValuesDataSize = getYValuesGroupedByXValues(reverseTxs, xValues, sumDataSize)
     }
   }
 
