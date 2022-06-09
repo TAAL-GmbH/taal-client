@@ -5,7 +5,7 @@ keys_archive/
 taal-client
 node_modules/
 repository.db
-localdata/
 settings.conf.old
 settings.conf.tmp
+taal_client.db
 __debug_bin

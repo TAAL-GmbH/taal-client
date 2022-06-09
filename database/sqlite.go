@@ -7,6 +7,8 @@ import (
 
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
+
+	"taal-client/settings"
 )
 
 var (
@@ -20,7 +22,9 @@ func GetSQLiteDB(dbPath string, dbFilename string) (*sqlx.DB, error) {
 		}
 	}
 
-	sqliteDb, err := sql.Open("sqlite3", fmt.Sprintf("./%s/%s", dbPath, dbFilename))
+	dbFilePath := settings.Get("dbFilename")
+
+	sqliteDb, err := sql.Open("sqlite3", dbFilePath)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to open sqlite DB")
 	}
