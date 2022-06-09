@@ -1,10 +1,14 @@
 <script>
-  import chartjs from 'chart.js'
+  import chartjs, { CategoryScale } from 'chart.js'
   import { onMount } from 'svelte'
   import { GetDateFromISODateString } from '../util/format_functions.svelte'
 
   export let transactions
   export let valueFunction = () => {}
+
+  export let labelFormatFunc = (label) => {
+    return { label: label, unit: '' }
+  }
   export let valueLabel = ''
   export let datasetLabel = ''
 
@@ -13,6 +17,7 @@
 
   let initialChartValues
   let initialChartLabels
+  export let unit = ''
 
   let ctx
   let chart
@@ -33,14 +38,20 @@
           afterUpdate: function (axis) {
             axis.width = 100
           },
+
           ticks: {
             suggestedMin: 0,
             suggestedMax: 7,
             fontSize: fontSize,
+            callback: function (label, index, labels) {
+              var labelUnit = labelFormatFunc(label)
+              unit = labelUnit.unit
+              return labelUnit.label
+            },
           },
           scaleLabel: {
             display: true,
-            labelString: valueLabel,
+            labelString: valueLabel + unit,
             fontSize: fontSize,
           },
         },
@@ -120,10 +131,16 @@
 
     chart.data.labels = chartLabels
     chart.data.datasets[0].data = chartValues
+    chart.options.scales.yAxes[0].scaleLabel.labelString = valueLabel
     chart.update()
   }
 
   $: OnTransactionsChange(transactions)
 </script>
 
-<canvas width="200" height="40" bind:this={chartCanvas} id="transactionsChart" />
+<canvas
+  width="200"
+  height="40"
+  bind:this={chartCanvas}
+  id="transactionsChart"
+/>
