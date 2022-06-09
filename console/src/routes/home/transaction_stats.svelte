@@ -4,15 +4,36 @@
   import { GetDateFromISODateString } from '../util/format_functions.svelte'
   import TransactionsInfo from '../util/transactions_info.svelte'
   import Notifications from 'svelte-notifications'
+  import { onMount } from 'svelte'
 
   let transactions
-  let nrOfTransactions = 0
-  let combinedSize = 0
+  let statNrOfTransactions = 0
+  let statCombinedSize = 0
   let dataSizeYLabel = 'Transaction size [B]'
 
   function countElements(txs, valueLabels) {
     txs.forEach((tx) => valueLabels[GetDateFromISODateString(tx.created_at)]++)
   }
+
+  let initialChartValues
+  let initialChartLabels
+
+  let chartLabels
+  let chartValuesDataSize
+  let chartValuesDataSizeTest
+  let chartValuesNrOfTxs
+
+  onMount(() => {
+    var today = new Date()
+    var tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+
+    initialChartLabels = [
+      GetDateFromISODateString(today),
+      GetDateFromISODateString(tomorrow),
+    ]
+    initialChartValues = [0, 0]
+  })
 
   function formatDataSize(label) {
     var nrOfDigits = label.toString().length
@@ -38,6 +59,10 @@
     return { label: label / divisionFactor, unit: unit }
   }
 
+  function unique(value, index, self) {
+    return self.indexOf(value) === index
+  }
+
   function sumDataSize(txs, valueLabels) {
     txs.forEach(
       (tx) =>
@@ -49,21 +74,46 @@
     if (transactions == null) {
       return
     }
-    combinedSize = 0
-    nrOfTransactions = transactions.length
+    statCombinedSize = 0
+    statNrOfTransactions = transactions.length
     var dataSizes = transactions.map((tx) => tx.data_bytes)
 
     if (dataSizes.length == 0) {
-      combinedSize = 0
+      statCombinedSize = 0
     }
 
     dataSizes.forEach((element) => {
-      combinedSize += element
+      statCombinedSize += element
     })
 
-    var labelUnit = formatDataSize(combinedSize)
-    dataSizeYLabel = 'Transaction size ['+labelUnit.unit+']' 
-    console.log(dataSizeYLabel)
+    var labelUnit = formatDataSize(statCombinedSize)
+    dataSizeYLabel = 'Transaction size [' + labelUnit.unit + ']'
+
+    chartLabels = initialChartLabels
+    chartValuesDataSize = initialChartValues
+    chartValuesNrOfTxs = initialChartValues
+
+    if (transactions.length > 0) {
+      var reverseTxs = []
+      var valueLabelsDataSize = {}
+      var valueLabelsNrOfTxs = {}
+      reverseTxs = transactions.reverse() // Order of time axis is ascending
+
+      chartLabels = reverseTxs
+        .map((tx) => GetDateFromISODateString(tx.created_at))
+        .filter(unique)
+
+      chartLabels.forEach((element) => {
+        valueLabelsDataSize[element] = 0
+        valueLabelsNrOfTxs[element] = 0
+      })
+
+      sumDataSize(reverseTxs, valueLabelsDataSize)
+      chartValuesDataSize = Object.values(valueLabelsDataSize)
+
+      countElements(reverseTxs, valueLabelsNrOfTxs)
+      chartValuesNrOfTxs = Object.values(valueLabelsNrOfTxs)
+    }
   }
 
   $: OnTransactionsChange(transactions)
@@ -74,22 +124,22 @@
     <TransactionsInfo bind:transactions />
   </Notifications>
   <div class="field">
-    <h1>Number of transactions: {nrOfTransactions}</h1>
+    <h1>Number of transactions: {statNrOfTransactions}</h1>
     <TransactionChart
       valueLabel="Nr of transactions"
-      valueFunction={countElements}
+      bind:chartLabels
+      bind:chartValues={chartValuesNrOfTxs}
       datasetLabel="# Tx"
-      bind:transactions
     />
   </div>
   <div class="field">
-    <h1>Combined data size of transactions: {TxDataSize(combinedSize)}</h1>
+    <h1>Combined data size of transactions: {TxDataSize(statCombinedSize)}</h1>
     <TransactionChart
       bind:valueLabel={dataSizeYLabel}
-      valueFunction={sumDataSize}
+      bind:chartLabels
+      bind:chartValues={chartValuesDataSize}
       labelFormatFunc={formatDataSize}
       datasetLabel="Tx data size"
-      bind:transactions
     />
   </div>
 </div>
