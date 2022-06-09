@@ -30,18 +30,20 @@
 <tr>
   <td class="is-vcentered">{GetFormatedTxTimestamp(transaction.created_at)}</td>
   <td class="is-vcentered">
-    <button
-      id="copyButton"
-      class="button is-small is-vcentered "
-      on:click|preventDefault={copyToClipboard}
-    >
-      <Fa icon={faCopy} color="silver" />
-    </button>
-    <a href="https://www.whatsonchain.com/tx/{transaction.id}">
-      <span class="is-vcentered">
-        {TruncateTxID(transaction.id)}
-      </span>
-    </a>
+    <div style="margin-top: 6px;">
+      <button
+        id="copyButton"
+        class="button is-small is-vcentered "
+        on:click|preventDefault={copyToClipboard}
+      >
+        <Fa icon={faCopy} color="silver" />
+      </button>
+      <a href="https://www.whatsonchain.com/tx/{transaction.id}">
+        <span class="is-vcentered">
+          {TruncateTxID(transaction.id)}
+        </span>
+      </a>
+    </div>
   </td>
   <td class="is-vcentered">
     <span class="dot" style={backgroundColor} />
