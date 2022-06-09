@@ -61,7 +61,15 @@ func (s Server) write(c echo.Context) error {
 		hash := sha256.Sum256(reqBody)
 		payload = []byte(hex.EncodeToString(hash[:]))
 	case "encrypt":
-		return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.New("Not implemented"))
+		key := c.Request().Header.Get("x-key")
+		if key == "" {
+			return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.New("missing encryption key"))
+		}
+		encryptedBytes, err := Encrypt(reqBody, []byte(key))
+		if err != nil {
+			return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.New("decrypted body is wrong1"))
+		}
+		payload = encryptedBytes
 	default:
 		payload = reqBody
 	}
