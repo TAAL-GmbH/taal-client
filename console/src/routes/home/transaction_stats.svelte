@@ -10,6 +10,8 @@
   let statNrOfTransactions = 0
   let statCombinedSize = 0
   let dataSizeYLabel = 'Transaction size [B]'
+  
+  let dataSizeDivisionFactor = 1
 
   let initialChartValues
   let initialChartLabels
@@ -30,33 +32,22 @@
     initialChartValues = [0, 0]
   })
 
-  function formatDataSize(dataSizeValue) {
+  function formatDataSizeDivFactor(dataSizeValue) {
     var nrOfDigits = dataSizeValue.toString().length
-    var unit = ''
-    var divisionFactor = 1
-    var formattedValue = dataSizeValue
     if (nrOfDigits >= 10) {
       // size >= 1 GB
-      divisionFactor = 1000000000
-      unit = 'GB'
+      return { divFactor: 1000000000, unit: 'GB' }
     }
     if (nrOfDigits >= 7) {
       // size >= 1 MB
-      divisionFactor = 1000000
-      unit = 'MB'
+      return { divFactor: 1000000, unit: 'MB' }
     }
     if (nrOfDigits >= 4) {
       // size >= 1 kB
-      divisionFactor = 1000
-      unit = 'kB'
+      return { divFactor: 1000, unit: 'kB' }
     }
 
-    formattedValue = dataSizeValue / divisionFactor
-    return { value: formattedValue, unit: unit }
-  }
-  function formatDataSizeCallBackFunc(label, index, labels) {
-    var labelUnit = formatDataSize(label)
-    return labelUnit.value
+    return { divFactor: 1, unit: 'B' }
   }
 
   function unique(value, index, self) {
@@ -103,9 +94,6 @@
       statCombinedSize += element
     })
 
-    var dataSizeFormat = formatDataSize(statCombinedSize)
-    dataSizeYLabel = 'Transaction size [' + dataSizeFormat.unit + ']'
-
     xValues = initialChartLabels
     yValuesDataSize = initialChartValues
     yValuesNrOfTxs = initialChartValues
@@ -117,9 +105,23 @@
         .map((tx) => GetDateFromISODateString(tx.created_at))
         .filter(unique)
 
+      yValuesNrOfTxs = getYValuesGroupedByXValues(
+        reverseTxs,
+        xValues,
+        countElements
+      )
+      yValuesDataSize = getYValuesGroupedByXValues(
+        reverseTxs,
+        xValues,
+        sumDataSize
+      )
       yValuesNrOfTxs = getYValuesGroupedByXValues(reverseTxs, xValues, countElements)
       yValuesDataSize = getYValuesGroupedByXValues(reverseTxs, xValues, sumDataSize)
     }
+
+    dataSizeYLabel = 'Transaction size [' + formatDataSizeDivFactor(Math.max(...yValuesDataSize)).unit + ']'
+    
+    dataSizeDivisionFactor = formatDataSizeDivFactor(Math.max(...yValuesDataSize)).divFactor
   }
 
   $: OnTransactionsChange(transactions)
@@ -144,7 +146,7 @@
       bind:yAxisLabel={dataSizeYLabel}
       bind:xValues
       bind:yValues={yValuesDataSize}
-      labelFormatCallbackFunc={formatDataSizeCallBackFunc}
+      bind:divicionFactor={dataSizeDivisionFactor}
       datasetLabel="Tx data size"
     />
   </div>

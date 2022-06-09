@@ -2,14 +2,12 @@
   import chartjs, { CategoryScale } from 'chart.js'
   import { onMount } from 'svelte'
 
-  export let labelFormatCallbackFunc = (label) => {
-    return label
-  }
   export let yAxisLabel = ''
   export let datasetLabel = ''
 
   export let yValues = []
   export let xValues = []
+  export let divicionFactor = 1
 
   let ctx
   let chart
@@ -28,7 +26,9 @@
             suggestedMin: 0,
             suggestedMax: 7,
             fontSize: fontSize,
-            callback: labelFormatCallbackFunc,
+            callback: function (label, index, labels) {
+              return label / divicionFactor
+            },
           },
           scaleLabel: {
             display: true,
