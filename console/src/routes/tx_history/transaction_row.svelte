@@ -38,7 +38,10 @@
       >
         <Fa icon={faCopy} color="silver" />
       </button>
-      <a href="https://www.whatsonchain.com/tx/{transaction.id}">
+      <a
+        href="https://www.whatsonchain.com/tx/{transaction.id}"
+        target="_blank"
+      >
         <span class="is-vcentered">
           {TruncateTxID(transaction.id)}
         </span>
