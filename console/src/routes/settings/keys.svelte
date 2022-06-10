@@ -117,6 +117,8 @@
           <Key {key} />
         {/each}
       </table>
+    {:else}
+      <p class="loading">Loading...</p>
     {/if}
   </div>
 </div>
