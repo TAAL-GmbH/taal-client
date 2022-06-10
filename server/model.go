@@ -37,6 +37,10 @@ type TransactionInfo struct {
 	DataBytes int       `json:"data_bytes"`
 }
 
+type TransactionInfos struct {
+	Transactions []TransactionInfo `json:"transactions"`
+}
+
 type Transactions struct {
 	Transactions []Transaction `json:"transactions"`
 }

@@ -245,25 +245,50 @@ func TestGetTransactionsStats(t *testing.T) {
 	err := prepareTestDatabase()
 	is.NoErr(err)
 
-	now := func() time.Time {
-		return time.Date(2022, 6, 1, 10, 0, 0, 0, time.UTC)
-	}
-	repo := repository.NewRepository(db, now)
+	to := time.Date(2022, 6, 1, 10, 0, 0, 0, time.UTC)
+
+	repo := repository.NewRepository(db, nil)
 	ctx := context.Background()
 
 	tt := []struct {
 		name        string
-		hoursBack   int
+		from        time.Time
 		expectedTxs []server.TransactionInfo
 	}{
 		{
 			name:        "0 hours back",
-			hoursBack:   0,
+			from:        to,
 			expectedTxs: []server.TransactionInfo{},
 		},
 		{
-			name:      "30 days back",
-			hoursBack: 24 * 30,
+			name: "30 days back",
+			from: to.AddDate(0, 0, -30),
+			expectedTxs: []server.TransactionInfo{
+				{
+					Timestamp: time.Date(2022, 5, 25, 0, 0, 0, 0, time.UTC),
+					DataBytes: 100,
+					Count:     1,
+				},
+				{
+					Timestamp: time.Date(2022, 5, 23, 0, 0, 0, 0, time.UTC),
+					DataBytes: 50,
+					Count:     1,
+				},
+				{
+					Timestamp: time.Date(2022, 5, 12, 0, 0, 0, 0, time.UTC),
+					DataBytes: 533,
+					Count:     2,
+				},
+				{
+					Timestamp: time.Date(2022, 5, 10, 0, 0, 0, 0, time.UTC),
+					DataBytes: 100,
+					Count:     1,
+				},
+			},
+		},
+		{
+			name: "30 days back, hour granularity",
+			from: to.AddDate(0, 0, -30),
 			expectedTxs: []server.TransactionInfo{
 				{
 					Timestamp: time.Date(2022, 5, 25, 0, 0, 0, 0, time.UTC),
@@ -291,7 +316,7 @@ func TestGetTransactionsStats(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			transactions, err := repo.GetTransactionsStats(ctx, tc.hoursBack)
+			transactions, err := repo.GetTransactionsStats(ctx, tc.from, to, server.Day)
 			is.NoErr(err)
 
 			is.Equal(tc.expectedTxs, transactions)
