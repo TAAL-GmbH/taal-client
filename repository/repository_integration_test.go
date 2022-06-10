@@ -207,6 +207,13 @@ func TestGetTransactions(t *testing.T) {
 					Filename:  "textfile2.txt",
 				},
 				{
+					ID:        "27EC83F0",
+					ApiKey:    "api_key_1",
+					DataBytes: 333,
+					CreatedAt: "2022-05-12 22:10:58.022+00:00",
+					Filename:  "somepicture5.png",
+				},
+				{
 					ID:        "7650035F",
 					ApiKey:    "api_key_2",
 					DataBytes: 200,
@@ -227,6 +234,91 @@ func TestGetTransactions(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
 			transactions, err := repo.GetAllTransactions(ctx, tc.hoursBack)
+			is.NoErr(err)
+
+			is.Equal(tc.expectedTxs, transactions)
+
+		})
+	}
+}
+
+func TestGetTransactionsStats(t *testing.T) {
+	is := is.New(t)
+	err := prepareTestDatabase()
+	is.NoErr(err)
+
+	to := time.Date(2022, 6, 1, 10, 0, 0, 0, time.UTC)
+
+	repo := repository.NewRepository(db, nil)
+	ctx := context.Background()
+
+	tt := []struct {
+		name        string
+		from        time.Time
+		expectedTxs []server.TransactionInfo
+	}{
+		{
+			name:        "0 hours back",
+			from:        to,
+			expectedTxs: []server.TransactionInfo{},
+		},
+		{
+			name: "30 days back",
+			from: to.AddDate(0, 0, -30),
+			expectedTxs: []server.TransactionInfo{
+				{
+					Timestamp: time.Date(2022, 5, 25, 0, 0, 0, 0, time.UTC),
+					DataBytes: 100,
+					Count:     1,
+				},
+				{
+					Timestamp: time.Date(2022, 5, 23, 0, 0, 0, 0, time.UTC),
+					DataBytes: 50,
+					Count:     1,
+				},
+				{
+					Timestamp: time.Date(2022, 5, 12, 0, 0, 0, 0, time.UTC),
+					DataBytes: 533,
+					Count:     2,
+				},
+				{
+					Timestamp: time.Date(2022, 5, 10, 0, 0, 0, 0, time.UTC),
+					DataBytes: 100,
+					Count:     1,
+				},
+			},
+		},
+		{
+			name: "30 days back, hour granularity",
+			from: to.AddDate(0, 0, -30),
+			expectedTxs: []server.TransactionInfo{
+				{
+					Timestamp: time.Date(2022, 5, 25, 0, 0, 0, 0, time.UTC),
+					DataBytes: 100,
+					Count:     1,
+				},
+				{
+					Timestamp: time.Date(2022, 5, 23, 0, 0, 0, 0, time.UTC),
+					DataBytes: 50,
+					Count:     1,
+				},
+				{
+					Timestamp: time.Date(2022, 5, 12, 0, 0, 0, 0, time.UTC),
+					DataBytes: 533,
+					Count:     2,
+				},
+				{
+					Timestamp: time.Date(2022, 5, 10, 0, 0, 0, 0, time.UTC),
+					DataBytes: 100,
+					Count:     1,
+				},
+			},
+		},
+	}
+
+	for _, tc := range tt {
+		t.Run(tc.name, func(t *testing.T) {
+			transactions, err := repo.GetTransactionInfo(ctx, tc.from, to, server.Day)
 			is.NoErr(err)
 
 			is.Equal(tc.expectedTxs, transactions)

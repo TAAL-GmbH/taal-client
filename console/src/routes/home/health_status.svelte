@@ -5,9 +5,9 @@
 
 <div class="field">
   {#if status == 'healthy'}
-    <button {id} class="button is-success">Healthy</button>
+    <button {id} class="button is-success is-light">Healthy</button>
   {:else if status == 'unhealthy'}
-    <button {id} class="button is-danger">Unhealthy</button>
+    <button {id} class="button is-danger is-light">Unhealthy</button>
   {:else}
     <button {id} class="button is-loading" />
   {/if}

@@ -4,7 +4,7 @@
 
   import TransactionRows from './transaction_rows.svelte'
   import Cards from './transaction_cards.svelte'
-  import TransactionsInfo from '../util/transactions_info.svelte'
+  import Transactions from '../util/transactions.svelte'
   import { setButtonClassIsSuccess } from '../util/control_functions.svelte'
   import Notifications from 'svelte-notifications'
 
@@ -49,7 +49,7 @@
   >
 </div>
 <Notifications>
-  <TransactionsInfo bind:transactions />
+  <Transactions bind:transactions />
 </Notifications>
 {#if transactions}
   {#if listViewSelected}

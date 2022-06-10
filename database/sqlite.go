@@ -2,14 +2,12 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
 	"path/filepath"
+	"taal-client/settings"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
-
-	"taal-client/settings"
 )
 
 var (
@@ -38,8 +36,7 @@ func GetSQLiteDB() (*sqlx.DB, error) {
 }
 
 func RemoveSQLiteDB() error {
-	err := os.RemoveAll(fmt.Sprintf("./%s/", dbPathToRemove))
-
+	err := os.RemoveAll(dbPathToRemove)
 	if err != nil {
 		return errors.Wrap(err, "unable to remove sqlite db")
 	}

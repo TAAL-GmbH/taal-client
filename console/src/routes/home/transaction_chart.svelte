@@ -7,7 +7,8 @@
 
   export let yValues = []
   export let xValues = []
-  export let divicionFactor = 1
+  export let divisionFactor = 1
+  export let timeUnit = 'day'
 
   let ctx
   let chart
@@ -24,10 +25,9 @@
 
           ticks: {
             suggestedMin: 0,
-            suggestedMax: 7,
             fontSize: fontSize,
             callback: function (label, index, labels) {
-              return label / divicionFactor
+              return label / divisionFactor
             },
           },
           scaleLabel: {
@@ -42,7 +42,7 @@
           type: 'time',
           distribution: 'linear',
           time: {
-            unit: 'day',
+            unit: timeUnit,
           },
           ticks: {
             fontSize: fontSize,
@@ -56,15 +56,16 @@
 
   onMount(() => {
     const config = {
-      type: 'bar',
+      type: 'line',
       options: options,
       data: {
         datasets: [
           {
             label: datasetLabel,
-            borderColor: 'rgb(255, 99, 132)',
-            backgroundColor: 'rgb(204, 255, 153)',
-            fill: false,
+            borderColor: 'rgb(179, 179, 179)',
+            backgroundColor: 'rgb(51, 204, 255)',
+            lineTension: '0.3',
+            fill: true,
           },
         ],
       },
@@ -73,17 +74,18 @@
     chart = new chartjs(ctx, config)
   })
 
-  function OnTransactionsChange(yValues, xValues, yAxisLabel) {
+  function OnTransactionsChange(yValues, xValues, yAxisLabel, timeUnit) {
     if (chart == null) {
       return
     }
     chart.data.labels = xValues
     chart.data.datasets[0].data = yValues
     chart.options.scales.yAxes[0].scaleLabel.labelString = yAxisLabel
+    chart.options.scales.xAxes[0].time.unit = timeUnit
     chart.update()
   }
 
-  $: OnTransactionsChange(yValues, xValues, yAxisLabel)
+  $: OnTransactionsChange(yValues, xValues, yAxisLabel, timeUnit)
 </script>
 
 <canvas
