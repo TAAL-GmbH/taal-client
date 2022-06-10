@@ -1,6 +1,6 @@
 <script>
   import { setButtonClassIsSuccess } from './control_functions.svelte'
-  export let transactions = []
+  export let transactionInfos = []
   import { getNotificationsContext } from 'svelte-notifications'
 
   const { addNotification } = getNotificationsContext()
@@ -50,7 +50,7 @@
         return res.json()
       })
       .then((data) => {
-        transactions = data.transactions
+        transactionInfos = data.transactions
       })
       .catch((err) => {
         const errJson = JSON.parse(err.message)

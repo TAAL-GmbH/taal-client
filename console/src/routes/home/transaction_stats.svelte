@@ -1,35 +1,25 @@
 <script>
   import { TxDataSize } from '../util/format_functions.svelte'
   import TransactionChart from './transaction_chart.svelte'
-  import { GetDateFromISODateString } from '../util/format_functions.svelte'
   import TransactionsInfo from '../util/transactions_info.svelte'
   import Notifications from 'svelte-notifications'
   import { onMount } from 'svelte'
 
-  let transactions
+  let transactionInfos
   let statNrOfTransactions = 0
   let statCombinedSize = 0
   let dataSizeYLabel = 'Transaction size [B]'
-  
+
   let dataSizeDivisionFactor = 1
 
-  let initialChartValues
-  let initialChartLabels
-
-  let xValues
-  let yValuesNrOfTxs
-  let yValuesDataSize
+  let xValuesInfos
+  let yValuesInfosNrOfTxs
+  let yValuesInfosDataSize
 
   onMount(() => {
     var today = new Date()
     var tomorrow = new Date(today)
     tomorrow.setDate(tomorrow.getDate() + 1)
-
-    initialChartLabels = [
-      GetDateFromISODateString(today),
-      GetDateFromISODateString(tomorrow),
-    ]
-    initialChartValues = [0, 0]
   })
 
   function formatDataSizeDivFactor(dataSizeValue) {
@@ -50,93 +40,46 @@
     return { divFactor: 1, unit: 'B' }
   }
 
-  function unique(value, index, self) {
-    return self.indexOf(value) === index
-  }
-
-  function sumDataSize(txs, valueLabels) {
-    txs.forEach(
-      (tx) =>
-        (valueLabels[GetDateFromISODateString(tx.created_at)] += tx.data_bytes)
-    )
-  }
-
-  function countElements(txs, valueLabels) {
-    txs.forEach((tx) => valueLabels[GetDateFromISODateString(tx.created_at)]++)
-  }
-
-  function getYValuesGroupedByXValues(txs, xValues, func) {
-    var valueLabels = {}
-
-    xValues.forEach((element) => {
-      valueLabels[element] = 0
-    })
-
-    func(txs, valueLabels)
-    return Object.values(valueLabels)
-  }
-
-  function OnTransactionsChange(transactions) {
-    if (transactions == null) {
+  function OnTransactionsChange(transactionInfos) {
+    if (transactionInfos == null) {
       return
     }
 
-    statNrOfTransactions = transactions.length
+    statNrOfTransactions = transactionInfos.length
 
-    statCombinedSize = 0
-    var dataSizes = transactions.map((tx) => tx.data_bytes)
+    statCombinedSize = transactionInfos
+      .map((tx) => tx.data_bytes)
+      .reduce((partialSum, a) => partialSum + a, 0)
 
-    if (dataSizes.length == 0) {
-      statCombinedSize = 0
+    if (transactionInfos.length > 0) {
+      xValuesInfos = transactionInfos.map((item) => item.timestamp)
+      yValuesInfosNrOfTxs = transactionInfos.map((item) => item.count)
+      yValuesInfosDataSize = transactionInfos.map((item) => item.data_bytes)
     }
 
-    dataSizes.forEach((element) => {
-      statCombinedSize += element
-    })
+    dataSizeYLabel =
+      'Transaction size [' +
+      formatDataSizeDivFactor(Math.max(...yValuesInfosDataSize)).unit +
+      ']'
 
-    xValues = initialChartLabels
-    yValuesDataSize = initialChartValues
-    yValuesNrOfTxs = initialChartValues
-
-    if (transactions.length > 0) {
-      var reverseTxs = []
-      reverseTxs = transactions.reverse() // Order of time axis is ascending
-      xValues = reverseTxs
-        .map((tx) => GetDateFromISODateString(tx.created_at))
-        .filter(unique)
-
-      yValuesNrOfTxs = getYValuesGroupedByXValues(
-        reverseTxs,
-        xValues,
-        countElements
-      )
-      yValuesDataSize = getYValuesGroupedByXValues(
-        reverseTxs,
-        xValues,
-        sumDataSize
-      )
-      yValuesNrOfTxs = getYValuesGroupedByXValues(reverseTxs, xValues, countElements)
-      yValuesDataSize = getYValuesGroupedByXValues(reverseTxs, xValues, sumDataSize)
-    }
-
-    dataSizeYLabel = 'Transaction size [' + formatDataSizeDivFactor(Math.max(...yValuesDataSize)).unit + ']'
-    
-    dataSizeDivisionFactor = formatDataSizeDivFactor(Math.max(...yValuesDataSize)).divFactor
+    dataSizeDivisionFactor = formatDataSizeDivFactor(
+      Math.max(...yValuesInfosDataSize)
+    ).divFactor
   }
 
-  $: OnTransactionsChange(transactions)
+  $: OnTransactionsChange(transactionInfos)
 </script>
 
 <div class="field">
   <Notifications>
-    <TransactionsInfo bind:transactions />
+    <TransactionsInfo bind:transactionInfos />
   </Notifications>
   <div class="field">
     <h1>Number of transactions: {statNrOfTransactions}</h1>
     <TransactionChart
       yAxisLabel="Nr of transactions"
-      bind:xValues
-      bind:yValues={yValuesNrOfTxs}
+      bind:xValues={xValuesInfos}
+      bind:yValues={yValuesInfosNrOfTxs}
       datasetLabel="# Tx"
     />
   </div>
@@ -144,8 +87,8 @@
     <h1>Combined data size of transactions: {TxDataSize(statCombinedSize)}</h1>
     <TransactionChart
       bind:yAxisLabel={dataSizeYLabel}
-      bind:xValues
-      bind:yValues={yValuesDataSize}
+      bind:xValues={xValuesInfos}
+      bind:yValues={yValuesInfosDataSize}
       bind:divicionFactor={dataSizeDivisionFactor}
       datasetLabel="Tx data size"
     />

@@ -84,7 +84,7 @@ func (r Repository) GetAllTransactions(ctx context.Context, hoursBack int) ([]se
 	return txs, nil
 }
 
-func (r Repository) GetTransactionsStats(ctx context.Context, from time.Time, to time.Time, granularity server.Granularity) ([]server.TransactionInfo, error) {
+func (r Repository) GetTransactionInfo(ctx context.Context, from time.Time, to time.Time, granularity server.Granularity) ([]server.TransactionInfo, error) {
 
 	query := `SELECT SUBSTR(created_at, 0, $1) AS timestamp, count(*) as count, sum(data_bytes) AS data_bytes FROM transactions WHERE created_at > $2 AND created_at < $3 GROUP BY timestamp ORDER BY timestamp DESC;`
 
