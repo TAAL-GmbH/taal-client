@@ -28,10 +28,9 @@
 <Router {url}>
   <nav class="navbar is-fixed-top is-dark" aria-label="main navigation">
     <div class="navbar-brand">
-      <a class="navbar-item has-text-light" href="https://taal.com">
-        <img {src} alt="Taal logo" />
-        <span class="is-size-4 client">Client</span>
-      </a>
+      <span class="navbar-item has-text-light">
+        <span class="is-size-4 client">TaalClient</span>
+      </span>
 
       <a
         href="#/"
@@ -52,16 +51,16 @@
       <div class="navbar-start is-dark">
         <Link to="/" class="navbar-item" on:click={closeMenu}>Home</Link>
 
-        <Link to="/settings" class="navbar-item" on:click={closeMenu}>
-          Settings
-        </Link>
-
         <Link to="/history" class="navbar-item" on:click={closeMenu}>
           History
         </Link>
 
         <Link to="/submit" class="navbar-item" on:click={closeMenu}>
           Submit data
+        </Link>
+
+        <Link to="/settings" class="navbar-item" on:click={closeMenu}>
+          Settings
         </Link>
       </div>
     </div>
