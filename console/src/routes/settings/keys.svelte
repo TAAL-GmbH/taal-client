@@ -12,13 +12,18 @@
   let keys
   let isActive
   let loading = true
+  let ref
 
   function showModal() {
     isActive = true
+    setTimeout(() => {
+      ref.focus()
+    }, 1)
   }
 
   function closeModal() {
     isActive = false
+    apiKey = ''
   }
 
   function getApiKeys() {
@@ -66,6 +71,9 @@
       method: 'POST',
     })
       .then((res) => {
+        closeModal()
+        apiKey = ''
+
         if (!res.ok) {
           return res.text().then((text) => {
             throw new Error(text)
@@ -75,9 +83,9 @@
             text: `API key registered successfully`,
             position: 'bottom-left',
             type: 'success',
+            removeAfter: 1000,
           })
 
-          closeModal()
           getApiKeys()
 
           return res.json()
@@ -89,6 +97,7 @@
           text: `Error: ${errJson.error}`,
           position: 'bottom-left',
           type: 'danger',
+          removeAfter: 5000,
         })
 
         console.log(err)
@@ -145,6 +154,7 @@
             type="text"
             placeholder="API Key"
             bind:value={apiKey}
+            bind:this={ref}
           />
         </div>
       </div>
