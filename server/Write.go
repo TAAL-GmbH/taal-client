@@ -113,8 +113,12 @@ func (s Server) write(c echo.Context) error {
 		ApiKey:    apiKey,
 		DataBytes: len(dataTx.ToBytes()),
 		Filename:  c.Request().Header.Get(HeaderFilename),
-		Secret:    c.Request().Header.Get("X-Key"),
 	}
+
+	if c.Request().Header.Get("x-mode") == "encrypt" {
+		tx.Secret = c.Request().Header.Get("X-Key")
+	}
+
 	err = s.repository.InsertTransaction(ctx, tx)
 	if err != nil {
 		return s.sendError(c, http.StatusBadRequest, errWriteInsertTransaction, errors.Wrap(err, "failed to write transaction to DB"))

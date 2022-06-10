@@ -62,7 +62,6 @@
         datasets: [
           {
             label: datasetLabel,
-            borderColor: 'rgb(179, 179, 179)',
             backgroundColor: 'rgb(51, 204, 255)',
             lineTension: '0.3',
             fill: true,

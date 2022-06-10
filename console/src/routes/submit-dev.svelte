@@ -1,7 +1,4 @@
 <script>
-  // svelte-ignore unused-export-let
-  export let location
-
   import { onMount } from 'svelte'
   import { getNotificationsContext } from 'svelte-notifications'
 
@@ -48,7 +45,7 @@
     localStorage.removeItem('secret')
   }
 
-  $: showCurl(apiKey, mimeType, tag, mode, secret, data, taalClientURL)
+  $: showCurl(apiKey, mimeType, tag, mode, secret, data, taalClientURL, file)
 
   $: submitButtonIsDisabled = data == '' || mimeType == '' || apiKey == ''
   $: inputDataDisabled = files != null
@@ -105,7 +102,7 @@
     navigator.clipboard.writeText(curlCommand)
   }
 
-  function showCurl(key, type, tag, mode, secret, data, url) {
+  function showCurl(key, type, tag, mode, secret, data, url, file) {
     let curl = 'curl \\\n  -X POST \\\n'
     if (key) curl += `  -H 'Authorization: Bearer ${key}' \\\n`
     if (type) curl += `  -H 'Content-Type: ${type}' \\\n`
@@ -133,6 +130,7 @@
 
   function reset() {
     files = null
+    filename = ''
     data = ''
     mimeType = stdMimeType
   }
@@ -181,11 +179,13 @@
 
         console.log(err)
       })
+
+    reset()
   }
 </script>
 
 <form class="panel">
-  <p class="panel-heading">Transaction parameters</p>
+  <p class="panel-heading">Submit data (Developer mode)</p>
   <div class="panel-body pad">
     <div class="columns">
       <div class="column">
@@ -238,9 +238,6 @@
         </div>
       </div>
     </div>
-  </div>
-  <p class="panel-heading">Transaction data</p>
-  <div class="panel-body pad">
     <div class="columns">
       <div class="column">
         <div class="field">
@@ -312,6 +309,25 @@
         </div>
       </div>
     </div>
+
+    <div class="columns">
+      <div class="column">
+        <div class="field is-grouped is-grouped-left">
+          <div class="control">
+            <button
+              class="button is-primary"
+              on:click|preventDefault={writeData}
+              disabled={submitButtonIsDisabled}>Submit transaction</button
+            >
+          </div>
+          <div class="control">
+            <button class="button is-light" on:click|preventDefault={reset}
+              >Reset</button
+            >
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </form>
 
@@ -322,28 +338,10 @@
       <Fa icon={faCopy} />
     </button>
   </p>
-  <div class="panel-body pad">
-    <div class="columns">
-      <div class="column">
-        <pre class="field" id="curl">{curlCommand}</pre>
-      </div>
-    </div>
+  <div class="panel-body">
+    <pre class="field" id="curl">{curlCommand}</pre>
   </div>
 </form>
-
-<div class="field is-grouped is-grouped-left">
-  <div class="control">
-    <button
-      class="button is-primary"
-      on:click={writeData}
-      disabled={submitButtonIsDisabled}>Submit transaction</button
-    >
-  </div>
-  <div class="control">
-    <button class="button is-light" on:click={reset}>Reset</button>
-  </div>
-</div>
-<div id="clipboard" />
 
 <style>
   .pad {
