@@ -7,6 +7,8 @@
   import Transactions from '../util/transactions.svelte'
   import { setButtonClassIsSuccess } from '../util/control_functions.svelte'
   import Notifications from 'svelte-notifications'
+  import Fa from 'svelte-fa'
+  import { faList, faTh } from '@fortawesome/free-solid-svg-icons'
 
   let transactions
   let distinctAPIKeys = []
@@ -39,18 +41,24 @@
   $: onChangeTransactions(transactions)
 </script>
 
-<h1>Transaction History</h1>
-<div class="buttons has-addons is-left">
-  <button class={viewButtonClasses[0]} on:click={clickListViewButton}
-    >List view</button
-  >
-  <button class={viewButtonClasses[1]} on:click={clickGridViewButton}
-    >Grid view</button
-  >
+<div class="columns">
+  <div class="column is-four-fifths">
+    <h1>Transaction History</h1>
+    <Notifications>
+      <Transactions bind:transactions />
+    </Notifications>
+  </div>
+  <div class="column">
+    <div id="viewButtons" class="buttons has-addons is-left">
+      <button class={viewButtonClasses[0]} on:click={clickListViewButton}
+        ><Fa icon={faList} /></button
+      >
+      <button class={viewButtonClasses[1]} on:click={clickGridViewButton}
+        ><Fa icon={faTh} /></button
+      >
+    </div>
+  </div>
 </div>
-<Notifications>
-  <Transactions bind:transactions />
-</Notifications>
 {#if transactions}
   {#if listViewSelected}
     <TransactionRows {transactions} {distinctAPIKeys} />
@@ -67,6 +75,10 @@
     font-size: 1.4em;
     font-weight: bold;
     display: block;
+  }
+
+  #viewButtons {
+    margin-top: 40px;
   }
 
   button {
