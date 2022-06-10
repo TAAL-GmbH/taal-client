@@ -22,11 +22,6 @@ var (
 	fixtures *testfixtures.Loader
 )
 
-const (
-	dbFolder         = "localdata_test"
-	sqLiteDBFilename = "db_test"
-)
-
 func TestMain(m *testing.M) {
 	code, err := run(m)
 	if err != nil {
@@ -37,7 +32,7 @@ func TestMain(m *testing.M) {
 }
 
 func run(m *testing.M) (code int, err error) {
-	db, err = database.GetSQLiteDB(dbFolder, sqLiteDBFilename)
+	db, err = database.GetSQLiteDB()
 	if err != nil {
 		return -1, errors.Wrap(err, "failed to set up db")
 	}
