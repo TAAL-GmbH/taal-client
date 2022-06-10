@@ -9,9 +9,9 @@
 
 <main>
   <Notifications>
-    <Config />
+    <Keys />
   </Notifications>
   <Notifications>
-    <Keys />
+    <Config />
   </Notifications>
 </main>
