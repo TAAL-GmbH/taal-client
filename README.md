@@ -39,7 +39,7 @@ After starting the TaalClient with ```taal-client``` you can then write data to 
 curl --location --request POST 'http://localhost:9500/api/v1/write' \
 --header 'X-Tag: AN_OPTIONAL_TAG' \
 --header 'X-Mode: <raw|hash|encrypt>' \
---header 'X-Key: AN_SHARED_SECRET_KEY' \  
+--header 'X-Key: A_SHARED_SECRET_KEY' \  
 --header 'Authorization: Bearer <APIKey>' \
 --header 'Content-Type: application/json' \
 --data '{
