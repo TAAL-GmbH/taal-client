@@ -56,15 +56,16 @@
 
   onMount(() => {
     const config = {
-      type: 'bar',
+      type: 'line',
       options: options,
       data: {
         datasets: [
           {
             label: datasetLabel,
-            borderColor: 'rgb(255, 99, 132)',
-            backgroundColor: 'rgb(204, 255, 153)',
-            fill: false,
+            borderColor: 'rgb(179, 179, 179)',
+            backgroundColor: 'rgb(51, 204, 255)',
+            lineTension: '0.3',
+            fill: true,
           },
         ],
       },
