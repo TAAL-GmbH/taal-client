@@ -147,6 +147,7 @@ func TestInsertTransaction(t *testing.T) {
 			ApiKey:    "api_key_3",
 			DataBytes: 100,
 			Filename:  "somepdf.pdf",
+			Secret:    "secret",
 		}
 		err := repo.InsertTransaction(ctx, tx)
 		is.NoErr(err)
@@ -196,6 +197,7 @@ func TestGetTransactions(t *testing.T) {
 					DataBytes: 100,
 					CreatedAt: "2022-05-25 15:10:58.022+00:00",
 					Filename:  "somepicture2.png",
+					Secret:    "secret",
 				},
 				{
 					ID:        "2BDCFF23",

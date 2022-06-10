@@ -29,6 +29,7 @@ type Transaction struct {
 	DataBytes int    `db:"data_bytes" json:"data_bytes"`
 	CreatedAt string `db:"created_at" json:"created_at"`
 	Filename  string `db:"filename" json:"filename"`
+	Secret    string `db:"secret" json:"secret"`
 }
 
 type TransactionInfo struct {

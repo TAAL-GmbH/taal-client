@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -62,10 +63,27 @@ func (r Repository) GetAllKeys(ctx context.Context) ([]server.Key, error) {
 
 func (r Repository) InsertTransaction(ctx context.Context, tx server.Transaction) error {
 	createdAt := r.now().UTC().Format(ISO8601)
-	query := `INSERT INTO transactions (created_at, id, api_key, data_bytes, filename) VALUES ($1, $2, $3, $4, $5);`
-	_, err := r.db.ExecContext(ctx, query, createdAt, tx.ID, tx.ApiKey, tx.DataBytes, tx.Filename)
+	query := `INSERT INTO transactions (created_at, id, api_key, data_bytes, filename, secret) VALUES ($1, $2, $3, $4, $5, $6);`
+	_, err := r.db.ExecContext(ctx, query, createdAt, tx.ID, tx.ApiKey, tx.DataBytes, tx.Filename, tx.Secret)
 
 	return err
+}
+
+func (r Repository) GetTransaction(ctx context.Context, txid string) (*server.Transaction, error) {
+	query := `SELECT * FROM transactions WHERE id = $1;`
+
+	txs := make([]server.Transaction, 0)
+
+	err := r.db.SelectContext(ctx, &txs, query, txid)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(txs) > 0 {
+		return &txs[0], nil
+	}
+
+	return nil, sql.ErrNoRows
 }
 
 func (r Repository) GetAllTransactions(ctx context.Context, hoursBack int) ([]server.Transaction, error) {

@@ -9,12 +9,13 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"taal-client/encryption"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 )
 
-const HeaderFilename = "Filename"
+const HeaderFilename = "X-Filename"
 
 func (s Server) write(c echo.Context) error {
 	authHeader := c.Request().Header.Get(echo.HeaderAuthorization)
@@ -61,7 +62,15 @@ func (s Server) write(c echo.Context) error {
 		hash := sha256.Sum256(reqBody)
 		payload = []byte(hex.EncodeToString(hash[:]))
 	case "encrypt":
-		return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.New("Not implemented"))
+		key := c.Request().Header.Get("x-key")
+		if key == "" {
+			return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.New("missing encryption key"))
+		}
+		encryptedBytes, err := encryption.Encrypt(reqBody, []byte(key))
+		if err != nil {
+			return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.New("decrypted body is wrong1"))
+		}
+		payload = encryptedBytes
 	default:
 		payload = reqBody
 	}
@@ -104,6 +113,7 @@ func (s Server) write(c echo.Context) error {
 		ApiKey:    apiKey,
 		DataBytes: len(dataTx.ToBytes()),
 		Filename:  c.Request().Header.Get(HeaderFilename),
+		Secret:    c.Request().Header.Get("X-Key"),
 	}
 	err = s.repository.InsertTransaction(ctx, tx)
 	if err != nil {

@@ -28,6 +28,7 @@ type Repository interface {
 	InsertTransaction(ctx context.Context, tx Transaction) error
 	GetAllTransactions(ctx context.Context, hoursBack int) ([]Transaction, error)
 	GetTransactionInfo(ctx context.Context, from time.Time, to time.Time, granularity Granularity) ([]TransactionInfo, error)
+	GetTransaction(ctx context.Context, txid string) (*Transaction, error)
 	Health(ctx context.Context) error
 }
 
@@ -69,7 +70,8 @@ func New(address string, taal *client.Client, repo Repository) Server {
 			echo.HeaderXRequestedWith,
 			"X-Tag",
 			"X-Mode",
-			"Filename",
+			"X-Key",
+			"X-Filename",
 		},
 	}))
 

@@ -11,7 +11,7 @@
 
   // FontAwesome icon...
   import Fa from 'svelte-fa'
-  import { faCopy } from '@fortawesome/free-solid-svg-icons'
+  import { faCopy, faKey } from '@fortawesome/free-solid-svg-icons'
 
   let backgroundColor
 
@@ -39,8 +39,9 @@
             >
               <Fa icon={faCopy} color="silver" />
             </button>
-            <a href="https://www.whatsonchain.com/tx/{transaction.id}" target="_blank"
-              >{TruncateTxID(transaction.id)}</a
+            <a
+              href="https://www.whatsonchain.com/tx/{transaction.id}"
+              target="_blank">{TruncateTxID(transaction.id)}</a
             >
           </p>
           <p class="subtitle is-6">
@@ -64,6 +65,11 @@
             txApiKey={transaction.api_key}
             txID={transaction.id}
           />
+          {#if transaction.secret}
+            <span class="key">
+              <Fa icon={faKey} />
+            </span>
+          {/if}
         </div>
       </div>
     </div>
@@ -77,6 +83,11 @@
     border-radius: 50%;
     display: inline-block;
     margin-right: 5px;
+  }
+
+  .key {
+    display: inline-block;
+    padding: 10px;
   }
 
   #copyButton {
