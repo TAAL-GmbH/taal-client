@@ -10,7 +10,7 @@
 
   const stdMimeType = 'text/plain'
 
-  let taalClientURL = BASE_URL
+  let taalClientURL
 
   let keys
   let apiKey
@@ -50,7 +50,7 @@
   $: submitButtonIsDisabled = data == '' || mimeType == '' || apiKey == ''
   $: inputDataDisabled = files != null
 
-  $: if (files != null) {
+  $: if (files) {
     file = files[0]
     mimeType = file.type
     filename = file.name
@@ -72,10 +72,21 @@
     fr.readAsArrayBuffer(file)
   }
 
-  $: if (files == null) {
+  $: if (!files) {
     data = ''
+    file = null
     fileData = null
+    filename = ''
     mimeType = stdMimeType
+  }
+
+  function getCorrectURL(url) {
+    try {
+      const urlParts = new URL(url)
+      return `http://${url}`
+    } catch {
+      return `http://localhost${url}`
+    }
   }
 
   onMount(async () => {
@@ -87,13 +98,18 @@
     const lastMode = localStorage.getItem('mode')
     const lastSecret = localStorage.getItem('secret')
 
-    const r = await fetch(`${BASE_URL}/api/v1/apikeys`)
-    const data = await r.json()
-    keys = data.keys
+    const r1 = await fetch(`${BASE_URL}/api/v1/settings`)
+    const settings = await r1.json()
+
+    const r2 = await fetch(`${BASE_URL}/api/v1/apikeys`)
+    const data2 = await r2.json()
+    keys = data2.keys
 
     apiKey = lastKey || keys[0].api_key
     mode = lastMode || 'raw'
     secret = lastSecret || ''
+
+    taalClientURL = getCorrectURL(settings.listenAddress)
 
     loading = false
   })
@@ -119,7 +135,7 @@
     }
 
     if (file) {
-      curl += `  --data-binary @${file.name} \\\n`
+      curl += `  --data-binary @'${file.name}' \\\n`
     } else if (data) {
       curl += `  -d '${data}' \\\n`
     }
@@ -130,7 +146,6 @@
 
   function reset() {
     files = null
-    filename = ''
     data = ''
     mimeType = stdMimeType
   }
