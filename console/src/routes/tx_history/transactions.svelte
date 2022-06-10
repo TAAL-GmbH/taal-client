@@ -51,10 +51,10 @@
   <div class="column">
     <div id="viewButtons" class="buttons has-addons is-left">
       <button class={viewButtonClasses[0]} on:click={clickListViewButton}
-        ><Fa icon={faList} /></button
+        ><Fa icon={faList} />&nbsp; List view</button
       >
       <button class={viewButtonClasses[1]} on:click={clickGridViewButton}
-        ><Fa icon={faTh} /></button
+        ><Fa icon={faTh} />&nbsp; Grid view</button
       >
     </div>
   </div>
