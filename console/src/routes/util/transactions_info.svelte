@@ -69,6 +69,7 @@
   $: onChangeHoursBack(hoursBack)
 </script>
 
+<h1>Transaction stats</h1>
 <div class="field has-addons">
   <p class="control">
     <button class={filterButtonClasses[0]} on:click={click24Hours}
@@ -88,6 +89,11 @@
 </div>
 
 <style>
+  h1 {
+    font-size: 1.4em;
+    font-weight: bold;
+    display: block;
+  }
   button {
     min-width: 100px;
   }
