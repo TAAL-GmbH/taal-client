@@ -8,11 +8,12 @@
 
   export function TruncateTxID(str) {
     const n = 10
-    return str.length > n ? str.slice(0, 5) + '...' + str.slice(-5) : str
+    return str.length > n ? str.slice(0, 8) + '....' + str.slice(-8) : str
   }
 
   export function GetColor(apiKey, distinctAPIKeys) {
     var colorFactor = 0
+
     if (distinctAPIKeys.length > 1) {
       var index = distinctAPIKeys.indexOf(apiKey)
       var part = 360 / distinctAPIKeys.length
@@ -20,9 +21,10 @@
       colorFactor = index * part
     }
 
-    var color = 'background-color: hsl(' + colorFactor + ', 100%, 90%);'
+    var color = 'background-color: hsl(' + colorFactor + ', 100%, 70%);'
     return color
   }
+
   export function TxDataSize(dataSizeBytes) {
     var nrOfDigits = dataSizeBytes.toString().length
     if (nrOfDigits >= 10) {
@@ -45,7 +47,7 @@
     var date = new Date(dateString)
     return date.toISOString().split('T')[0]
   }
-  
+
   function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }

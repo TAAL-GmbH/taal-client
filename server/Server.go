@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"time"
 
 	"taal-client/client"
 	"taal-client/console"
@@ -26,6 +27,8 @@ type Repository interface {
 	GetAllKeys(ctx context.Context) ([]Key, error)
 	InsertTransaction(ctx context.Context, tx Transaction) error
 	GetAllTransactions(ctx context.Context, hoursBack int) ([]Transaction, error)
+	GetTransactionInfo(ctx context.Context, from time.Time, to time.Time, granularity Granularity) ([]TransactionInfo, error)
+	GetTransaction(ctx context.Context, txid string) (*Transaction, error)
 	Health(ctx context.Context) error
 }
 
@@ -67,7 +70,8 @@ func New(address string, taal *client.Client, repo Repository) Server {
 			echo.HeaderXRequestedWith,
 			"X-Tag",
 			"X-Mode",
-			"Filename",
+			"X-Key",
+			"X-Filename",
 		},
 	}))
 
@@ -104,7 +108,8 @@ func New(address string, taal *client.Client, repo Repository) Server {
 
 	group.POST("/transactions", s.write)
 	group.GET("/transactions/:txid", s.read)
-	group.GET("/transactions/info", s.getTransactions)
+	group.GET("/transactions/", s.getTransactions)
+	group.GET("/transactions/info", s.getTransactionInfo)
 
 	group.GET("/health", func(c echo.Context) error {
 		err := s.repository.Health(context.Background())

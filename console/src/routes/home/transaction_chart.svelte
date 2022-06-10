@@ -1,43 +1,38 @@
 <script>
-  import chartjs from 'chart.js'
+  import chartjs, { CategoryScale } from 'chart.js'
   import { onMount } from 'svelte'
-  import {GetDateFromISODateString} from '../util/format_functions.svelte'
 
-  export let transactions
-  export let valueFunction = () =>{}
-  export let valueLabel = ''
+  export let yAxisLabel = ''
   export let datasetLabel = ''
 
-  let chartValues = []
-  let chartLabels = []
-
-  let initialChartValues
-  let initialChartLabels
+  export let yValues = []
+  export let xValues = []
+  export let divisionFactor = 1
+  export let timeUnit = 'day'
 
   let ctx
   let chart
   let chartCanvas
-  function unique(value, index, self) {
-    return self.indexOf(value) === index
-  }
 
   const options = {
     responsive: true,
-    title: {
-      display: false,
-      text: 'Transaction history',
-    },
     scales: {
       yAxes: [
         {
+          afterUpdate: function (axis) {
+            axis.width = 100
+          },
+
           ticks: {
             suggestedMin: 0,
-            suggestedMax: 7,
             fontSize: fontSize,
+            callback: function (label, index, labels) {
+              return label / divisionFactor
+            },
           },
           scaleLabel: {
             display: true,
-            labelString: valueLabel,
+            labelString: yAxisLabel,
             fontSize: fontSize,
           },
         },
@@ -47,7 +42,7 @@
           type: 'time',
           distribution: 'linear',
           time: {
-            unit: 'day',
+            unit: timeUnit,
           },
           ticks: {
             fontSize: fontSize,
@@ -60,28 +55,16 @@
   const fontSize = 18
 
   onMount(() => {
-    var today = new Date()
-    var tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
-
-    initialChartLabels = [
-      GetDateFromISODateString(today),
-      GetDateFromISODateString(tomorrow),
-    ]
-    initialChartValues = [0, 0]
-
     const config = {
-      type: 'bar',
+      type: 'line',
       options: options,
       data: {
-        labels: initialChartLabels,
         datasets: [
           {
             label: datasetLabel,
-            borderColor: 'rgb(255, 99, 132)',
-            lineTension: '0.2',
-            data: initialChartValues,
-            fill: false,
+            backgroundColor: 'rgb(51, 204, 255)',
+            lineTension: '0.3',
+            fill: true,
           },
         ],
       },
@@ -90,37 +73,23 @@
     chart = new chartjs(ctx, config)
   })
 
-  function OnTransactionsChange(transactions) {
-    if (transactions == null) {
+  function OnTransactionsChange(yValues, xValues, yAxisLabel, timeUnit) {
+    if (chart == null) {
       return
     }
-
-    chartLabels = initialChartLabels
-    chartValues = initialChartValues
-
-    if (transactions.length > 0) {
-      var reverseTxs = []
-      var valueLabels = {}
-      reverseTxs = transactions.reverse() // Order of time axis is ascending
-
-      chartLabels = reverseTxs
-        .map((tx) => GetDateFromISODateString(tx.created_at))
-        .filter(unique)
-
-      chartLabels.forEach((element) => {
-        valueLabels[element] = 0
-      })
-
-      valueFunction(reverseTxs, valueLabels)
-      chartValues = Object.values(valueLabels)
-    }
-
-    chart.data.labels = chartLabels
-    chart.data.datasets[0].data = chartValues
+    chart.data.labels = xValues
+    chart.data.datasets[0].data = yValues
+    chart.options.scales.yAxes[0].scaleLabel.labelString = yAxisLabel
+    chart.options.scales.xAxes[0].time.unit = timeUnit
     chart.update()
   }
 
-  $: OnTransactionsChange(transactions)
+  $: OnTransactionsChange(yValues, xValues, yAxisLabel, timeUnit)
 </script>
 
-<canvas width="200" height="60" bind:this={chartCanvas} id="transactionsChart" />
+<canvas
+  width="200"
+  height="40"
+  bind:this={chartCanvas}
+  id="transactionsChart"
+/>

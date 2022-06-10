@@ -41,11 +41,24 @@
   })
 </script>
 
-<div class="field">
-  <label for="serverStatus">Server</label>
-  <HealthStatus id="serverStatus" status={serverStatus} />
+<div id="status">
+  <div id="server" class="field">
+    <label for="serverStatus">Server</label>
+    <HealthStatus id="serverStatus" status={serverStatus} />
+  </div>
+  <div class="field">
+    <label for="dbStatus">DB Connection</label>
+    <HealthStatus id="dbStatus" status={dbStatus} />
+  </div>
 </div>
-<div class="field">
-  <label for="dbStatus">DB Connection</label>
-  <HealthStatus id="dbStatus" status={dbStatus} />
-</div>
+
+<style>
+  #server {
+    float: left;
+    margin-right: 15px;
+  }
+
+  #status {
+    margin-top: 20px;
+  }
+</style>

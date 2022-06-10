@@ -1,44 +1,56 @@
 <script>
-  // svelte-ignore unused-export-let
-  export let location
-
   import { onMount } from 'svelte'
   import { getNotificationsContext } from 'svelte-notifications'
 
   // FontAwesome icon...
   import Fa from 'svelte-fa'
-  import { faCopy } from '@fortawesome/free-solid-svg-icons'
-
-  let keys
-  let apiKey
+  import { faCopy, faUpload } from '@fortawesome/free-solid-svg-icons'
 
   const { addNotification } = getNotificationsContext()
 
   const stdMimeType = 'text/plain'
 
-  let taalClientURL = 'http://localhost:9500'
+  let taalClientURL
+
+  let keys
+  let apiKey
   let tag
   let mimeType = stdMimeType
   let data
   let filename = ''
-  let mode = 'raw'
-
-  $: if (tag && tag.length > 0) {
-    localStorage.setItem('tag', tag)
-  }
-
+  let mode
+  let secret
+  let loading = true
   let curlCommand = ''
 
   let files = null
   let file = null
   let fileData = null
 
-  $: showCurl(apiKey, mimeType, tag, mode, data, taalClientURL)
+  $: if (tag && tag.length > 0) {
+    localStorage.setItem('tag', tag)
+  } else if (!loading) {
+    localStorage.removeItem('tag')
+  }
+
+  $: if (mode && mode.length > 0) {
+    localStorage.setItem('mode', mode)
+  } else if (!loading) {
+    localStorage.removeItem('mode')
+  }
+
+  $: if (secret && secret.length > 0) {
+    localStorage.setItem('secret', secret)
+  } else if (!loading) {
+    localStorage.removeItem('secret')
+  }
+
+  $: showCurl(apiKey, mimeType, tag, mode, secret, data, taalClientURL, file)
 
   $: submitButtonIsDisabled = data == '' || mimeType == '' || apiKey == ''
   $: inputDataDisabled = files != null
 
-  $: if (files != null) {
+  $: if (files) {
     file = files[0]
     mimeType = file.type
     filename = file.name
@@ -60,10 +72,21 @@
     fr.readAsArrayBuffer(file)
   }
 
-  $: if (files == null) {
+  $: if (!files) {
     data = ''
+    file = null
     fileData = null
+    filename = ''
     mimeType = stdMimeType
+  }
+
+  function getCorrectURL(url) {
+    try {
+      const urlParts = new URL(url)
+      return `http://${url}`
+    } catch {
+      return `http://localhost${url}`
+    }
   }
 
   onMount(async () => {
@@ -72,25 +95,47 @@
 
     const lastKey = localStorage.getItem('apiKey')
 
-    const r = await fetch(`${BASE_URL}/api/v1/apikeys`)
-    const data = await r.json()
-    keys = data.keys
+    const lastMode = localStorage.getItem('mode')
+    const lastSecret = localStorage.getItem('secret')
+
+    const r1 = await fetch(`${BASE_URL}/api/v1/settings`)
+    const settings = await r1.json()
+
+    const r2 = await fetch(`${BASE_URL}/api/v1/apikeys`)
+    const data2 = await r2.json()
+    keys = data2.keys
+
     apiKey = lastKey || keys[0].api_key
+    mode = lastMode || 'raw'
+    secret = lastSecret || ''
+
+    taalClientURL = getCorrectURL(settings.listenAddress)
+
+    loading = false
   })
 
   function copyToClipboard() {
     navigator.clipboard.writeText(curlCommand)
   }
 
-  function showCurl(key, type, tag, mode, data, url) {
+  function showCurl(key, type, tag, mode, secret, data, url, file) {
     let curl = 'curl \\\n  -X POST \\\n'
     if (key) curl += `  -H 'Authorization: Bearer ${key}' \\\n`
     if (type) curl += `  -H 'Content-Type: ${type}' \\\n`
     if (tag) curl += `  -H 'X-Tag: ${tag}' \\\n`
-    if (mode !== 'raw') curl += `  -H 'X-Mode: ${mode}' \\\n`
+    switch (mode) {
+      case 'hash':
+        curl += `  -H 'X-Mode: ${mode}' \\\n`
+        break
+
+      case 'encrypt':
+        curl += `  -H 'X-Mode: ${mode}' \\\n`
+        curl += `  -H 'X-Key: ${secret}' \\\n`
+        break
+    }
 
     if (file) {
-      curl += `  --data-binary @${file.name} \\\n`
+      curl += `  --data-binary @'${file.name}' \\\n`
     } else if (data) {
       curl += `  -d '${data}' \\\n`
     }
@@ -106,7 +151,7 @@
   }
 
   function writeData() {
-    let url = `${taalClientURL}/api/v1/transactions`
+    const url = `${BASE_URL}/api/v1/transactions`
 
     fetch(url, {
       method: 'POST',
@@ -115,7 +160,9 @@
         Authorization: 'Bearer ' + apiKey,
         'Content-Type': mimeType,
         'X-Tag': tag,
-        Filename: filename,
+        'X-Filename': filename,
+        'X-Mode': mode,
+        'X-Key': secret,
       },
     })
       .then((res) => {
@@ -126,7 +173,7 @@
             throw new Error(text)
           })
         }
-        
+
         addNotification({
           text: `Transaction submitted successfully`,
           position: 'bottom-left',
@@ -141,17 +188,19 @@
         addNotification({
           text: `Error: ${errJson.error}`,
           position: 'bottom-left',
-          type: 'warning',
+          type: 'danger',
           removeAfter: 2000,
         })
 
         console.log(err)
       })
+
+    reset()
   }
 </script>
 
 <form class="panel">
-  <p class="panel-heading">Transaction parameters</p>
+  <p class="panel-heading">Submit data (Developer mode)</p>
   <div class="panel-body pad">
     <div class="columns">
       <div class="column">
@@ -204,9 +253,6 @@
         </div>
       </div>
     </div>
-  </div>
-  <p class="panel-heading">Transaction data</p>
-  <div class="panel-body pad">
     <div class="columns">
       <div class="column">
         <div class="field">
@@ -240,9 +286,9 @@
               />
               <span class="file-cta">
                 <span class="file-icon">
-                  <i class="fas fa-upload" />
+                  <Fa icon={faUpload} />
                 </span>
-                <span class="file-label"> Choose a file… </span>
+                <span class="file-label">Choose a file… </span>
               </span>
             </label>
           </div>
@@ -255,11 +301,44 @@
             <label class="label" for="mode">Mode</label>
             <div class="select">
               <select id="mode" bind:value={mode}>
-                <option value="raw"> raw </option>
-                <option value="hash"> hash </option>
-                <!-- <option value="encrypt"> encrypt </option> -->
+                <option value="raw">raw</option>
+                <option value="hash">hash</option>
+                <option value="encrypt">encrypt</option>
               </select>
             </div>
+          </div>
+          {#if mode === 'encrypt'}
+            <div class="field">
+              <div id="input3" class="control">
+                <label class="label" for="secret">Secret</label>
+                <input
+                  id="secret"
+                  class="input"
+                  type="text"
+                  placeholder="This is required in encryption mode"
+                  bind:value={secret}
+                />
+              </div>
+            </div>
+          {/if}
+        </div>
+      </div>
+    </div>
+
+    <div class="columns">
+      <div class="column">
+        <div class="field is-grouped is-grouped-left">
+          <div class="control">
+            <button
+              class="button is-primary"
+              on:click|preventDefault={writeData}
+              disabled={submitButtonIsDisabled}>Submit transaction</button
+            >
+          </div>
+          <div class="control">
+            <button class="button is-light" on:click|preventDefault={reset}
+              >Reset</button
+            >
           </div>
         </div>
       </div>
@@ -274,28 +353,10 @@
       <Fa icon={faCopy} />
     </button>
   </p>
-  <div class="panel-body pad">
-    <div class="columns">
-      <div class="column">
-        <pre class="field" id="curl">{curlCommand}</pre>
-      </div>
-    </div>
+  <div class="panel-body">
+    <pre class="field" id="curl">{curlCommand}</pre>
   </div>
 </form>
-
-<div class="field is-grouped is-grouped-left">
-  <div class="control">
-    <button
-      class="button is-primary"
-      on:click={writeData}
-      disabled={submitButtonIsDisabled}>Submit transaction</button
-    >
-  </div>
-  <div class="control">
-    <button class="button is-light" on:click={reset}>Reset</button>
-  </div>
-</div>
-<div id="clipboard" />
 
 <style>
   .pad {

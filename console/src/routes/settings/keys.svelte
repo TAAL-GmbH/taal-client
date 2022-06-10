@@ -12,13 +12,18 @@
   let keys
   let isActive
   let loading = true
+  let ref
 
   function showModal() {
     isActive = true
+    setTimeout(() => {
+      ref.focus()
+    }, 1)
   }
 
   function closeModal() {
     isActive = false
+    apiKey = ''
   }
 
   function getApiKeys() {
@@ -47,7 +52,7 @@
         addNotification({
           text: `Failed to load api keys: ${errMessage}`,
           position: 'bottom-left',
-          type: 'warning',
+          type: 'danger',
           removeAfter: 2000,
         })
 
@@ -66,6 +71,9 @@
       method: 'POST',
     })
       .then((res) => {
+        closeModal()
+        apiKey = ''
+
         if (!res.ok) {
           return res.text().then((text) => {
             throw new Error(text)
@@ -75,9 +83,9 @@
             text: `API key registered successfully`,
             position: 'bottom-left',
             type: 'success',
+            removeAfter: 1000,
           })
 
-          closeModal()
           getApiKeys()
 
           return res.json()
@@ -88,7 +96,8 @@
         addNotification({
           text: `Error: ${errJson.error}`,
           position: 'bottom-left',
-          type: 'warning',
+          type: 'danger',
+          removeAfter: 5000,
         })
 
         console.log(err)
@@ -117,6 +126,8 @@
           <Key {key} />
         {/each}
       </table>
+    {:else}
+      <p class="loading">Loading...</p>
     {/if}
   </div>
 </div>
@@ -143,6 +154,7 @@
             type="text"
             placeholder="API Key"
             bind:value={apiKey}
+            bind:this={ref}
           />
         </div>
       </div>

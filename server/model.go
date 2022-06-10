@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/hex"
+	"time"
 
 	"github.com/bitcoinsv/bsvd/bsvec"
 	"github.com/bitcoinsv/bsvd/chaincfg"
@@ -28,6 +29,18 @@ type Transaction struct {
 	DataBytes int    `db:"data_bytes" json:"data_bytes"`
 	CreatedAt string `db:"created_at" json:"created_at"`
 	Filename  string `db:"filename" json:"filename"`
+	Secret    string `db:"secret" json:"secret"`
+}
+
+type TransactionInfo struct {
+	Timestamp time.Time `json:"timestamp"`
+	Count     int       `json:"count"`
+	DataBytes int       `json:"data_bytes"`
+}
+
+type TransactionInfos struct {
+	Transactions []TransactionInfo `json:"transactions"`
+	TimeUnit     string            `json:"time_unit"`
 }
 
 type Transactions struct {

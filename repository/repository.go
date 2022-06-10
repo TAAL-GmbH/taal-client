@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/jmoiron/sqlx"
@@ -62,10 +63,27 @@ func (r Repository) GetAllKeys(ctx context.Context) ([]server.Key, error) {
 
 func (r Repository) InsertTransaction(ctx context.Context, tx server.Transaction) error {
 	createdAt := r.now().UTC().Format(ISO8601)
-	query := `INSERT INTO transactions (created_at, id, api_key, data_bytes, filename) VALUES ($1, $2, $3, $4, $5);`
-	_, err := r.db.ExecContext(ctx, query, createdAt, tx.ID, tx.ApiKey, tx.DataBytes, tx.Filename)
+	query := `INSERT INTO transactions (created_at, id, api_key, data_bytes, filename, secret) VALUES ($1, $2, $3, $4, $5, $6);`
+	_, err := r.db.ExecContext(ctx, query, createdAt, tx.ID, tx.ApiKey, tx.DataBytes, tx.Filename, tx.Secret)
 
 	return err
+}
+
+func (r Repository) GetTransaction(ctx context.Context, txid string) (*server.Transaction, error) {
+	query := `SELECT * FROM transactions WHERE id = $1;`
+
+	txs := make([]server.Transaction, 0)
+
+	err := r.db.SelectContext(ctx, &txs, query, txid)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(txs) > 0 {
+		return &txs[0], nil
+	}
+
+	return nil, sql.ErrNoRows
 }
 
 func (r Repository) GetAllTransactions(ctx context.Context, hoursBack int) ([]server.Transaction, error) {
@@ -84,6 +102,48 @@ func (r Repository) GetAllTransactions(ctx context.Context, hoursBack int) ([]se
 	return txs, nil
 }
 
+func (r Repository) GetTransactionInfo(ctx context.Context, from time.Time, to time.Time, granularity server.Granularity) ([]server.TransactionInfo, error) {
+
+	query := `SELECT SUBSTR(created_at, 0, $1) AS timestamp, count(*) as count, sum(data_bytes) AS data_bytes FROM transactions WHERE created_at > $2 AND created_at < $3 GROUP BY timestamp ORDER BY timestamp DESC;`
+
+	txs := make([]TransactionInfo, 0)
+	position, format := granularitySecondsToPositionAndFormat(granularity)
+	err := r.db.SelectContext(ctx, &txs, query, position, from.Format(ISO8601), to.Format(ISO8601))
+	if err != nil {
+		return nil, err
+	}
+
+	txInfos := make([]server.TransactionInfo, len(txs))
+
+	for i, tx := range txs {
+		timestamp, err := time.Parse(format, tx.Timestamp)
+		if err != nil {
+			return nil, err
+		}
+		txInfos[i] = server.TransactionInfo{
+			Timestamp: timestamp,
+			Count:     tx.Count,
+			DataBytes: tx.DataBytes,
+		}
+	}
+
+	return txInfos, nil
+}
+
 func (r Repository) Health(ctx context.Context) error {
 	return r.db.Ping()
+}
+
+func granularitySecondsToPositionAndFormat(granularitySeconds server.Granularity) (int, string) {
+	switch granularitySeconds {
+	case server.None:
+		return 20, "2006-01-02T15:04:05"
+	case server.Minute:
+		return 17, "2006-01-02T15:04"
+	case server.Hour:
+		return 14, "2006-01-02T15"
+	}
+
+	// Day
+	return 11, "2006-01-02"
 }

@@ -2,8 +2,9 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
+	"path/filepath"
+	"taal-client/settings"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -13,26 +14,29 @@ var (
 	dbPathToRemove string
 )
 
-func GetSQLiteDB(dbPath string, dbFilename string) (*sqlx.DB, error) {
-	if err := os.Mkdir(dbPath, 0755); err != nil {
+func GetSQLiteDB() (*sqlx.DB, error) {
+	dbFilePath := settings.Get("dbFilename")
+
+	dir, _ := filepath.Split(dbFilePath)
+
+	if err := os.Mkdir(dir, 0755); err != nil {
 		if !os.IsExist(err) {
 			return nil, err
 		}
 	}
 
-	sqliteDb, err := sql.Open("sqlite3", fmt.Sprintf("./%s/%s", dbPath, dbFilename))
+	sqliteDb, err := sql.Open("sqlite3", dbFilePath)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to open sqlite DB")
 	}
 
-	dbPathToRemove = dbPath
+	dbPathToRemove = dir
 
 	return sqlx.NewDb(sqliteDb, "sqlite3"), nil
 }
 
 func RemoveSQLiteDB() error {
-	err := os.RemoveAll(fmt.Sprintf("./%s/", dbPathToRemove))
-
+	err := os.RemoveAll(dbPathToRemove)
 	if err != nil {
 		return errors.Wrap(err, "unable to remove sqlite db")
 	}

@@ -3,6 +3,8 @@
   let filename
 
   import mime from 'mime'
+  import Fa from 'svelte-fa'
+  import { faDownload } from '@fortawesome/free-solid-svg-icons'
 
   export let txID
   export let txApiKey
@@ -49,4 +51,6 @@
   }
 </script>
 
-<button class="button is-primary" on:click={download}>Download</button>
+<button class="button is-primary" on:click={download}
+  ><Fa icon={faDownload}/>&nbsp; Download</button
+>

@@ -1,0 +1,17 @@
+[Unit]
+Description=taal-client
+After=network.target
+
+[Service]
+LimitNOFILE=infinity
+LimitNPROC=infinity
+LimitCORE=infinity
+User=<NAME>
+ExecStart=/home/<NAME>/taal-client/taal-client
+WorkingDirectory=/home/<NAME>/taal-client
+Type=simple
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
