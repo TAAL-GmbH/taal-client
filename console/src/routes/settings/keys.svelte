@@ -47,7 +47,7 @@
         addNotification({
           text: `Failed to load api keys: ${errMessage}`,
           position: 'bottom-left',
-          type: 'warning',
+          type: 'danger',
           removeAfter: 2000,
         })
 
@@ -88,7 +88,7 @@
         addNotification({
           text: `Error: ${errJson.error}`,
           position: 'bottom-left',
-          type: 'warning',
+          type: 'danger',
         })
 
         console.log(err)

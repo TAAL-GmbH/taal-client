@@ -57,7 +57,7 @@
         addNotification({
           text: `Error: ${errJson.error}`,
           position: 'bottom-left',
-          type: 'warning',
+          type: 'danger',
           removeAfter: 2000,
         })
 
