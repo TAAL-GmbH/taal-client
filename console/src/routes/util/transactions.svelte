@@ -1,7 +1,6 @@
 <script>
   import { setButtonClassIsSuccess } from './control_functions.svelte'
-  export let transactionInfos = []
-  export let timeUnit = ''
+  export let transactions = []
   import { getNotificationsContext } from 'svelte-notifications'
 
   const { addNotification } = getNotificationsContext()
@@ -40,7 +39,7 @@
         break
     }
 
-    fetch(`${BASE_URL}/api/v1/transactions/info?hours_back=${hoursBack}`)
+    fetch(`${BASE_URL}/api/v1/transactions/?hours_back=${hoursBack}`)
       .then((res) => {
         if (!res.ok) {
           return res.text().then((text) => {
@@ -51,8 +50,7 @@
         return res.json()
       })
       .then((data) => {
-        transactionInfos = data.transactions
-        timeUnit = data.time_unit
+        transactions = data.transactions
       })
       .catch((err) => {
         const errJson = JSON.parse(err.message)

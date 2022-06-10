@@ -39,6 +39,7 @@ type TransactionInfo struct {
 
 type TransactionInfos struct {
 	Transactions []TransactionInfo `json:"transactions"`
+	TimeUnit     string            `json:"time_unit"`
 }
 
 type Transactions struct {

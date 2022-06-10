@@ -23,10 +23,13 @@ const (
 	errAPIKeysFailedToGetKeys                    = 24
 	errWriteInsertTransaction                    = 25
 	errAPIKeysRevoke                             = 26
-	errGetTransactionInfo                        = 27
+	errGetTransactions                           = 27
 	errHealthDB                                  = 28
-	errGetTransactionInfoHoursBackMustBeInteger  = 29
-	errGetTransactionInfoHoursBackMustBePositive = 30
-	errGetTransactionInfoGetGranularity          = 31
-	errGetTransactionInfoFillDates               = 32
+	errGetTransactionsHoursBackMustBeInteger     = 29
+	errGetTransactionsHoursBackMustBePositive    = 30
+	errGetTransactionInfo                        = 31
+	errGetTransactionInfoHoursBackMustBeInteger  = 32
+	errGetTransactionInfoHoursBackMustBePositive = 33
+	errGetTransactionInfoGetGranularity          = 34
+	errGetTransactionInfoFillDates               = 35
 )

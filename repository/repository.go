@@ -122,12 +122,8 @@ func granularitySecondsToPositionAndFormat(granularitySeconds server.Granularity
 		return 20, "2006-01-02T15:04:05"
 	case server.Minute:
 		return 17, "2006-01-02T15:04"
-	case server.TenMinutes:
-		return 16, "2006-01-02T15:04"
 	case server.Hour:
 		return 14, "2006-01-02T15"
-	case server.TenHour:
-		return 13, "2006-01-02T15"
 	}
 
 	// Day

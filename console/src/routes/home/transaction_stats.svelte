@@ -11,6 +11,7 @@
   let dataSizeYLabel = 'Transaction size [B]'
 
   let dataSizeDivisionFactor = 1
+  let timeUnit = 'day'
 
   let xValuesInfos
   let yValuesInfosNrOfTxs
@@ -72,7 +73,7 @@
 
 <div class="field">
   <Notifications>
-    <TransactionsInfo bind:transactionInfos />
+    <TransactionsInfo bind:transactionInfos bind:timeUnit />
   </Notifications>
   <div class="field">
     <h1>Number of transactions: {statNrOfTransactions}</h1>
@@ -80,6 +81,7 @@
       yAxisLabel="Nr of transactions"
       bind:xValues={xValuesInfos}
       bind:yValues={yValuesInfosNrOfTxs}
+      bind:timeUnit
       datasetLabel="# Tx"
     />
   </div>
@@ -89,7 +91,8 @@
       bind:yAxisLabel={dataSizeYLabel}
       bind:xValues={xValuesInfos}
       bind:yValues={yValuesInfosDataSize}
-      bind:divicionFactor={dataSizeDivisionFactor}
+      bind:divisionFactor={dataSizeDivisionFactor}
+      bind:timeUnit
       datasetLabel="Tx data size"
     />
   </div>

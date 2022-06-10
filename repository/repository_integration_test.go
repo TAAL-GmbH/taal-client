@@ -316,7 +316,7 @@ func TestGetTransactionsStats(t *testing.T) {
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			transactions, err := repo.GetTransactionsStats(ctx, tc.from, to, server.Day)
+			transactions, err := repo.GetTransactionInfo(ctx, tc.from, to, server.Day)
 			is.NoErr(err)
 
 			is.Equal(tc.expectedTxs, transactions)

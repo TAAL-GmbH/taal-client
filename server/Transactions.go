@@ -14,15 +14,38 @@ import (
 type Granularity int64
 
 const (
-	None       Granularity = 0
-	Minute                 = 1
-	TenMinutes             = 2
-	Hour                   = 3
-	TenHour                = 4
-	Day                    = 5
+	None   Granularity = 0
+	Minute             = 1
+	Hour               = 2
+	Day                = 3
 )
 
 const defaultHoursBack = 720 // 30 * 24 = 720 hours in 30 days
+
+func (s Server) getTransactions(c echo.Context) error {
+	ctx := context.Background()
+
+	hoursBackParam := c.QueryParam("hours_back")
+	var hoursBack int = defaultHoursBack
+
+	if hoursBackParam != "" {
+		hoursBackParsed, err := strconv.Atoi(hoursBackParam)
+		if err != nil {
+			s.sendError(c, http.StatusBadRequest, errGetTransactionsHoursBackMustBeInteger, errors.Wrapf(err, "given value for hours back parameter is %s, but must be integer", hoursBackParam))
+		}
+		if hoursBackParsed < 0 {
+			s.sendError(c, http.StatusBadRequest, errGetTransactionsHoursBackMustBePositive, errors.Wrapf(err, "given value for hours back parameter is %d, but must be positive", hoursBackParsed))
+		}
+		hoursBack = hoursBackParsed
+	}
+
+	txs, err := s.repository.GetAllTransactions(ctx, hoursBack)
+	if err != nil {
+		return s.sendError(c, http.StatusInternalServerError, errGetTransactions, errors.Wrap(err, "failed to get transaction information"))
+	}
+
+	return c.JSON(http.StatusOK, Transactions{Transactions: txs})
+}
 
 func (s Server) getTransactionInfo(c echo.Context) error {
 	ctx := context.Background()
@@ -59,7 +82,23 @@ func (s Server) getTransactionInfo(c echo.Context) error {
 	}
 	sort.SliceStable(txsWithGaps, func(i, j int) bool { return txsWithGaps[i].Timestamp.Before(txsWithGaps[j].Timestamp) })
 
-	return c.JSON(http.StatusOK, TransactionInfos{Transactions: txsWithGaps})
+	return c.JSON(http.StatusOK, TransactionInfos{
+		Transactions: txsWithGaps,
+		TimeUnit:     getTimeUnitFromGranularity(granularity),
+	})
+}
+
+func getTimeUnitFromGranularity(granularity Granularity) string {
+	switch granularity {
+	case Minute:
+		return "minute"
+	case Hour:
+		return "hour"
+	case Day:
+		return "day"
+	default:
+		return "day"
+	}
 }
 
 func getGranularity(from, to time.Time) (Granularity, error) {
@@ -92,12 +131,8 @@ func fillDates(from time.Time, to time.Time, granularity Granularity, stats []Tr
 	switch granularity {
 	case Minute:
 		step = time.Minute
-	case TenMinutes:
-		step = time.Minute * 10
 	case Hour:
 		step = time.Hour
-	case TenHour:
-		step = time.Hour * 10
 	case Day:
 		step = time.Hour * 24
 	default:
