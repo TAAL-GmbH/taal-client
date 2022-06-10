@@ -17,12 +17,15 @@
   let hoursBack = hours24h
 
   function click24Hours(e) {
+    transactions = null
     hoursBack = hours24h
   }
   function click7Days(e) {
+    transactions = null
     hoursBack = hours7d
   }
   function click30Days(e) {
+    transactions = null
     hoursBack = hours30d
   }
   function onChangeHoursBack(hoursBack) {
