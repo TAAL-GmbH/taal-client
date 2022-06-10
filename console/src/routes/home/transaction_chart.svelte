@@ -25,7 +25,6 @@
 
           ticks: {
             suggestedMin: 0,
-            suggestedMax: 7,
             fontSize: fontSize,
             callback: function (label, index, labels) {
               return label / divisionFactor
