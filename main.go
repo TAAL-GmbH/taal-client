@@ -21,11 +21,6 @@ import (
 	"taal-client/settings"
 )
 
-const (
-	dbFolder         = "localdata"
-	sqLiteDBFilename = "db"
-)
-
 func usage() {
 	fmt.Println(`
 Usage
@@ -103,7 +98,7 @@ func getSqlDb(dbType string) (*sqlx.DB, error) {
 			return db, errors.Wrap(err, "postgres database migration failed")
 		}
 	case "sqlite":
-		db, err = database.GetSQLiteDB(settings.Get("dbFilename"))
+		db, err = database.GetSQLiteDB()
 		if err != nil {
 			return nil, errors.Wrap(err, "could not open sqlite database")
 		}
