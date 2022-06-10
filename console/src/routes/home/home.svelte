@@ -5,6 +5,8 @@
   import Notifications from 'svelte-notifications'
   import Health from './health.svelte'
   import { onMount } from 'svelte'
+  import Fa from 'svelte-fa'
+  import { faSpinner } from '@fortawesome/free-solid-svg-icons'
 
   let transactionInfos
   let statNrOfTransactions = 0
@@ -53,11 +55,9 @@
       .map((tx) => tx.data_bytes)
       .reduce((partialSum, a) => partialSum + a, 0)
 
-    if (transactionInfos.length > 0) {
-      xValuesInfos = transactionInfos.map((item) => item.timestamp)
-      yValuesInfosNrOfTxs = transactionInfos.map((item) => item.count)
-      yValuesInfosDataSize = transactionInfos.map((item) => item.data_bytes)
-    }
+    xValuesInfos = transactionInfos.map((item) => item.timestamp)
+    yValuesInfosNrOfTxs = transactionInfos.map((item) => item.count)
+    yValuesInfosDataSize = transactionInfos.map((item) => item.data_bytes)
 
     dataSizeYLabel =
       'Transaction size [' +
@@ -73,7 +73,7 @@
 </script>
 
 <div class="field">
-  <div class="columns" >
+  <div class="columns">
     <div class="column is-four-fifths">
       <Notifications>
         <TransactionsInfo bind:transactionInfos bind:timeUnit />
@@ -83,31 +83,45 @@
       <Health />
     </div>
   </div>
-
-  <div class="field">
-    <h1>Number of transactions: {statNrOfTransactions}</h1>
-    <TransactionChart
-      yAxisLabel="Nr of transactions"
-      bind:xValues={xValuesInfos}
-      bind:yValues={yValuesInfosNrOfTxs}
-      bind:timeUnit
-      datasetLabel="# Tx"
-    />
-  </div>
-  <div class="field">
-    <h1>Combined data size of transactions: {TxDataSize(statCombinedSize)}</h1>
-    <TransactionChart
-      bind:yAxisLabel={dataSizeYLabel}
-      bind:xValues={xValuesInfos}
-      bind:yValues={yValuesInfosDataSize}
-      bind:divisionFactor={dataSizeDivisionFactor}
-      bind:timeUnit
-      datasetLabel="Tx data size"
-    />
-  </div>
+  {#if transactionInfos}
+    <div class="field">
+      <h1>Number of transactions: {statNrOfTransactions}</h1>
+      <TransactionChart
+        yAxisLabel="Nr of transactions"
+        bind:xValues={xValuesInfos}
+        bind:yValues={yValuesInfosNrOfTxs}
+        bind:timeUnit
+        datasetLabel="# Tx"
+      />
+    </div>
+  {/if}
+  {#if transactionInfos}
+    <div class="field">
+      <h1>
+        Combined data size of transactions: {TxDataSize(statCombinedSize)}
+      </h1>
+      <TransactionChart
+        bind:yAxisLabel={dataSizeYLabel}
+        bind:xValues={xValuesInfos}
+        bind:yValues={yValuesInfosDataSize}
+        bind:divisionFactor={dataSizeDivisionFactor}
+        bind:timeUnit
+        datasetLabel="Tx data size"
+      />
+    </div>
+  {:else}
+    <div id="spinner" class="field">
+      <Fa icon={faSpinner} size="3x" pulse />
+    </div>
+  {/if}
 </div>
 
 <style>
+  #spinner {
+    padding-top: 100px;
+    margin: auto;
+    width: 0%;
+  }
   h1 {
     font-size: 1em;
     font-weight: bold;

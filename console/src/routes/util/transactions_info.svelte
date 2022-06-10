@@ -1,6 +1,6 @@
 <script>
   import { setButtonClassIsSuccess } from './control_functions.svelte'
-  export let transactionInfos = []
+  export let transactionInfos = null
   export let timeUnit = ''
   import { getNotificationsContext } from 'svelte-notifications'
 
@@ -18,12 +18,15 @@
   let hoursBack = hours24h
 
   function click24Hours(e) {
+    transactionInfos = null
     hoursBack = hours24h
   }
   function click7Days(e) {
+    transactionInfos = null
     hoursBack = hours7d
   }
   function click30Days(e) {
+    transactionInfos = null
     hoursBack = hours30d
   }
   function onChangeHoursBack(hoursBack) {
