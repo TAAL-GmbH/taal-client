@@ -38,14 +38,25 @@
       >
         <Fa icon={faCopy} color="silver" />
       </button>
-      <a
-        href="https://www.whatsonchain.com/tx/{transaction.id}"
-        target="_blank"
-      >
-        <span class="is-vcentered">
-          {TruncateTxID(transaction.id)}
-        </span>
-      </a>
+      {#if transaction.api_key.startsWith('testnet')}
+        <a
+          href="https://test.whatsonchain.com/tx/{transaction.id}"
+          target="_blank"
+        >
+          <span class="is-vcentered">
+            {TruncateTxID(transaction.id)}
+          </span>
+        </a>
+      {:else}
+        <a
+          href="https://www.whatsonchain.com/tx/{transaction.id}"
+          target="_blank"
+        >
+          <span class="is-vcentered">
+            {TruncateTxID(transaction.id)}
+          </span>
+        </a>
+      {/if}
     </div>
   </td>
   <td class="is-vcentered">
