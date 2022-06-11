@@ -39,10 +39,21 @@
             >
               <Fa icon={faCopy} color="silver" />
             </button>
-            <a
-              href="https://www.whatsonchain.com/tx/{transaction.id}"
-              target="_blank">{TruncateTxID(transaction.id)}</a
-            >
+            {#if transaction.api_key.startsWith('testnet')}
+              <a
+                href="https://test.whatsonchain.com/tx/{transaction.id}"
+                target="_blank"
+              >
+                {TruncateTxID(transaction.id)}
+              </a>
+            {:else}
+              <a
+                href="https://www.whatsonchain.com/tx/{transaction.id}"
+                target="_blank"
+              >
+                {TruncateTxID(transaction.id)}
+              </a>
+            {/if}
           </p>
           <p class="subtitle is-6">
             Created at: {GetFormatedTxTimestamp(transaction.created_at)}
