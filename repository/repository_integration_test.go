@@ -2,6 +2,8 @@ package repository_test
 
 import (
 	"context"
+	"log"
+	"strconv"
 
 	"fmt"
 	"os"
@@ -14,16 +16,29 @@ import (
 	"github.com/go-testfixtures/testfixtures/v3"
 	"github.com/jmoiron/sqlx"
 	"github.com/matryer/is"
+
+	"github.com/ory/dockertest"
+	"github.com/ory/dockertest/docker"
 	"github.com/pkg/errors"
 )
 
 var (
 	db       *sqlx.DB
 	fixtures *testfixtures.Loader
+
+	dbuser     = "postgres"
+	dbpassword = "secret"
+	dbname     = "postgres_test"
+	dbport     = 5433
+	dbdialect  = "postgres"
+
+	// dsn      = "postgres://%s:%s@localhost:%s/%s?sslmode=disable"
+	// idleConn = 25
+	// maxConn  = 25
 )
 
 func TestMain(m *testing.M) {
-	code, err := run(m)
+	code, err := runPostgres(m)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -31,7 +46,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func run(m *testing.M) (code int, err error) {
+func runSqLite(m *testing.M) (code int, err error) {
 	db, err = database.GetSQLiteDB()
 	if err != nil {
 		return -1, errors.Wrap(err, "failed to set up db")
@@ -50,6 +65,78 @@ func run(m *testing.M) (code int, err error) {
 	fixtures, err = testfixtures.New(
 		testfixtures.Database(db.DB),
 		testfixtures.Dialect("sqlite"),              // Available: "postgresql", "timescaledb", "mysql", "mariadb", "sqlite" and "sqlserver"
+		testfixtures.Directory("testdata/fixtures"), // The directory containing the YAML files
+	)
+	if err != nil {
+		return -1, errors.Wrap(err, "failed to run fixtures")
+	}
+	return m.Run(), nil
+}
+
+func runPostgres(m *testing.M) (code int, err error) {
+
+	pool, err := dockertest.NewPool("")
+	if err != nil {
+		log.Fatalf("Could not connect to docker: %s", err)
+	}
+
+	opts := dockertest.RunOptions{
+		Repository: "postgres",
+		Tag:        "12.3",
+		Env: []string{
+			"POSTGRES_USER=" + dbuser,
+			"POSTGRES_PASSWORD=" + dbpassword,
+			"POSTGRES_DB=" + dbname,
+		},
+		ExposedPorts: []string{"5432"},
+		PortBindings: map[docker.Port][]docker.PortBinding{
+			"5432": {
+				{HostIP: "0.0.0.0", HostPort: strconv.Itoa(dbport)},
+			},
+		},
+	}
+
+	// pulls an image, creates a container based on it and runs it
+	resource, err := pool.RunWithOptions(&opts)
+	if err != nil {
+		log.Fatalf("Could not start resource: %s", err)
+	}
+
+	defer pool.Purge(resource)
+
+	// exponential backoff-retry, because the application in the container might not be ready to accept connections yet
+	if err := pool.Retry(func() error {
+
+		db, err = database.GetPostgreSqlDB("localhost", dbport, dbuser, dbpassword, dbname)
+
+		if err != nil {
+			return err
+		}
+
+		err = db.Ping()
+		if err != nil {
+			return err
+		}
+
+		return nil
+
+	}); err != nil {
+		log.Fatalf("Could not connect to database: %s", err)
+	}
+
+	err = database.RunMigrationsPostgreSQL(db)
+	if err != nil {
+		return -1, errors.Wrap(err, "failed to run migrations")
+	}
+
+	defer func() {
+		db.Close()
+		// err = database.RemoveSQLiteDB()
+	}()
+
+	fixtures, err = testfixtures.New(
+		testfixtures.Database(db.DB),
+		testfixtures.Dialect(dbdialect),             // Available: "postgresql", "timescaledb", "mysql", "mariadb", "sqlite" and "sqlserver"
 		testfixtures.Directory("testdata/fixtures"), // The directory containing the YAML files
 	)
 	if err != nil {
