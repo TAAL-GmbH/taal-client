@@ -1,7 +1,4 @@
 <script>
-  // svelte-ignore unused-export-let
-  export let location
-
   import SubmitDev from './submit-dev.svelte'
   import SubmitSimple from './submit-simple.svelte'
   import Notifications from 'svelte-notifications'

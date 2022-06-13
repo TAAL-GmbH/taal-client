@@ -1,7 +1,4 @@
 <script>
-  // svelte-ignore unused-export-let
-  export let location
-
   import TransactionRows from './transaction_rows.svelte'
   import Cards from './transaction_cards.svelte'
   import Transactions from '../util/transactions.svelte'
