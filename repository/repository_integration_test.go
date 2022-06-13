@@ -31,19 +31,30 @@ var (
 	dbname     = "postgres_test"
 	dbport     = 5433
 	dbdialect  = "postgres"
-
-	// dsn      = "postgres://%s:%s@localhost:%s/%s?sslmode=disable"
-	// idleConn = 25
-	// maxConn  = 25
 )
 
 func TestMain(m *testing.M) {
-	code, err := runPostgres(m)
-	if err != nil {
-		fmt.Println(err)
-	}
+	var code int
+	var err error
 
-	os.Exit(code)
+	db := os.Getenv("DB")
+
+	switch db {
+	case "POSTGRES":
+		code, err = runPostgres(m)
+		if err != nil {
+			fmt.Println(err)
+		}
+		os.Exit(code)
+	case "SQLITE":
+		code, err = runSqLite(m)
+		if err != nil {
+			fmt.Println(err)
+		}
+		os.Exit(code)
+	default:
+		log.Println("no db set with env var 'DB'")
+	}
 }
 
 func runSqLite(m *testing.M) (code int, err error) {
@@ -70,6 +81,12 @@ func runSqLite(m *testing.M) (code int, err error) {
 	if err != nil {
 		return -1, errors.Wrap(err, "failed to run fixtures")
 	}
+
+	fixtures.Load()
+	if err != nil {
+		return -1, errors.Wrap(err, "failed to load fixtures")
+	}
+
 	return m.Run(), nil
 }
 
@@ -129,10 +146,7 @@ func runPostgres(m *testing.M) (code int, err error) {
 		return -1, errors.Wrap(err, "failed to run migrations")
 	}
 
-	defer func() {
-		db.Close()
-		// err = database.RemoveSQLiteDB()
-	}()
+	defer db.Close()
 
 	fixtures, err = testfixtures.New(
 		testfixtures.Database(db.DB),
@@ -141,6 +155,11 @@ func runPostgres(m *testing.M) (code int, err error) {
 	)
 	if err != nil {
 		return -1, errors.Wrap(err, "failed to run fixtures")
+	}
+
+	fixtures.Load()
+	if err != nil {
+		return -1, errors.Wrap(err, "failed to load fixtures")
 	}
 	return m.Run(), nil
 }
@@ -220,7 +239,6 @@ func TestGetAllKeys(t *testing.T) {
 }
 
 func TestInsertTransaction(t *testing.T) {
-
 	t.Run("Insert transaction", func(t *testing.T) {
 		is := is.New(t)
 		now := func() time.Time {
@@ -239,7 +257,6 @@ func TestInsertTransaction(t *testing.T) {
 		err := repo.InsertTransaction(ctx, tx)
 		is.NoErr(err)
 
-		// time.Sleep(500)
 		txsFromDB, err := repo.GetAllTransactions(ctx, 1)
 		is.NoErr(err)
 
