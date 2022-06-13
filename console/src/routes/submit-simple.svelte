@@ -4,7 +4,11 @@
 
   // FontAwesome icon...
   import Fa from 'svelte-fa'
-  import { faFile, faUpload } from '@fortawesome/free-solid-svg-icons'
+  import {
+    faFile,
+    faUpload,
+    faSpinner,
+  } from '@fortawesome/free-solid-svg-icons'
 
   const { addNotification } = getNotificationsContext()
 
@@ -14,6 +18,7 @@
   let tag = ''
 
   let dropZone
+  let dataTransmissionInProgress = false
 
   let files
   let mode
@@ -130,55 +135,65 @@
   }
 
   function writeData() {
-    const url = `${BASE_URL}/api/v1/transactions`
+    dataTransmissionInProgress = true
 
-    arr.forEach((a) => {
-      const headers = {
-        Authorization: 'Bearer ' + apiKey,
-        'Content-Type': a.file.type,
-        'X-Tag': tag,
-        'X-Filename': a.file.name,
-        'X-Mode': mode,
-        'X-Key': secret,
-      }
-
-      fetch(url, {
-        method: 'POST',
-        body: a.data,
-        headers,
-      })
-        .then((res) => {
-          localStorage.setItem('tag', tag)
-          localStorage.setItem('apiKey', apiKey)
-
-          if (!res.ok) {
-            return res.text().then((text) => {
-              throw new Error(text)
-            })
-          }
-
-          addNotification({
-            text: `Transaction submitted successfully`,
-            position: 'bottom-left',
-            type: 'success',
-            removeAfter: 1000,
-          })
-
-          return res.json()
-        })
-        .catch((err) => {
-          console.log(err)
-          const errJson = JSON.parse(err.message)
-          addNotification({
-            text: `Error: ${errJson.error}`,
-            position: 'bottom-left',
-            type: 'danger',
-            removeAfter: 2000,
-          })
-        })
+    Promise.all(arr.map((a) => writeDataItem(a))).finally(() => {
+      console.log('data transmission finished')
+      dataTransmissionInProgress = false
+      localStorage.setItem('tag', tag)
+      localStorage.setItem('apiKey', apiKey)
     })
 
     reset()
+  }
+
+  async function writeDataItem(a) {
+    const headers = {
+      Authorization: 'Bearer ' + apiKey,
+      'Content-Type': a.file.type,
+      'X-Tag': tag,
+      'X-Filename': a.file.name,
+      'X-Mode': mode,
+      'X-Key': secret,
+    }
+
+    return fetch(`${BASE_URL}/api/v1/transactions`, {
+      method: 'POST',
+      body: a.data,
+      headers,
+    })
+      .then((res) => {
+        if (!res.ok) {
+          return res.text().then((text) => {
+            throw new Error(text)
+          })
+        }
+
+        addNotification({
+          text: `Transaction submitted successfully`,
+          position: 'bottom-left',
+          type: 'success',
+          removeAfter: 1000,
+        })
+
+        return res.json()
+      })
+      .catch((err) => {
+        var errMessage = ''
+        try {
+          const errJson = JSON.parse(err.message)
+          errMessage = errJson.error
+        } catch (error) {
+          errMessage = err
+        }
+
+        addNotification({
+          text: `Failed to submit data ${errMessage}`,
+          position: 'bottom-left',
+          type: 'danger',
+          removeAfter: 2000,
+        })
+      })
   }
 </script>
 
@@ -315,6 +330,10 @@
       </div>
     </div>
   </form>
+{:else if dataTransmissionInProgress}
+  <div id="spinner" class="field">
+    <Fa icon={faSpinner} size="3x" pulse />
+  </div>
 {/if}
 
 <style>
@@ -340,5 +359,11 @@
     /* height: 160px; */
     border: 2px dashed grey;
     border-radius: 15px;
+  }
+
+  #spinner {
+    padding-top: 100px;
+    margin: auto;
+    width: 0%;
   }
 </style>
