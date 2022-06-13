@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"os"
 	"path/filepath"
-	"taal-client/settings"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -14,9 +13,7 @@ var (
 	dbPathToRemove string
 )
 
-func GetSQLiteDB() (*sqlx.DB, error) {
-	dbFilePath := settings.Get("dbFilename")
-
+func GetSQLiteDB(dbFilePath string) (*sqlx.DB, error) {
 	dir, _ := filepath.Split(dbFilePath)
 
 	if err := os.Mkdir(dir, 0755); err != nil {
