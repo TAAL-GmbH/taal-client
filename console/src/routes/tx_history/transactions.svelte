@@ -15,7 +15,9 @@
   const dispatch = createEventDispatcher()
 
   onMount(() => {
-    dispatch('mounted', {})
+    dispatch('mounted', {
+      message: 'history',
+    })
   })
 
   let transactions

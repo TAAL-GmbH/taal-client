@@ -10,21 +10,18 @@
   const isActiveClass = 'navbar-item is-active'
   const isInactiveClass = 'navbar-item'
 
-  let navBarItemClasses = [
-    isActiveClass,
-    isInactiveClass,
-    isInactiveClass,
-    isInactiveClass,
-  ]
+  const navBarItemClassesDictInit = {
+    home: isInactiveClass,
+    settings: isInactiveClass,
+    history: isInactiveClass,
+    submit: isInactiveClass,
+  }
 
-  function setNavbarItemClassIsActive(setIndex) {
-    for (let index = 0; index < navBarItemClasses.length; index++) {
-      if (index == setIndex) {
-        navBarItemClasses[index] = isActiveClass
-        continue
-      }
-      navBarItemClasses[index] = isInactiveClass
-    }
+  let navBarItemClassesDict = {}
+
+  function setActiveItem(event) {
+    Object.assign(navBarItemClassesDict, navBarItemClassesDictInit)
+    navBarItemClassesDict[event.detail.message] = isActiveClass
   }
 
   function toggleMenu() {
@@ -69,19 +66,34 @@
 
     <div class="navbar-menu {isActive ? 'is-active' : ''}">
       <div class="navbar-start is-dark">
-        <Link to="/" class={navBarItemClasses[0]} on:click={closeMenu}
+        <Link
+          to="/"
+          bind:class={navBarItemClassesDict['home']}
+          on:click={closeMenu}
           >Home
         </Link>
 
-        <Link to="/history" class={navBarItemClasses[1]} on:click={closeMenu}>
+        <Link
+          to="/history"
+          bind:class={navBarItemClassesDict['history']}
+          on:click={closeMenu}
+        >
           History
         </Link>
 
-        <Link to="/submit" class={navBarItemClasses[2]} on:click={closeMenu}>
+        <Link
+          to="/submit"
+          bind:class={navBarItemClassesDict['submit']}
+          on:click={closeMenu}
+        >
           Submit data
         </Link>
 
-        <Link to="/settings" class={navBarItemClasses[3]} on:click={closeMenu}>
+        <Link
+          to="/settings"
+          bind:class={navBarItemClassesDict['settings']}
+          on:click={closeMenu}
+        >
           Settings
         </Link>
       </div>
@@ -89,33 +101,16 @@
   </nav>
 
   <main class="section">
-    <Route path="/"
-      ><Home
-        on:mounted={() => {
-          setNavbarItemClassIsActive(0)
-        }}
-      /></Route
+    <Route path="/"><Home on:mounted={setActiveItem} /></Route
     >
     <Route path="history"
-      ><TxHistory
-        on:mounted={() => {
-          setNavbarItemClassIsActive(1)
-        }}
-      /></Route
+      ><TxHistory on:mounted={setActiveItem} /></Route
     >
     <Route path="submit"
-      ><Submit
-        on:mounted={() => {
-          setNavbarItemClassIsActive(2)
-        }}
-      /></Route
+      ><Submit on:mounted={setActiveItem} /></Route
     >
     <Route path="settings"
-      ><Settings
-        on:mounted={() => {
-          setNavbarItemClassIsActive(3)
-        }}
-      /></Route
+      ><Settings on:mounted={setActiveItem} /></Route
     >
   </main>
 </Router>

@@ -28,7 +28,9 @@
     var tomorrow = new Date(today)
     tomorrow.setDate(tomorrow.getDate() + 1)
 
-    dispatch('mounted', {})
+    dispatch('mounted', {
+      message: 'home',
+    })
   })
 
   function formatDataSizeDivFactor(dataSizeValue) {

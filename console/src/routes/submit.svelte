@@ -11,7 +11,9 @@
   const dispatch = createEventDispatcher()
 
   onMount(() => {
-    dispatch('mounted', {})
+    dispatch('mounted', {
+      message: 'submit',
+    })
   })
 
   let checked = localStorage.getItem('devmode') === 'true'
