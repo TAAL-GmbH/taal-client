@@ -9,6 +9,14 @@
   import Notifications from 'svelte-notifications'
   import Fa from 'svelte-fa'
   import { faList, faTh } from '@fortawesome/free-solid-svg-icons'
+  import { createEventDispatcher } from 'svelte'
+  import { onMount } from 'svelte'
+
+  const dispatch = createEventDispatcher()
+
+  onMount(() => {
+    dispatch('mounted', {})
+  })
 
   let transactions
   let distinctAPIKeys = []

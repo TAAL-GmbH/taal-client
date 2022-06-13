@@ -7,6 +7,26 @@
 
   let isActive = false
 
+  const isActiveClass = 'navbar-item is-active'
+  const isInactiveClass = 'navbar-item'
+
+  let navBarItemClasses = [
+    isActiveClass,
+    isInactiveClass,
+    isInactiveClass,
+    isInactiveClass,
+  ]
+
+  function setNavbarItemClassIsActive(setIndex) {
+    for (let index = 0; index < navBarItemClasses.length; index++) {
+      if (index == setIndex) {
+        navBarItemClasses[index] = isActiveClass
+        continue
+      }
+      navBarItemClasses[index] = isInactiveClass
+    }
+  }
+
   function toggleMenu() {
     isActive = !isActive
   }
@@ -49,17 +69,19 @@
 
     <div class="navbar-menu {isActive ? 'is-active' : ''}">
       <div class="navbar-start is-dark">
-        <Link to="/" class="navbar-item" on:click={closeMenu}>Home</Link>
+        <Link to="/" class={navBarItemClasses[0]} on:click={closeMenu}
+          >Home
+        </Link>
 
-        <Link to="/history" class="navbar-item" on:click={closeMenu}>
+        <Link to="/history" class={navBarItemClasses[1]} on:click={closeMenu}>
           History
         </Link>
 
-        <Link to="/submit" class="navbar-item" on:click={closeMenu}>
+        <Link to="/submit" class={navBarItemClasses[2]} on:click={closeMenu}>
           Submit data
         </Link>
 
-        <Link to="/settings" class="navbar-item" on:click={closeMenu}>
+        <Link to="/settings" class={navBarItemClasses[3]} on:click={closeMenu}>
           Settings
         </Link>
       </div>
@@ -67,10 +89,34 @@
   </nav>
 
   <main class="section">
-    <Route path="/"><Home /></Route>
-    <Route path="settings" component={Settings} />
-    <Route path="history" component={TxHistory} />
-    <Route path="submit" component={Submit} />
+    <Route path="/"
+      ><Home
+        on:mounted={() => {
+          setNavbarItemClassIsActive(0)
+        }}
+      /></Route
+    >
+    <Route path="history"
+      ><TxHistory
+        on:mounted={() => {
+          setNavbarItemClassIsActive(1)
+        }}
+      /></Route
+    >
+    <Route path="submit"
+      ><Submit
+        on:mounted={() => {
+          setNavbarItemClassIsActive(2)
+        }}
+      /></Route
+    >
+    <Route path="settings"
+      ><Settings
+        on:mounted={() => {
+          setNavbarItemClassIsActive(3)
+        }}
+      /></Route
+    >
   </main>
 </Router>
 

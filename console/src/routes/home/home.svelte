@@ -7,6 +7,9 @@
   import { onMount } from 'svelte'
   import Fa from 'svelte-fa'
   import { faSpinner } from '@fortawesome/free-solid-svg-icons'
+  import { createEventDispatcher } from 'svelte'
+
+  const dispatch = createEventDispatcher()
 
   let transactionInfos
   let statNrOfTransactions = 0
@@ -24,6 +27,8 @@
     var today = new Date()
     var tomorrow = new Date(today)
     tomorrow.setDate(tomorrow.getDate() + 1)
+
+    dispatch('mounted', {})
   })
 
   function formatDataSizeDivFactor(dataSizeValue) {
