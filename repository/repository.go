@@ -25,6 +25,8 @@ func NewRepository(db *sqlx.DB, now func() time.Time) Repository {
 }
 
 const ISO8601 = "2006-01-02T15:04:05.999Z"
+const ISO8601DBOutput = "2006-01-02 15:04:05.999Z"
+const ISO8601Sqlite = "2006-01-02 15:04:05.999+00:00"
 
 func (r Repository) InsertKey(ctx context.Context, key server.Key) error {
 	createdAt := r.now().UTC().Format(ISO8601)
@@ -56,6 +58,14 @@ func (r Repository) GetAllKeys(ctx context.Context) ([]server.Key, error) {
 	err := r.db.SelectContext(ctx, &keys, query)
 	if err != nil {
 		return nil, err
+	}
+
+	for idx := range keys {
+		parsedTime, err := time.Parse(ISO8601Sqlite, keys[idx].CreatedAt)
+		if err == nil {
+			createdAtFormatted := parsedTime.Format(ISO8601DBOutput)
+			keys[idx].CreatedAt = createdAtFormatted
+		}
 	}
 
 	return keys, nil
@@ -97,6 +107,14 @@ func (r Repository) GetAllTransactions(ctx context.Context, hoursBack int) ([]se
 	err := r.db.SelectContext(ctx, &txs, query, timeBack)
 	if err != nil {
 		return nil, err
+	}
+
+	for idx := range txs {
+		parsedTime, err := time.Parse(ISO8601Sqlite, txs[idx].CreatedAt)
+		if err == nil {
+			createdAtFormatted := parsedTime.Format(ISO8601DBOutput)
+			txs[idx].CreatedAt = createdAtFormatted
+		}
 	}
 
 	return txs, nil
