@@ -308,6 +308,7 @@ func TestGetTransactions(t *testing.T) {
 					DataBytes: 50,
 					CreatedAt: "2022-05-23 15:10:58.022Z",
 					Filename:  "textfile2.txt",
+					Secret:    "1234",
 				},
 				{
 					ID:        "27EC83F0",
