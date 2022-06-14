@@ -21,7 +21,7 @@ In order to run the integration tests with either database use the environment v
 For integration tests with `sqlite` run
 
 ```
-DB=SQLITE go test ./...
+DB=SQLITE go test -v repository/repository_integration_test.go
 ```
 
 ### Postgres
@@ -29,7 +29,7 @@ DB=SQLITE go test ./...
 For integration tests with `postgres` run
 
 ```
-DB=POSTGRES go test ./...
+DB=POSTGRES go test -v repository/repository_integration_test.go
 ```
 
 [Docker](https://www.docker.com/products/docker-desktop/) needs to be preinstalled for this integration test to run
