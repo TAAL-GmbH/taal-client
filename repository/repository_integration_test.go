@@ -53,7 +53,7 @@ func TestMain(m *testing.M) {
 		}
 		os.Exit(code)
 	default:
-		log.Println("no db set with env var 'DB'")
+		log.Println("no db set with env var 'DB' - skipping integration tests")
 	}
 }
 
