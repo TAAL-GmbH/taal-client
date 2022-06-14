@@ -58,7 +58,7 @@ func TestMain(m *testing.M) {
 }
 
 func runSqLite(m *testing.M) (code int, err error) {
-	db, err = database.GetSQLiteDB()
+	db, err = database.GetSQLiteDB("./localdata/testdb")
 	if err != nil {
 		return -1, errors.Wrap(err, "failed to set up db")
 	}
@@ -301,7 +301,6 @@ func TestGetTransactions(t *testing.T) {
 					DataBytes: 100,
 					CreatedAt: "2022-05-25 15:10:58.022+00:00",
 					Filename:  "somepicture2.png",
-					Secret:    "secret",
 				},
 				{
 					ID:        "2BDCFF23",
