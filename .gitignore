@@ -9,3 +9,5 @@ settings.conf.old
 settings.conf.tmp
 taal_client.db
 __debug_bin
+build2.sh
+build_linux.sh

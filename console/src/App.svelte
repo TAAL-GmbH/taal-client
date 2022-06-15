@@ -7,6 +7,23 @@
 
   let isActive = false
 
+  const isActiveClass = 'navbar-item is-active'
+  const isInactiveClass = 'navbar-item'
+
+  const navBarItemClassesDictInit = {
+    home: isInactiveClass,
+    settings: isInactiveClass,
+    history: isInactiveClass,
+    submit: isInactiveClass,
+  }
+
+  let navBarItemClassesDict = {}
+
+  function setActiveItem(event) {
+    Object.assign(navBarItemClassesDict, navBarItemClassesDictInit)
+    navBarItemClassesDict[event.detail.message] = isActiveClass
+  }
+
   function toggleMenu() {
     isActive = !isActive
   }
@@ -49,17 +66,34 @@
 
     <div class="navbar-menu {isActive ? 'is-active' : ''}">
       <div class="navbar-start is-dark">
-        <Link to="/" class="navbar-item" on:click={closeMenu}>Home</Link>
+        <Link
+          to="/"
+          bind:class={navBarItemClassesDict['home']}
+          on:click={closeMenu}
+          >Home
+        </Link>
 
-        <Link to="/history" class="navbar-item" on:click={closeMenu}>
+        <Link
+          to="/history"
+          bind:class={navBarItemClassesDict['history']}
+          on:click={closeMenu}
+        >
           History
         </Link>
 
-        <Link to="/submit" class="navbar-item" on:click={closeMenu}>
+        <Link
+          to="/submit"
+          bind:class={navBarItemClassesDict['submit']}
+          on:click={closeMenu}
+        >
           Submit data
         </Link>
 
-        <Link to="/settings" class="navbar-item" on:click={closeMenu}>
+        <Link
+          to="/settings"
+          bind:class={navBarItemClassesDict['settings']}
+          on:click={closeMenu}
+        >
           Settings
         </Link>
       </div>
@@ -67,10 +101,17 @@
   </nav>
 
   <main class="section">
-    <Route path="/"><Home /></Route>
-    <Route path="settings" component={Settings} />
-    <Route path="history" component={TxHistory} />
-    <Route path="submit" component={Submit} />
+    <Route path="/"><Home on:mounted={setActiveItem} /></Route
+    >
+    <Route path="history"
+      ><TxHistory on:mounted={setActiveItem} /></Route
+    >
+    <Route path="submit"
+      ><Submit on:mounted={setActiveItem} /></Route
+    >
+    <Route path="settings"
+      ><Settings on:mounted={setActiveItem} /></Route
+    >
   </main>
 </Router>
 

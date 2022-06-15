@@ -1,10 +1,17 @@
 <script>
-  // svelte-ignore unused-export-let
-  export let location
-
   import SubmitDev from './submit-dev.svelte'
   import SubmitSimple from './submit-simple.svelte'
   import Notifications from 'svelte-notifications'
+  import { createEventDispatcher } from 'svelte'
+  import { onMount } from 'svelte'
+
+  const dispatch = createEventDispatcher()
+
+  onMount(() => {
+    dispatch('mounted', {
+      message: 'submit',
+    })
+  })
 
   let checked = localStorage.getItem('devmode') === 'true'
 
