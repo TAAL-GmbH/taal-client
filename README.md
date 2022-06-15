@@ -28,7 +28,7 @@ Before this client can be used, a valid Taal APIKey needs to be registered in or
 4. Register the APIKey in TaalClient via the Settings page which can be found at http://localhost:9500
 
 
-![Register sequence](assets/register.png)
+![Register sequence](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/register.png)
 
 
 ## Writing data
@@ -58,7 +58,7 @@ curl --location --request POST 'http://localhost:9500/api/v1/write' \
 --data-binary @myimage.png
 ```
 
-![Writing sequence](/assets/write.png)
+![Writing sequence](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/write.png)
 
 ## Reading data
 
@@ -84,8 +84,8 @@ chmod 755 taal-client
 
 chmod 755
 
-![Mac1](/assets/mac1.png)
+![Mac1](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/mac1.png)
 
-![Mac2](/assets/mac2.png)
+![Mac2](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/mac2.png)
 
-![Mac3](/assets/mac3.png)
+![Mac3](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/mac3.png)
