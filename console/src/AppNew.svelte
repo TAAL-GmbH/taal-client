@@ -6,6 +6,7 @@
   import Submit from './routes/submit.svelte'
   import GlobalStyle from './lib/styles/GlobalStyle.svelte'
   import NewUsers from './routes/new-users/index.svelte'
+  import RegisterKey from './routes/register-key/index.svelte'
 
   let isActive = false
 
@@ -80,6 +81,12 @@
       path="/"
       component={NewUsers}
       meta={{ name: 'New Users' }}
+      primary={false}
+    />
+    <Route
+      path="/register-key"
+      component={RegisterKey}
+      meta={{ name: 'Register Key' }}
       primary={false}
     />
   </GlobalStyle>
