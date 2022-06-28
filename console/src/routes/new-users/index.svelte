@@ -16,7 +16,7 @@
 
 <PageBasic>
   <div class="island">
-    <Heading>Do you have an API key?</Heading>
+    <Heading value="Do you have an API key?" />
     <Spacer h={64} />
     <Row gap={16}>
       <Button variant="secondary" width={236} on:click={onNoKey}

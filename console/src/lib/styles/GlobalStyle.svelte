@@ -29,6 +29,7 @@
 <style>
   :global(:root) {
     --box-sizing: border-box;
+    --font-family: 'Work Sans';
 
     background: #f4f6ff;
   }

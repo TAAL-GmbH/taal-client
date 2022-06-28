@@ -18,12 +18,22 @@
       case 2:
         fontSize = '24px'
         break
+      case 4:
+        fontSize = '14px'
+        fontWeight = 500
+        lineHeight = '16px'
+        break
+      case 5:
+        fontSize = '12px'
+        fontWeight = 500
+        lineHeight = '18px'
+        break
     }
   }
 </script>
 
 <div
-  class="tui-heading"
+  class="tui-text"
   style:--color-local={color}
   style:--font-size-local={fontSize}
   style:--font-weight-local={fontWeight}
@@ -38,12 +48,16 @@
 </div>
 
 <style>
-  .tui-heading {
-    font-family: 'Work Sans';
+  .tui-text {
+    font-family: var(--font-family);
     font-size: var(--font-size-local);
     font-weight: var(--font-weight-local);
     letter-spacing: var(--letting-spacing-local);
     line-height: var(--line-height-local);
     color: var(--color-local);
+  }
+
+  .tui-text :global(a) {
+    color: #0094ff;
   }
 </style>

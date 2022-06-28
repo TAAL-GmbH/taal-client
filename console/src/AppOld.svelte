@@ -33,12 +33,6 @@
 <svelte:head>
   <link rel="stylesheet" href="/css/bulma.min.css" />
   <link rel="stylesheet" href="/css/bulma-switch.min.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&display=swap"
-    rel="stylesheet"
-  />
 </svelte:head>
 
 <Router {url}>
@@ -90,5 +84,8 @@
   }
   .client {
     margin-left: 5px;
+  }
+  /**/
+  .content {
   }
 </style>
