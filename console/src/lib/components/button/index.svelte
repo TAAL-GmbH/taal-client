@@ -1,6 +1,6 @@
 <script>
   // variant
-  export let variant = 'link'
+  export let variant = 'primary'
 
   let primary = false
   let secondary = false
@@ -17,6 +17,7 @@
 
   export let disabled = false
   export let selected = false
+  export let width = -1
 
   // size
   export let size = 'medium'
@@ -62,6 +63,7 @@
   style:--height-local={height}
   style:--padding-local={padding}
   style:--fontSize-local={fontSize}
+  style:--width-local={width === -1 ? 'inherit' : `${width}px`}
   on:click
 >
   <div><slot /></div>
@@ -70,10 +72,13 @@
 <style>
   .tui-button {
     display: flex;
-    text-align: center;
+    align-items: center;
+    justify-content: center;
+
     outline: none;
     box-sizing: var(--box-sizing);
 
+    width: var(--width-local);
     min-height: var(--height-local);
     max-height: var(--height-local);
     padding: var(--padding-local) !important;

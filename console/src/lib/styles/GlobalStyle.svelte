@@ -29,6 +29,16 @@
 <style>
   :global(:root) {
     --box-sizing: border-box;
+
+    background: #f4f6ff;
+  }
+
+  :global(body) {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+
+    font-family: 'Work Sans';
   }
 
   /* :global(:root) {

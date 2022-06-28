@@ -7,12 +7,12 @@
 
   const dispatch = createEventDispatcher()
 
-  function onLink(id) {
-    dispatch('link', { id })
+  function onLink(item) {
+    dispatch('link', item)
   }
 
-  function onAction(id) {
-    dispatch('action', { id })
+  function onAction(item) {
+    dispatch('action', item)
   }
 
   function onToggle() {
@@ -50,7 +50,7 @@
             variant="link"
             size="small"
             selected={link.selected}
-            on:click={(e) => onLink(link.id)}>{link.label}</Button
+            on:click={(e) => onLink(link)}>{link.label}</Button
           >
         {/each}
       </div>
@@ -62,7 +62,7 @@
           <Button
             variant={action.selected ? 'primary' : 'secondary'}
             size="small"
-            on:click={(e) => onAction(action.id)}>{action.label}</Button
+            on:click={(e) => onAction(action)}>{action.label}</Button
           >
         {/each}
       </div>

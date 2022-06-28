@@ -6,10 +6,13 @@
 
 <style>
   .tui-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     width: 100%;
     height: 50px;
-
-    text-align: center;
+    flex: 0;
 
     font-family: 'Work Sans';
     font-style: normal;
