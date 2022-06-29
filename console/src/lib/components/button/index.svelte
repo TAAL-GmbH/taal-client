@@ -1,6 +1,23 @@
 <script>
+  import Icon from '../icon/index.svelte'
+
   // variant
   export let variant = 'primary'
+
+  // icon
+  export let icon = null
+  export let iconAfter = null
+
+  let hasIcon = false
+  let direction = 'row'
+
+  $: {
+    hasIcon = icon || iconAfter
+
+    if (hasIcon) {
+      direction = icon ? 'row' : 'row-reverse'
+    }
+  }
 
   let primary = false
   let secondary = false
@@ -25,6 +42,7 @@
   let height = '60px'
   let padding = '10px 32px'
   let fontSize = '16px'
+  let iconSize = 24
 
   $: {
     switch (size) {
@@ -42,6 +60,7 @@
         height = '36px'
         padding = '4px 16px'
         fontSize = '14px'
+        iconSize = 18
         break
     }
 
@@ -63,17 +82,25 @@
   style:--height-local={height}
   style:--padding-local={padding}
   style:--fontSize-local={fontSize}
+  style:--direction-local={direction}
   style:--width-local={width === -1 ? 'inherit' : `${width}px`}
   on:click
 >
-  <div><slot /></div>
+  {#if hasIcon}
+    <div class="icon" style="width: {iconSize}px; height: {iconSize}px;">
+      <Icon name={icon || iconAfter} size={iconSize} />
+    </div>
+  {/if}
+  <div class="label"><slot /></div>
 </div>
 
 <style>
   .tui-button {
     display: flex;
+    flex-direction: var(--direction-local);
     align-items: center;
     justify-content: center;
+    gap: 10px;
 
     outline: none;
     box-sizing: var(--box-sizing);
@@ -83,7 +110,7 @@
     max-height: var(--height-local);
     padding: var(--padding-local) !important;
 
-    font-family: 'Work Sans';
+    font-family: var(--font-family);
     font-size: var(--fontSize-local);
     font-weight: 500;
     line-height: 30px;
@@ -95,7 +122,11 @@
     cursor: pointer;
   }
 
-  .tui-button > div {
+  .icon {
+    margin: 0 -6px;
+  }
+
+  .tui-button .label {
     display: flex;
     align-items: center;
     white-space: nowrap;

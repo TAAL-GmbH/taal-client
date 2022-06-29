@@ -12,7 +12,7 @@
     <Spacer h={24} />
     <div class="sub-row">
       <Heading value="Registered API keys" size={2} />
-      <Button>Add new</Button>
+      <Button icon="plus">Add new</Button>
     </div>
     <Spacer h={24} />
     <Row flex>

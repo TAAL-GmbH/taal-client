@@ -18,7 +18,7 @@
 
 <style>
   .tui-icon {
-    display: inline-flex;
+    display: flex;
     flex: 0;
 
     width: var(--width-local);
