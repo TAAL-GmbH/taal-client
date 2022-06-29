@@ -4,18 +4,19 @@
 
   const dispatch = createEventDispatcher()
 
+  //   export let type = 'text'
+  let type = 'text'
+
   export let label = ''
   export let labelPlacement = 'top'
   export let required = false
-  //   export let type = 'text'
-  let type = 'text'
   export let name = ''
   export let value = ''
   export let placeholder = ''
   export let disabled = false
   export let error = ''
 
-  // size
+  // direction
   let direction = 'row'
 
   $: {
@@ -71,7 +72,7 @@
   }
 
   function onInputChange(e) {
-    dispatch('change', { name, value: e.data })
+    dispatch('change', { name, type, value: e.data })
   }
 </script>
 

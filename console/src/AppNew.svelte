@@ -1,12 +1,13 @@
 <script>
   import { Router, Route } from 'svelte-navigator'
-  import Home from './routes/home/home.svelte'
-  import Settings from './routes/settings/settings.svelte'
-  import TxHistory from './routes/tx_history/transactions.svelte'
-  import Submit from './routes/submit.svelte'
+  import { menuLinks, menuActions } from './lib/stores'
   import GlobalStyle from './lib/styles/GlobalStyle.svelte'
   import NewUsers from './routes/new-users/index.svelte'
   import RegisterKey from './routes/register-key/index.svelte'
+  import KeyManager from './routes/key-manager/index.svelte'
+  import History from './routes/history/index.svelte'
+  import Settings from './routes/settings/index.svelte'
+  import SendData from './routes/send-data/index.svelte'
 
   let isActive = false
 
@@ -18,11 +19,29 @@
     isActive = false
   }
 
-  let routes = [
-    { id: 0, path: '/', label: 'Home', component: Home },
-    { id: 1, path: '/history', label: 'History', component: TxHistory },
-    { id: 2, path: '/submit', label: 'Submit data', component: Submit },
-    { id: 3, path: '/settings', label: 'Settings', component: Settings },
+  $menuLinks = [
+    {
+      path: '/key-manager',
+      label: 'Key manager',
+      component: KeyManager,
+    },
+    {
+      path: '/history',
+      label: 'History',
+      component: History,
+    },
+    {
+      path: '/settings',
+      label: 'Settings',
+      component: Settings,
+    },
+  ]
+  $menuActions = [
+    {
+      path: '/send-data',
+      label: 'Send data',
+      component: SendData,
+    },
   ]
 
   export let url = ''
@@ -39,44 +58,6 @@
 
 <Router {url}>
   <GlobalStyle>
-    <!-- <nav class="navbar is-fixed-top is-dark" aria-label="main navigation">
-      <div class="navbar-brand">
-        <span class="navbar-item has-text-light">
-          <span class="is-size-4 client">TaalClient</span>
-        </span>
-
-        <a
-          href="#/"
-          role="button"
-          class="navbar-burger {isActive ? 'is-active' : ''}"
-          aria-label="menu"
-          aria-expanded="false"
-          data-target="navbarBasicExample"
-          on:click={toggleMenu}
-        >
-          <span aria-hidden="true" />
-          <span aria-hidden="true" />
-          <span aria-hidden="true" />
-        </a>
-      </div>
-
-      <div class="navbar-menu {isActive ? 'is-active' : ''}">
-        <Menu {routes} on:close={closeMenu} />
-      </div>
-    </nav>
-
-    <main class="section">
-      {#each routes as item (item.id)}
-        <Route
-          path={item.path}
-          component={item.component}
-          meta={{ name: item.label }}
-          primary={false}
-        />
-      {/each}
-    </main>
-
-    <Footer /> -->
     <Route
       path="/"
       component={NewUsers}
@@ -89,17 +70,21 @@
       meta={{ name: 'Register Key' }}
       primary={false}
     />
+    {#each $menuLinks as menuLink (menuLink.path)}
+      <Route
+        path={menuLink.path}
+        component={menuLink.component}
+        meta={{ name: menuLink.label }}
+        primary={false}
+      />
+    {/each}
+    {#each $menuActions as menuAction (menuAction.path)}
+      <Route
+        path={menuAction.path}
+        component={menuAction.component}
+        meta={{ name: menuAction.label }}
+        primary={false}
+      />
+    {/each}
   </GlobalStyle>
 </Router>
-
-<style>
-  main {
-    padding-top: 20px;
-  }
-  .client {
-    margin-left: 5px;
-  }
-  /**/
-  .content {
-  }
-</style>

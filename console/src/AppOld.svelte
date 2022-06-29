@@ -1,7 +1,7 @@
 <script>
   import { Router, Route } from 'svelte-navigator'
   import Home from './routes/home/home.svelte'
-  import Settings from './routes/settings/settings.svelte'
+  import SettingsOld from './routes/settings_old/settings.svelte'
   import TxHistory from './routes/tx_history/transactions.svelte'
   import Submit from './routes/submit.svelte'
   import GlobalStyle from './lib/styles/GlobalStyle.svelte'
@@ -22,7 +22,7 @@
     { id: 0, path: '/', label: 'Home', component: Home },
     { id: 1, path: '/history', label: 'History', component: TxHistory },
     { id: 2, path: '/submit', label: 'Submit data', component: Submit },
-    { id: 3, path: '/settings', label: 'Settings', component: Settings },
+    { id: 3, path: '/settings', label: 'Settings', component: SettingsOld },
   ]
 
   export let url = ''

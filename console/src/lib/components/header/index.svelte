@@ -30,6 +30,7 @@
   export let open = true
   export let showLinks = true
   export let showActions = true
+  export let dataKey = 'path'
 </script>
 
 <div class="tui-header">
@@ -45,7 +46,7 @@
     </div>
     {#if showLinks}
       <div class="links">
-        {#each links as link (link.id)}
+        {#each links as link (link[dataKey])}
           <Button
             variant="link"
             size="small"
@@ -58,7 +59,7 @@
     <div class="spacer" />
     {#if showActions}
       <div class="actions">
-        {#each actions as action (action.id)}
+        {#each actions as action (action[dataKey])}
           <Button
             variant={action.selected ? 'primary' : 'secondary'}
             size="small"

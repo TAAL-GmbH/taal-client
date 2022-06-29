@@ -18,6 +18,9 @@
       case 2:
         fontSize = '24px'
         break
+      case 3:
+        fontSize = '16px'
+        break
       case 4:
         fontSize = '14px'
         fontWeight = 500

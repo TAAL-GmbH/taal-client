@@ -18,6 +18,9 @@
       case 2:
         fontSize = '24px'
         break
+      case 5:
+        fontSize = '16px'
+        break
     }
   }
 </script>
