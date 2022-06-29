@@ -72,7 +72,6 @@
   }
 
   function onInputChange(e) {
-    console.log('onInputChange: e = ', e)
     dispatch('change', { name, type, value: e.originalTarget.value })
   }
 </script>

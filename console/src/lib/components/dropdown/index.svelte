@@ -93,6 +93,7 @@
       type,
       value: items[e.originalTarget.selectedIndex].value,
     })
+    selectRef.focus()
   }
 
   function onClose() {
@@ -103,6 +104,7 @@
     value = val
     open = false
     dispatch('change', { name, type, value })
+    selectRef.focus()
   }
 </script>
 

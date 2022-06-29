@@ -7,6 +7,15 @@
 
   const dispatch = createEventDispatcher()
 
+  export let links = []
+  export let actions = []
+
+  export let showMobile = false
+  export let open = true
+  export let showLinks = true
+  export let showActions = true
+  export let dataKey = 'path'
+
   function onLink(item) {
     dispatch('link', item)
   }
@@ -18,19 +27,6 @@
   function onToggle() {
     dispatch('toggle-menu')
   }
-
-  export let links = [
-    { id: 0, label: 'Key manager', selected: true },
-    { id: 1, label: 'History' },
-    { id: 2, label: 'Settings' },
-  ]
-  export let actions = [{ id: 0, label: 'Send data', selected: true }]
-
-  export let showMobile = false
-  export let open = true
-  export let showLinks = true
-  export let showActions = true
-  export let dataKey = 'path'
 </script>
 
 <div class="tui-header">
