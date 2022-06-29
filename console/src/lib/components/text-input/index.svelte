@@ -72,7 +72,8 @@
   }
 
   function onInputChange(e) {
-    dispatch('change', { name, type, value: e.data })
+    console.log('onInputChange: e = ', e)
+    dispatch('change', { name, type, value: e.originalTarget.value })
   }
 </script>
 
@@ -100,6 +101,7 @@
         {name}
         {value}
         {placeholder}
+        {disabled}
         on:input={onInputChange}
         on:focus={(e) => (focused = true)}
         on:blur={(e) => (focused = false)}
@@ -139,6 +141,7 @@
     outline: none;
     border: none;
     width: 100%;
+    background: none;
   }
 
   .input {
@@ -188,6 +191,6 @@
   .disabled,
   .disabled:active {
     background-color: #efefef;
-    border-color: #232d7c;
+    border-color: #8f8d94;
   }
 </style>

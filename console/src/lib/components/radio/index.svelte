@@ -14,6 +14,7 @@
   export let checked = false
   export let disabled = false
   export let error = false
+  export let allowToggle = false
 
   let direction = 'row'
   let justify = 'flex-start'
@@ -56,13 +57,20 @@
   let height = '24px'
   let width = '24px'
   let fontSize = '16px'
-  let cursor = disabled ? 'auto' : 'pointer'
+
+  let cursor = 'auto'
+  $: {
+    cursor = disabled || (checked && !allowToggle) ? 'auto' : 'pointer'
+  }
 
   let focused = false
 
   let inputRef
 
   function onInputParentClick() {
+    if (cursor !== 'pointer') {
+      return
+    }
     inputRef.focus()
     const newValue = !checked
     checked = newValue
@@ -79,7 +87,7 @@
   style:--justify-local={justify}
   style:--label-align-local={labelAlign}
   style:--cursor-local={cursor}
-  on:click={disabled ? null : onInputParentClick}
+  on:click={disabled || cursor !== 'pointer' ? null : onInputParentClick}
 >
   <label for={name}>{getInputLabel(label, required)}</label>
   <div class="input" class:disabled class:error class:focused class:checked>

@@ -19,6 +19,8 @@
   export let error = ''
   export let maxVisibleListItems = 6
 
+  let type = 'select'
+
   let open = false
 
   // direction
@@ -86,7 +88,11 @@
   }
 
   function onSelectChange(e) {
-    dispatch('change', { name, value: e.data })
+    dispatch('change', {
+      name,
+      type,
+      value: items[e.originalTarget.selectedIndex].value,
+    })
   }
 
   function onClose() {
@@ -96,7 +102,7 @@
   function onItemSelect(val) {
     value = val
     open = false
-    dispatch('change', { name, value })
+    dispatch('change', { name, type, value })
   }
 </script>
 
@@ -213,7 +219,7 @@
   .list-item {
     display: flex;
     align-items: center;
-    width: 100%;
+    width: calc(100% -2px);
     height: var(--height-local);
 
     padding: 1px 18px;
@@ -226,6 +232,9 @@
 
     color: #282933;
     cursor: pointer;
+  }
+  .list-item:last-of-type {
+    border-radius: 0 0 4px 4px;
   }
   .list-item:hover {
     background: #f4f6ff;
@@ -316,6 +325,6 @@
   .disabled,
   .disabled:active {
     background-color: #efefef;
-    border-color: #232d7c;
+    border-color: #8f8d94;
   }
 </style>
