@@ -161,6 +161,9 @@
     background-color: #232d7c;
   }
   .input.disabled .icon {
+    background-color: #efefef;
+  }
+  .input.disabled.checked .icon {
     background-color: #8f8d94;
   }
 
@@ -168,6 +171,6 @@
   .disabled:active,
   .input.disabled {
     background-color: #efefef;
-    border-color: #232d7c;
+    border-color: #8f8d94;
   }
 </style>

@@ -173,6 +173,6 @@
   .disabled:active,
   .input.disabled {
     background-color: #efefef;
-    border-color: #232d7c;
+    border-color: #8f8d94;
   }
 </style>

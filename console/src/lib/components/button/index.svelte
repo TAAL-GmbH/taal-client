@@ -179,6 +179,9 @@
   .link.selected {
     border-bottom: 2px solid #232d7c;
   }
+  .link.selected {
+    font-weight: 600;
+  }
 
   .disabled,
   .disabled:hover {
