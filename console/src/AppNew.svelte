@@ -8,6 +8,7 @@
   import History from './routes/history/index.svelte'
   import Settings from './routes/settings/index.svelte'
   import SendData from './routes/send-data/index.svelte'
+  import Comps from './routes/comps/index.svelte'
 
   let isActive = false
 
@@ -34,6 +35,11 @@
       path: '/settings',
       label: 'Settings',
       component: Settings,
+    },
+    {
+      path: '/comps',
+      label: 'Comps',
+      component: Comps,
     },
   ]
   $menuActions = [
