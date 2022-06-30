@@ -7,38 +7,75 @@
     easing: cubicOut,
   })
 
+  // ratio-based progress
+  export let ratio = -1
+  export let dangerRatio = -1
+  export let warnRatio = -1
+
+  // value-based progress
   export let value = -1
   export let total = -1
   export let dangerValue = -1
   export let warnValue = -1
 
   let showValue = false
-  let ratio = 0
+  let valueRatio = 0
   let color = '#6EC492'
+  let validRatioSet = false
 
   $: {
-    if (value !== -1 && total !== -1 && total !== 0 && value <= total) {
+    showValue = false
+    validRatioSet = ratio !== -1 && ratio >= 0 && ratio <= 1
+
+    if (validRatioSet) {
       showValue = true
-    }
 
-    if (showValue) {
-      ratio = value / total
-    } else {
-      ratio = 0
-    }
-
-    if (showValue) {
-      color = '#6EC492'
-      if (dangerValue !== -1 && dangerValue <= total && value <= dangerValue) {
-        color = '#FF344C'
-      } else if (warnValue !== -1 && warnValue <= total && value <= warnValue) {
-        color = '#F5A200'
+      if (showValue) {
+        color = '#6EC492'
+        if (dangerRatio !== -1 && dangerRatio <= 1 && ratio <= dangerRatio) {
+          color = '#FF344C'
+        } else if (warnRatio !== -1 && warnRatio <= 1 && ratio <= warnRatio) {
+          color = '#F5A200'
+        }
+      } else {
+        color = '#6EC492'
       }
     } else {
-      color = '#6EC492'
+      if (value !== -1 && total !== -1 && total !== 0 && value <= total) {
+        showValue = true
+      }
+
+      if (showValue) {
+        valueRatio = value / total
+      } else {
+        valueRatio = 0
+      }
+
+      if (showValue) {
+        color = '#6EC492'
+        if (
+          dangerValue !== -1 &&
+          dangerValue <= total &&
+          value <= dangerValue
+        ) {
+          color = '#FF344C'
+        } else if (
+          warnValue !== -1 &&
+          warnValue <= total &&
+          value <= warnValue
+        ) {
+          color = '#F5A200'
+        }
+      } else {
+        color = '#6EC492'
+      }
     }
 
-    progress.set(ratio)
+    if (showValue) {
+      progress.set(validRatioSet ? ratio : valueRatio)
+    } else {
+      progress.set(0)
+    }
   }
 </script>
 
@@ -57,6 +94,7 @@
     background-color: #efefef;
     border-radius: 20px;
     height: 12px;
+    width: 100%;
     overflow: hidden;
   }
 
