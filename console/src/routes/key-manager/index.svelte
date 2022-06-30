@@ -5,6 +5,20 @@
   import PageWithMenu from '../../lib/components/page/template/menu/index.svelte'
   import Row from '../../lib/components/layout/row/index.svelte'
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
+  import RegisterKeyPopup from '../../lib/components/popups/register-key-popup/index.svelte'
+
+  let popupVisible = false
+
+  function showPopup() {
+    popupVisible = true
+  }
+  function hidePopup() {
+    popupVisible = false
+  }
+
+  function onRegister(e) {
+    console.log('onRegister: key = ', e.detail.key)
+  }
 </script>
 
 <PageWithMenu>
@@ -13,7 +27,7 @@
     <Spacer h={24} />
     <div class="sub-row">
       <Heading value="Registered API keys" size={2} />
-      <Button icon="plus">Add new</Button>
+      <Button icon="plus" on:click={showPopup}>Add new</Button>
     </div>
     <Spacer h={24} />
     <Row flex gap={16}>
@@ -24,13 +38,16 @@
   </div>
 </PageWithMenu>
 
+{#if popupVisible}
+  <RegisterKeyPopup on:close={hidePopup} on:register={onRegister} />
+{/if}
+
 <style>
   .island {
     display: flex;
     flex-direction: column;
     width: 100%;
     max-width: 920px;
-
     padding-top: 40px;
     margin-bottom: 100px;
   }
@@ -39,11 +56,5 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
-
-  .block {
-    height: 300px;
-    min-width: 400px;
-    background: red;
   }
 </style>

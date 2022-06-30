@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher } from 'svelte'
+  import { createEventDispatcher, onMount } from 'svelte'
   import { getInputLabel } from '../../utils/strings'
 
   const dispatch = createEventDispatcher()
@@ -74,6 +74,10 @@
   function onInputChange(e) {
     dispatch('change', { name, type, value: e.originalTarget.value })
   }
+
+  onMount(() => {
+    dispatch('mount', { inputRef })
+  })
 </script>
 
 <div

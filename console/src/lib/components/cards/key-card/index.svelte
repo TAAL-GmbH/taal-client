@@ -54,7 +54,6 @@
     justify-content: space-between;
 
     width: calc(100% - 48px);
-    height: 60px;
     padding: 15px 24px;
 
     font-weight: 500;

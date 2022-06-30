@@ -1,27 +1,86 @@
 <script>
-  //
+  import { createEventDispatcher } from 'svelte'
+  import Heading from '../heading/index.svelte'
+  import Icon from '../icon/index.svelte'
+
+  const dispatch = createEventDispatcher()
+
+  export let title = ''
+  export let maxW = -1
+
+  function onClose() {
+    dispatch('close')
+  }
 </script>
 
-<div class="tui-popup">
-  <div class="title">
-    <slot name="title" />
+<div
+  class="tui-popup"
+  style:--max-width-local={maxW !== -1 ? maxW + 'px' : 'inherit'}
+>
+  <div class="header">
+    <div class="title"><Heading value={title} size={5} /></div>
+    <div class="ico" on:click={onClose}><Icon name="close" size={24} /></div>
   </div>
-  <div class="body">
-    <slot name="body" />
-  </div>
-  <div class="footer">
-    <slot name="footer" />
-  </div>
+  {#if $$slots.body}
+    <div class="body">
+      <slot name="body" />
+    </div>
+  {/if}
+  {#if $$slots.footer}
+    <div class="footer">
+      <slot name="footer" />
+    </div>
+  {/if}
 </div>
 
 <style>
   .tui-popup {
+    display: flex;
+    flex-direction: column;
     width: 100%;
+    max-width: var(--max-width-local);
+
+    background: #ffffff;
+    border: 1px solid #ffffff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.08);
+    border-radius: 6px;
   }
 
-  .title {
+  .header {
+    display: flex;
+    align-items: center;
+
     height: 52px;
-    width: 100%;
+    padding: 0 16px;
     border-bottom: 1px solid #efefef;
+  }
+  .title {
+    width: 100%;
+    margin-right: 48px;
+  }
+  .ico {
+    right: 16px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+    width: calc(100% - 32px);
+    padding: 16px;
+  }
+
+  .footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    width: calc(100% - 32px);
+    padding: 16px;
+  }
+  .footer > :global(div) {
+    flex: 0;
   }
 </style>

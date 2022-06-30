@@ -120,6 +120,7 @@
     border-style: solid;
     border-radius: 4px;
     cursor: pointer;
+    user-select: none;
   }
 
   .icon {
