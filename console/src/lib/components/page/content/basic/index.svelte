@@ -1,4 +1,15 @@
-<div class="page-content">
+<script>
+  import { pageContentOffsetX } from '../../../../stores'
+
+  export let gutterW = 60
+</script>
+
+<div
+  class="page-content"
+  style:--width-local="calc(100% - {gutterW * 2 + $pageContentOffsetX}px)"
+  style:--padding-local="0 {gutterW}px"
+  style:--margin-left-local={$pageContentOffsetX + 'px'}
+>
   <slot />
 </div>
 
@@ -9,12 +20,12 @@
     align-items: center;
     justify-content: space-around;
 
-    width: 100%;
     min-height: calc(100% - 50px);
 
-    width: calc(100% - 120px);
-    max-width: calc(100% - 120px);
-    padding: 0 60px;
+    width: var(--width-local);
+    max-width: var(--width-local);
+    padding: var(--padding-local);
+    margin-left: var(--margin-left-local);
 
     overflow: hidden;
   }

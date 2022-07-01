@@ -15,7 +15,7 @@
 
 <div
   class="tui-popup"
-  style:--max-width-local={maxW !== -1 ? maxW + 'px' : 'inherit'}
+  style:--max-width-local={maxW !== -1 ? maxW + 'px' : 'auto'}
 >
   <div class="header">
     <div class="title"><Heading value={title} size={5} /></div>

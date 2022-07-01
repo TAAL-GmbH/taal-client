@@ -5,6 +5,7 @@
   import TextInput from '../../lib/components/text-input/index.svelte'
   import Checkbox from '../../lib/components/checkbox/index.svelte'
   import Radio from '../../lib/components/radio/index.svelte'
+  import Pager from '../../lib/components/pager/index.svelte'
   import Progress from '../../lib/components/progress/index.svelte'
   import Switch from '../../lib/components/switch/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
@@ -104,6 +105,14 @@
         { label: 'List', value: 88, icon: 'view-list' },
         { label: 'Grid', value: 99, iconAfter: 'view-grid' },
       ]}
+      on:change={onChange}
+    />
+    <Spacer h={24} />
+    <Pager
+      name="bo"
+      value={2}
+      totalItems={480}
+      pageSize={10}
       on:change={onChange}
     />
   </div>

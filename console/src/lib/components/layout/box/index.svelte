@@ -30,7 +30,7 @@
   style:--direction-local={direction}
   style:--wrap-local={wrap ? 'wrap' : 'nowrap'}
   style:--margin-local="-{gapV}px 0 0 -{gapH}px"
-  style:--width-local={stretchWidth ? `calc(100% - ${gapH}px)` : 'inherit'}
+  style:--width-local={stretchWidth ? `calc(100% - ${gapH}px)` : 'auto'}
   style:--justify-content-local={flex
     ? 'stretch'
     : center

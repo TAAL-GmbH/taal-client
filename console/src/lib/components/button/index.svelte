@@ -85,7 +85,7 @@
   style:--padding-local={padding}
   style:--fontSize-local={fontSize}
   style:--direction-local={direction}
-  style:--width-local={width === -1 ? 'inherit' : `${width}px`}
+  style:--width-local={width === -1 ? 'auto' : `${width}px`}
   on:click
 >
   {#if hasIcon}
@@ -93,7 +93,9 @@
       <Icon name={icon || iconAfter} size={iconSize} />
     </div>
   {/if}
-  <div class="label"><slot /></div>
+  {#if $$slots.default}
+    <div class="label"><slot /></div>
+  {/if}
 </div>
 
 <style>
