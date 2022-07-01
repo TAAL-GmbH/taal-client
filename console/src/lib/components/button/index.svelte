@@ -34,6 +34,7 @@
 
   export let disabled = false
   export let selected = false
+  export let toggle = false
   export let width = -1
 
   // size
@@ -79,6 +80,7 @@
   class:link
   class:disabled
   class:selected
+  class:toggle
   style:--height-local={height}
   style:--padding-local={padding}
   style:--fontSize-local={fontSize}
@@ -167,6 +169,15 @@
 
   .ghost {
     border: none;
+  }
+  .ghost.disabled.toggle {
+    background-color: transparent;
+  }
+  .ghost.selected {
+    background-color: #dbdbff;
+  }
+  .ghost.selected.disabled {
+    background-color: #efefef;
   }
 
   .link {

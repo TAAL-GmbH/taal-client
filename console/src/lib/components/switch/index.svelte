@@ -56,7 +56,13 @@
   let height = '24px'
   let width = '48px'
   let fontSize = '16px'
-  let cursor = disabled ? 'auto' : 'pointer'
+  let gap = '8px'
+  let cursor = 'auto'
+
+  $: {
+    gap = label ? '8px' : '0'
+    cursor = disabled ? 'auto' : 'pointer'
+  }
 
   let focused = false
 
@@ -79,6 +85,7 @@
   style:--justify-local={justify}
   style:--label-align-local={labelAlign}
   style:--cursor-local={cursor}
+  style:--gap-local={gap}
   on:click={disabled ? null : onInputParentClick}
 >
   <label for={name}>{getInputLabel(label, required)}</label>
@@ -106,7 +113,7 @@
     flex-direction: var(--direction-local);
     align-items: var(--label-align-local);
     justify-content: var(--justify-local);
-    gap: 8px;
+    gap: var(--gap-local);
   }
 
   label {

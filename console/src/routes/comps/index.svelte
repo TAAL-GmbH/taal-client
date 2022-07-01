@@ -1,5 +1,6 @@
 <script>
   import Button from '../../lib/components/button/index.svelte'
+  import ButtonSelect from '../../lib/components/button-select/index.svelte'
   import Dropdown from '../../lib/components/dropdown/index.svelte'
   import TextInput from '../../lib/components/text-input/index.svelte'
   import Checkbox from '../../lib/components/checkbox/index.svelte'
@@ -10,9 +11,29 @@
   import PageWithMenu from '../../lib/components/page/template/menu/index.svelte'
   import Row from '../../lib/components/layout/row/index.svelte'
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
+  import Modal from '../../lib/components/modal/index.svelte'
+  import Popup from '../../lib/components/popup/index.svelte'
+  import Text from '../../lib/components/text/index.svelte'
+  import { link } from '../../lib/utils/format'
+
+  let popupInputValue
 
   function onChange(e) {
     console.log('onChange: detail = ', e.detail)
+    if (e.detail.name === 'popup-input') {
+      popupInputValue = e.detail.value
+    }
+  }
+
+  let showPopup = false
+
+  function onHidePopup() {
+    console.log('onHidePopup')
+    showPopup = false
+  }
+  function onShowPopup() {
+    console.log('onShowPopup')
+    showPopup = true
   }
 </script>
 
@@ -22,7 +43,7 @@
     <Spacer h={24} />
     <div class="sub-row">
       <Heading value="Add something" size={2} />
-      <Button icon="plus">Add new</Button>
+      <Button icon="plus" on:click={onShowPopup}>Add new</Button>
     </div>
     <Spacer h={24} />
     <Dropdown
@@ -72,13 +93,55 @@
     </Row>
     <Spacer h={24} />
     <Progress value={55} total={100} warnValue={50} dangerValue={20} />
-    <!-- <Row flex>
-      <div class="block" />
-      <div class="block" />
-      <div class="block" />
-    </Row> -->
+    <Spacer h={24} />
+    <ButtonSelect
+      name="btn-select"
+      items={[
+        { label: 'One', value: 10 },
+        { label: 'Two', value: 20 },
+        { label: 'Three', value: 30 },
+        { label: 'Filters', value: 77, icon: 'filters' },
+        { label: 'List', value: 88, icon: 'view-list' },
+        { label: 'Grid', value: 99, iconAfter: 'view-grid' },
+      ]}
+      on:change={onChange}
+    />
   </div>
 </PageWithMenu>
+
+{#if showPopup}
+  <Modal>
+    <Popup maxW={480} title="Something" on:close={onHidePopup}>
+      <svelte:fragment slot="body">
+        <Spacer h={20} />
+        <TextInput
+          name="popup-input"
+          label="Enter something"
+          value={popupInputValue}
+          required
+          on:change={onChange}
+        />
+        <Spacer h={8} />
+        <Text
+          size={5}
+          html
+          value="Examples are often pointed to {link(
+            'https://www.example.com'
+          )}"
+        />
+        <Spacer h={80} />
+      </svelte:fragment>
+      <svelte:fragment slot="footer">
+        <Button variant="ghost" size="small" on:click={onHidePopup}
+          >Cancel</Button
+        >
+        <Button size="small" on:click={(e) => console.log('onSubmit')}
+          >Submit</Button
+        >
+      </svelte:fragment>
+    </Popup>
+  </Modal>
+{/if}
 
 <style>
   .island {
@@ -95,11 +158,5 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-  }
-
-  .block {
-    height: 300px;
-    min-width: 400px;
-    background: red;
   }
 </style>
