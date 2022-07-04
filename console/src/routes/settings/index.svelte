@@ -50,10 +50,6 @@
   function onInputMount(e) {
     e.detail.inputRef.focus()
   }
-
-  function onRegister(e) {
-    console.log('onRegister: key = ', e.detail.key)
-  }
 </script>
 
 <PageWithMenu>
