@@ -1,5 +1,6 @@
 import RenderLink from './renderers/render-link/index.svelte'
 import RenderSpan from './renderers/render-span/index.svelte'
+import RenderStatusText from './renderers/render-status-text/index.svelte'
 import {
   formatDate,
   formatNum,
@@ -23,6 +24,7 @@ export const ColType = {
   transactionhash: 'transactionhash',
   percent: 'percent',
   terraHash: 'terraHash',
+  apiKey: 'apiKey',
 }
 
 export const FilterType = {
@@ -103,6 +105,14 @@ const defaultColTypeRenderers = {
       href: getTransactionHashUrl(str(item[colId])),
       text: str(formatTransactionHash(item[colId])),
       className: 'transactionhash',
+    },
+    value: '',
+  }),
+  [ColType.apiKey]: (idField, item, colId) => ({
+    component: item[colId] ? RenderStatusText : null,
+    props: {
+      value: item[colId],
+      status: 'active',
     },
     value: '',
   }),

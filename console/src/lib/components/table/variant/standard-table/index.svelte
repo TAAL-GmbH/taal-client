@@ -46,6 +46,10 @@
   function onPage(e) {
     dispatch('paginate', { page: e.detail.value })
   }
+
+  function onActionIcon(type, value) {
+    dispatch('action', { type, value })
+  }
 </script>
 
 <div
@@ -82,7 +86,7 @@
               <div class="table-cell-row">
                 {colDef.name}
                 {#if sortEnabled && sortState.sortColumn === colDef.id}
-                  <div class="header-icon">
+                  <div class="table-icon">
                     <Icon
                       name={sortState.sortOrder === SortOrder.asc
                         ? 'chevron-up'
@@ -92,7 +96,7 @@
                   </div>
                 {/if}
                 {#if filtersEnabled && filtersState[colDef.id]}
-                  <div class="header-icon">
+                  <div class="table-icon">
                     <Icon
                       name="filters"
                       size={18}
@@ -152,7 +156,16 @@
               </td>
             {/each}
             {#if rowIconActions?.length > 0}
-              <td>row icons</td>
+              <td>
+                {#each rowIconActions as actionItem (actionItem.event)}
+                  <div
+                    class="table-icon active"
+                    on:click={() => onActionIcon(actionItem.type, item)}
+                  >
+                    <Icon name={actionItem.icon} size={18} />
+                  </div>
+                {/each}
+              </td>
             {/if}
           </tr>
         {/each}
@@ -304,10 +317,14 @@
     align-items: center;
     flex-wrap: nowrap;
   }
-  .header-icon {
+  .table-icon {
     width: 18px;
     height: 18px;
     padding: 0 1px 0 3px;
+    color: #232d7c;
+  }
+  .table-icon.active {
+    cursor: pointer;
   }
   .table-pager {
     width: 100%;

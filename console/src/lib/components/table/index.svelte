@@ -35,6 +35,7 @@
   // more legacy
   export let selectable = false
   export let selectedRowIds = []
+  export let rowIconActions = []
 
   // filters
   export let filters = {}
@@ -172,6 +173,7 @@
       hasBoundaryRight,
       pager,
       alignPager,
+      rowIconActions,
     }
   }
 
@@ -187,6 +189,11 @@
   function onPaginate(e) {
     updatePagination(e.detail.page)
   }
+
+  function onAction(e) {
+    const { type, value } = e.detail
+    dispatch('action', { name, type, value })
+  }
 </script>
 
 <div class="tui-table">
@@ -197,6 +204,7 @@
       on:filter={onFilterClick}
       on:header={onHeaderClick}
       on:paginate={onPaginate}
+      on:action={onAction}
     />
   {:else}
     <div>Unknown table variant.</div>
