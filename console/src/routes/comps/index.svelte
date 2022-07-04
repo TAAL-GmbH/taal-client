@@ -2,6 +2,7 @@
   import Button from '../../lib/components/button/index.svelte'
   import ButtonSelect from '../../lib/components/button-select/index.svelte'
   import Dropdown from '../../lib/components/dropdown/index.svelte'
+  import FileUpload from '../../lib/components/file-upload/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
   import Checkbox from '../../lib/components/checkbox/index.svelte'
   import Radio from '../../lib/components/radio/index.svelte'
@@ -167,6 +168,8 @@
         },
       }}
     />
+    <Spacer h={24} />
+    <FileUpload name="fileUpload" label="File" required on:change={onChange} />
   </div>
 </PageWithMenu>
 

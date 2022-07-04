@@ -8,6 +8,9 @@
   export let icon = null
   export let iconAfter = null
 
+  // TODO: discuss, remove hack
+  export let forceDisabledBorderDark = false
+
   let hasIcon = false
   let direction = 'row'
 
@@ -79,6 +82,7 @@
   class:ghost
   class:link
   class:disabled
+  class:forceDisabledBorderDark
   class:selected
   class:toggle
   style:--height-local={height}
@@ -205,5 +209,9 @@
 
     cursor: auto;
     pointer-events: none;
+  }
+  .disabled.forceDisabledBorderDark,
+  .disabled.forceDisabledBorderDark:hover {
+    border-color: #8f8d94;
   }
 </style>
