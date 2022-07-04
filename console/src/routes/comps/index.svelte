@@ -2,7 +2,7 @@
   import Button from '../../lib/components/button/index.svelte'
   import ButtonSelect from '../../lib/components/button-select/index.svelte'
   import Dropdown from '../../lib/components/dropdown/index.svelte'
-  import TextInput from '../../lib/components/text-input/index.svelte'
+  import TextInput from '../../lib/components/textinput/index.svelte'
   import Checkbox from '../../lib/components/checkbox/index.svelte'
   import Radio from '../../lib/components/radio/index.svelte'
   import Pager from '../../lib/components/pager/index.svelte'

@@ -5,7 +5,7 @@
   import Switch from '../../lib/components/switch/index.svelte'
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import Text from '../../lib/components/text/index.svelte'
-  import TextInput from '../../lib/components/text-input/index.svelte'
+  import TextInput from '../../lib/components/textinput/index.svelte'
 
   let textInputs = {
     apiKey: '',
