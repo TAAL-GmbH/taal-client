@@ -1,4 +1,5 @@
 <script>
+  import Button from '../../lib/components/button/index.svelte'
   import Dropdown from '../../lib/components/dropdown/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
   import PageWithMenu from '../../lib/components/page/template/menu/index.svelte'
@@ -6,12 +7,16 @@
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import Text from '../../lib/components/text/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
+  import TextArea from '../../lib/components/textarea/index.svelte'
 
   let textInputs = {
     apiKey: '',
     taalClientUrl: '',
     mimeType: '',
     tag: '',
+    textData: '',
+    copyCurlText:
+      'curl \\ \n\t -X POST \\ \n\t -H ‘Authorization: Bearer mainnet_...',
   }
   let dropdowns = {
     mode: '',
@@ -37,6 +42,10 @@
 
   function onInputMount(e) {
     e.detail.inputRef.focus()
+  }
+
+  function onCopyCurl() {
+    console.log('onCopyCurl')
   }
 </script>
 
@@ -103,8 +112,33 @@
         on:change={onChange}
       />
     </div>
-
     <Spacer h={24} />
+    <TextArea
+      name="textData"
+      label="Text data"
+      required
+      value={textInputs['textData']}
+      on:change={onChange}
+    />
+    <Spacer h={32} />
+    <div class="sub-row">
+      <Heading value="cURL command" size={2} />
+      <Button
+        variant="ghost"
+        icon="document-duplicate"
+        size="small"
+        on:click={onCopyCurl}
+      >
+        Copy
+      </Button>
+    </div>
+    <Spacer h={24} />
+    <TextArea
+      name="copyCurlText"
+      readonly
+      value={textInputs['copyCurlText']}
+      on:change={onChange}
+    />
   </div>
 </PageWithMenu>
 
