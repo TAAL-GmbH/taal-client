@@ -11,7 +11,7 @@
   export let required = false
   export let name = ''
   export let value = ''
-  export let multiple = false
+  // export let multiple = false
   export let items = []
   export let disabled = false
   export let error = ''

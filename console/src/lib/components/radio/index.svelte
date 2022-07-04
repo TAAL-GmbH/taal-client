@@ -11,6 +11,7 @@
   export let labelAlignment = 'center' // 'start' | 'center' | 'end'
   export let required = false
   export let name = ''
+  export let group = ''
   export let checked = false
   export let disabled = false
   export let error = false
@@ -76,7 +77,7 @@
     inputRef.focus()
     const newValue = !checked
     checked = newValue
-    dispatch('change', { name, type, checked: newValue })
+    dispatch('change', { name, group, type, checked: newValue })
   }
 </script>
 
