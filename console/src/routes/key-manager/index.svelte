@@ -31,9 +31,9 @@
     </div>
     <Spacer h={24} />
     <Row flex gap={16}>
-      <KeyCard title="Boost" />
-      <KeyCard title="Boost" />
-      <KeyCard title="Boost" />
+      <KeyCard />
+      <KeyCard />
+      <KeyCard />
     </Row>
   </div>
 </PageWithMenu>
