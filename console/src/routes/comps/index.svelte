@@ -16,6 +16,7 @@
   import Popup from '../../lib/components/popup/index.svelte'
   import Table from '../../lib/components/table/index.svelte'
   import Text from '../../lib/components/text/index.svelte'
+  import TextArea from '../../lib/components/textarea/index.svelte'
   import { link } from '../../lib/utils/format'
 
   let popupInputValue
@@ -93,6 +94,8 @@
     />
     <Spacer h={24} />
     <TextInput name="sally" label="I am a textinput" on:change={onChange} />
+    <Spacer h={24} />
+    <TextArea name="textData" label="Text data" required on:change={onChange} />
     <Spacer h={24} />
     <Row gap={30}>
       <Switch name="switch1" label="Switch" on:change={onChange} />
