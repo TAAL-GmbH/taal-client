@@ -14,6 +14,7 @@
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import Modal from '../../lib/components/modal/index.svelte'
   import Popup from '../../lib/components/popup/index.svelte'
+  import Table from '../../lib/components/table/index.svelte'
   import Text from '../../lib/components/text/index.svelte'
   import { link } from '../../lib/utils/format'
 
@@ -36,6 +37,39 @@
     console.log('onShowPopup')
     showPopup = true
   }
+
+  const tableColDefs = [
+    {
+      id: 'name',
+      name: 'Name',
+      type: 'string',
+    },
+    {
+      id: 'age',
+      name: 'Age',
+      type: 'number',
+    },
+    {
+      id: 'email',
+      name: 'Email',
+      type: 'email',
+    },
+  ]
+
+  const tableData = [
+    { id: '1', name: 'Gabbie', age: 23, email: 'gsweetnam0@scribd.com' },
+    { id: '2', name: 'Elysee', age: 55, email: 'eoade1@dedecms.com' },
+    { id: '3', name: 'Emmanuel', age: 34, email: 'eguilford2@engadget.com' },
+    { id: '4', name: 'Putnam', age: 19, email: 'pbrobeck3@ebay.co.uk' },
+    { id: '5', name: 'Leonore', age: 74, email: 'lcheesley4@twitter.com' },
+    { id: '6', name: 'Dona', age: 28, email: 'drubinsky5@diigo.com' },
+    { id: '7', name: 'Rosemonde', age: 26, email: 'rcallacher6@examiner.com' },
+    { id: '8', name: 'Sheridan', age: 52, email: 'scockroft7@sbwire.com' },
+    { id: '9', name: 'Margareta', age: 37, email: 'mheugle8@linkedin.com' },
+    { id: '10', name: 'Allis', age: 44, email: 'ashewon9@oracle.com' },
+    { id: '11', name: 'Christophorus', age: 52, email: 'cprodricka@europa.eu' },
+    { id: '12', name: 'Cinnamon', age: 83, email: 'cosemanb@ning.com' },
+  ]
 </script>
 
 <PageWithMenu>
@@ -114,6 +148,21 @@
       totalItems={480}
       pageSize={10}
       on:change={onChange}
+    />
+    <Spacer h={24} />
+    <Table
+      colDefs={tableColDefs}
+      data={tableData}
+      pagination={{
+        page: 1,
+        pageSize: 5,
+      }}
+      filters={{
+        age: {
+          filterType: 'anyOf',
+          selectedValues: [],
+        },
+      }}
     />
   </div>
 </PageWithMenu>

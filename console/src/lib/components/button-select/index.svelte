@@ -22,8 +22,6 @@
   export let padding = '6px'
   export let gap = '4px'
 
-  console.log('value = ', value)
-
   let type = 'select'
 
   // direction
