@@ -64,6 +64,7 @@
       name="listenAddress"
       label="Listen address"
       value={textInputs['listenAddress']}
+      confirm
       on:change={onChange}
       on:mount={onInputMount}
     />
@@ -78,6 +79,7 @@
       name="taalUrl"
       label="TAAL URL"
       value={textInputs['taalUrl']}
+      confirm
       on:change={onChange}
     />
     <Spacer h={8} />
@@ -91,6 +93,7 @@
       name="taalTimeout"
       label="TAAL timeout"
       value={textInputs['taalTimeout']}
+      confirm
       on:change={onChange}
     />
     <Spacer h={8} />
@@ -153,6 +156,7 @@
       name="fileName"
       label="File name"
       value={textInputs['fileName']}
+      confirm
       on:change={onChange}
     />
   </div>

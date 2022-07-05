@@ -3,7 +3,7 @@
   import Field from '../../field/index.svelte'
 
   export let title = ''
-  export let action = 'Upgrade'
+  export let action = 'Add'
   export let usedData = -1
   export let totalData = -1
 
@@ -14,18 +14,19 @@
 
 <div class="tui-key-card">
   <div class="header">
-    <div>{title}</div>
-    <Button variant="secondary" size="small" on:click={onAction}
-      >{action}</Button
-    >
+    <!-- <div>{title}</div>-->
+    <Button variant="secondary" size="small" on:click={onAction}>
+      {action}
+    </Button>
+    <Button variant="secondary" size="small" on:click={onAction}>Remove</Button>
   </div>
   <div class="body">
-    <Field
+    <!-- <Field
       label="Available data: 750Mb / 1Gb"
       value={0.75}
       format="progress"
       layout="row"
-    />
+    /> -->
     <Field
       label="Api key"
       value="mainnet_1PyWzkfKrq1kakvLTeaCdAL8y8UJAcZAqU"
@@ -42,19 +43,26 @@
 
 <style>
   .tui-key-card {
+    font-family: var(--font-family);
+    box-sizing: var(--box-sizing);
+
     display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
 
   .header {
+    box-sizing: var(--box-sizing);
+
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
+    gap: 10px;
 
-    width: calc(100% - 48px);
-    padding: 15px 24px;
+    width: 100%;
+    height: 60px;
+    padding: 0 24px;
 
     font-weight: 500;
     font-size: 24px;
@@ -66,12 +74,14 @@
   }
 
   .body {
+    box-sizing: var(--box-sizing);
+
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 24px;
 
-    width: calc(100% - 48px);
+    width: 100%;
     padding: 15px 24px;
 
     background: #fcfcff;

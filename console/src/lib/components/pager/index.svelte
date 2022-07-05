@@ -86,6 +86,9 @@
 
 <style>
   .tui-pager {
+    font-family: var(--font-family);
+    box-sizing: var(--box-sizing);
+
     display: flex;
     gap: 8px;
   }

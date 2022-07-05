@@ -2,6 +2,8 @@
   import Button from '../../lib/components/button/index.svelte'
   import ButtonSelect from '../../lib/components/button-select/index.svelte'
   import Dropdown from '../../lib/components/dropdown/index.svelte'
+  import FileUpload from '../../lib/components/file-upload/index.svelte'
+  import FileTransfer from '../../lib/components/file-transfer/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
   import Checkbox from '../../lib/components/checkbox/index.svelte'
   import Radio from '../../lib/components/radio/index.svelte'
@@ -16,6 +18,7 @@
   import Popup from '../../lib/components/popup/index.svelte'
   import Table from '../../lib/components/table/index.svelte'
   import Text from '../../lib/components/text/index.svelte'
+  import TextArea from '../../lib/components/textarea/index.svelte'
   import { link } from '../../lib/utils/format'
 
   let popupInputValue
@@ -94,6 +97,15 @@
     <Spacer h={24} />
     <TextInput name="sally" label="I am a textinput" on:change={onChange} />
     <Spacer h={24} />
+    <TextInput
+      name="marvin"
+      label="I am a textinput in confirm mode"
+      confirm
+      on:change={onChange}
+    />
+    <Spacer h={24} />
+    <TextArea name="textData" label="Text data" required on:change={onChange} />
+    <Spacer h={24} />
     <Row gap={30}>
       <Switch name="switch1" label="Switch" on:change={onChange} />
       <Switch
@@ -163,6 +175,22 @@
           selectedValues: [],
         },
       }}
+    />
+    <Spacer h={24} />
+    <FileUpload name="fileUpload" label="File" required on:change={onChange} />
+    <Spacer h={24} />
+    <FileTransfer
+      name="fileTransfer"
+      label="Files uploaded"
+      files={[
+        { name: 'image1.png', size: 20805, type: 'image/png', progress: 0.37 },
+        {
+          name: 'Landscape002.jpg',
+          size: 120805,
+          type: 'image/jpeg',
+          progress: 0.77,
+        },
+      ]}
     />
   </div>
 </PageWithMenu>

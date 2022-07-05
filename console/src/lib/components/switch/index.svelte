@@ -119,7 +119,8 @@
   label {
     font-weight: 500;
     font-size: var(--fontSize-local);
-    line-height: 16px;
+    line-height: 24px;
+    letter-spacing: -0.02em;
 
     color: #232d7c;
     cursor: var(--cursor-local);

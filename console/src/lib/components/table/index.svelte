@@ -213,6 +213,9 @@
 
 <style>
   .tui-table {
+    font-family: var(--font-family);
+    box-sizing: var(--box-sizing);
+
     width: 100%;
   }
 

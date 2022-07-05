@@ -98,6 +98,33 @@ export const petaHash = (val) => {
   return (val / 1e15).toFixed(2) + ' PH/s'
 }
 
+export const dataSize = (val) => {
+  let unit = 'B'
+
+  if (isNaN(val)) {
+    return '-'
+  }
+
+  if (val >= 1.1258999068426e15) {
+    val = val / 1.1258999068426e15
+    unit = 'PB'
+  } else if (val >= 1099511627776) {
+    val = val / 1099511627776
+    unit = 'TB'
+  } else if (val >= 1073741824) {
+    val = val / 1073741824
+    unit = 'GB'
+  } else if (val >= 1048576) {
+    val = val / 1048576
+    unit = 'MB'
+  } else if (val >= 1024) {
+    val = val / 1024
+    unit = 'kB'
+  }
+
+  return val.toFixed(2) + ' ' + unit
+}
+
 export const link = (href, text = null, className, external = true) => {
   const propObj = external
     ? { target: '_blank', rel: 'noopener noreferrer' }
