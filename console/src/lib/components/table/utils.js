@@ -2,6 +2,7 @@ import RenderLink from './renderers/render-link/index.svelte'
 import RenderSpan from './renderers/render-span/index.svelte'
 import RenderStatusText from './renderers/render-status-text/index.svelte'
 import {
+  dataSize,
   formatDate,
   formatNum,
   formatSatoshi,
@@ -25,6 +26,7 @@ export const ColType = {
   percent: 'percent',
   terraHash: 'terraHash',
   apiKey: 'apiKey',
+  dataSize: 'dataSize',
 }
 
 export const FilterType = {
@@ -86,6 +88,10 @@ const str = (value) => {
 const defaultColTypeRenderers = {
   [ColType.string]: (idField, item, colId) => ({
     value: str(item[colId]),
+  }),
+  [ColType.dataSize]: (idField, item, colId) => ({
+    component: RenderSpan,
+    props: { value: str(dataSize(item[colId])), className: 'num' },
   }),
   [ColType.number]: (idField, item, colId) => ({
     component: RenderSpan,

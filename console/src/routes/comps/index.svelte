@@ -3,6 +3,7 @@
   import ButtonSelect from '../../lib/components/button-select/index.svelte'
   import Dropdown from '../../lib/components/dropdown/index.svelte'
   import FileUpload from '../../lib/components/file-upload/index.svelte'
+  import FileTransfer from '../../lib/components/file-transfer/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
   import Checkbox from '../../lib/components/checkbox/index.svelte'
   import Radio from '../../lib/components/radio/index.svelte'
@@ -170,6 +171,20 @@
     />
     <Spacer h={24} />
     <FileUpload name="fileUpload" label="File" required on:change={onChange} />
+    <Spacer h={24} />
+    <FileTransfer
+      name="fileTransfer"
+      label="Files uploaded"
+      files={[
+        { name: 'image1.png', size: 20805, type: 'image/png', progress: 0.37 },
+        {
+          name: 'Landscape002.jpg',
+          size: 120805,
+          type: 'image/jpeg',
+          progress: 0.77,
+        },
+      ]}
+    />
   </div>
 </PageWithMenu>
 

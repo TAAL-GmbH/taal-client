@@ -58,7 +58,6 @@
       <Switch
         name="devMode"
         label="Developer mode"
-        labelPlacement="right"
         checked={checks['devMode']}
         on:change={onChange}
       />

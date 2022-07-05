@@ -18,10 +18,33 @@
   export let dangerValue = -1
   export let warnValue = -1
 
+  export let normalColor = '#6EC492'
+  export let warnColor = '#F5A200'
+  export let dangerColor = '#FF344C'
+
   let showValue = false
   let valueRatio = 0
-  let color = '#6EC492'
+  let color = normalColor
   let validRatioSet = false
+
+  export let size = 'medium'
+
+  let height = 12
+  let borderRadius = 20
+
+  $: {
+    switch (size) {
+      case 'large':
+      case 'medium':
+        height = 12
+        borderRadius = 20
+        break
+      case 'small':
+        height = 3
+        borderRadius = 5
+        break
+    }
+  }
 
   $: {
     showValue = false
@@ -31,14 +54,14 @@
       showValue = true
 
       if (showValue) {
-        color = '#6EC492'
+        color = normalColor
         if (dangerRatio !== -1 && dangerRatio <= 1 && ratio <= dangerRatio) {
-          color = '#FF344C'
+          color = dangerColor
         } else if (warnRatio !== -1 && warnRatio <= 1 && ratio <= warnRatio) {
-          color = '#F5A200'
+          color = warnColor
         }
       } else {
-        color = '#6EC492'
+        color = normalColor
       }
     } else {
       if (value !== -1 && total !== -1 && total !== 0 && value <= total) {
@@ -52,22 +75,22 @@
       }
 
       if (showValue) {
-        color = '#6EC492'
+        color = normalColor
         if (
           dangerValue !== -1 &&
           dangerValue <= total &&
           value <= dangerValue
         ) {
-          color = '#FF344C'
+          color = dangerColor
         } else if (
           warnValue !== -1 &&
           warnValue <= total &&
           value <= warnValue
         ) {
-          color = '#F5A200'
+          color = warnColor
         }
       } else {
-        color = '#6EC492'
+        color = normalColor
       }
     }
 
@@ -83,6 +106,9 @@
   class="tui-progress"
   style:--value-width-local="{$progress * 100}%"
   style:--value-color-local={color}
+  style:--height-local={height + 'px'}
+  style:--border-radius-local={borderRadius + 'px'}
+  style:--value-border-radius-local="{borderRadius}px 0 0 {borderRadius}px"
 >
   {#if showValue}
     <div class="value" />
@@ -92,15 +118,15 @@
 <style>
   .tui-progress {
     background-color: #efefef;
-    border-radius: 20px;
-    height: 12px;
+    border-radius: var(--border-radius-local);
+    height: var(--height-local);
     width: 100%;
     overflow: hidden;
   }
 
   .value {
     background-color: var(--value-color-local);
-    border-radius: 20px 0px 0px 20px;
+    border-radius: var(--value-border-radius-local);
     height: 100%;
     width: var(--value-width-local);
   }
