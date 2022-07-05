@@ -17,6 +17,12 @@ var (
 	lineRegex = regexp.MustCompile(`^(\s*)(\S+)(\s*=\s*)(\S+){0,1}(\s*)(#.*)*$`)
 )
 
+const (
+	settingsFile     = "settings.conf"
+	settingsTempFile = "settings.conf.tmp"
+	settingsOldFile  = "settings.conf.old"
+)
+
 func (s Server) getSettings(c echo.Context) error {
 	b, err := settings.GetJSON()
 	if err != nil {
@@ -37,7 +43,7 @@ func (s Server) putSetting(c echo.Context) error {
 		return s.sendError(c, http.StatusInternalServerError, 21, err)
 	}
 
-	if err := updateSettings(set.Key, set.Value); err != nil {
+	if err := updateSettings(set.Key, set.Value, settingsFile, settingsTempFile, settingsOldFile); err != nil {
 		return s.sendError(c, http.StatusInternalServerError, 22, err)
 	}
 
@@ -46,13 +52,13 @@ func (s Server) putSetting(c echo.Context) error {
 	return c.String(http.StatusOK, "OK")
 }
 
-func updateSettings(key, value string) error {
-	w, err := os.Create("settings.conf.tmp")
+func updateSettings(key, value string, settingsFile string, settingsTempFile string, settingsOldFile string) error {
+	w, err := os.Create(settingsTempFile)
 	if err != nil {
 		return fmt.Errorf("Could not create settings.conf.tmp: %v", err)
 	}
 
-	r, err := os.Open("settings.conf")
+	r, err := os.Open(settingsFile)
 	if err != nil {
 		if !errors.Is(err, os.ErrNotExist) {
 			return fmt.Errorf("Could not open settings.conf: %v", err)
@@ -66,7 +72,7 @@ func updateSettings(key, value string) error {
 			return fmt.Errorf("Could not close temp file: %v", err)
 		}
 
-		if err := os.Rename("settings.conf.tmp", "settings.conf"); err != nil {
+		if err := os.Rename(settingsTempFile, settingsFile); err != nil {
 			return fmt.Errorf("Could not rename temp file: %v", err)
 		}
 
@@ -136,11 +142,11 @@ func updateSettings(key, value string) error {
 		return fmt.Errorf("Could not close temp file: %v", err)
 	}
 
-	if err := os.Rename("settings.conf", "settings.conf.old"); err != nil {
+	if err := os.Rename(settingsFile, settingsOldFile); err != nil {
 		return fmt.Errorf("Could not rename original file: %v", err)
 	}
 
-	if err := os.Rename("settings.conf.tmp", "settings.conf"); err != nil {
+	if err := os.Rename(settingsTempFile, settingsFile); err != nil {
 		return fmt.Errorf("Could not rename temp file: %v", err)
 	}
 

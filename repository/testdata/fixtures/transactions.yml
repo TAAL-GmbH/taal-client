@@ -8,6 +8,7 @@
   data_bytes: 50
   created_at: 2022-05-23T15:10:58.022Z
   filename: textfile2.txt
+  secret: 1234
 - id: 27EC83F0
   api_key: api_key_1
   data_bytes: 333

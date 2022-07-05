@@ -27,7 +27,7 @@ func RunMigrationsSQLite(db *sqlx.DB) error {
 }
 
 func RunMigrationsPostgreSQL(db *sqlx.DB) error {
-	// config := new(postgres.Config)
+
 	targetInstance, err := postgres.WithInstance(db.DB, &postgres.Config{})
 	if err != nil {
 		return errors.Wrap(err, "invalid target postgres instance")
