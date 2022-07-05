@@ -2,6 +2,8 @@
   import Button from '../../button/index.svelte'
   import Field from '../../field/index.svelte'
 
+  export let key
+
   export let title = ''
   export let action = 'Add'
   export let usedData = -1
@@ -29,15 +31,15 @@
     /> -->
     <Field
       label="Api key"
-      value="mainnet_1PyWzkfKrq1kakvLTeaCdAL8y8UJAcZAqU"
+      value={key.api_key}
       copy={true}
     />
     <Field
       label="Address"
-      value="1L7GLWPyWzkfKrq1kakvLTeaCdAL8y8UJAcZAqU"
+      value={key.address}
       copy={true}
     />
-    <Field label="Date created" value="2022-06-08 12:32:03" />
+    <Field label="Date created" value={key.createdAt} />
   </div>
 </div>
 
