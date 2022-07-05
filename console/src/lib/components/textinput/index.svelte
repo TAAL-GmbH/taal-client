@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher, onMount } from 'svelte'
+  import Icon from '../icon/index.svelte'
   import { getInputLabel } from '../../utils/strings'
 
   const dispatch = createEventDispatcher()
@@ -15,6 +16,15 @@
   export let placeholder = ''
   export let disabled = false
   export let error = ''
+
+  // in confirm mode, changes are local until confirm is clicked,
+  // or alternatively changes can be reset to previous non-local value
+  export let confirm = false
+  let localValue = value
+
+  $: {
+    localValue = value
+  }
 
   // direction
   let direction = 'row'
@@ -72,12 +82,25 @@
   }
 
   function onInputChange(e) {
-    dispatch('change', { name, type, value: e.originalTarget.value })
+    if (confirm) {
+      localValue = e.originalTarget.value
+    } else {
+      dispatch('change', { name, type, value: e.originalTarget.value })
+    }
   }
 
   onMount(() => {
     dispatch('mount', { inputRef })
   })
+
+  function onConfirmClick() {
+    value = localValue
+    dispatch('change', { name, type, value })
+  }
+
+  function onResetClick() {
+    localValue = value
+  }
 </script>
 
 <div
@@ -102,13 +125,31 @@
         bind:this={inputRef}
         {type}
         {name}
-        {value}
+        value={confirm ? localValue : value}
         {placeholder}
         {disabled}
         on:input={onInputChange}
         on:focus={(e) => (focused = true)}
         on:blur={(e) => (focused = false)}
       />
+      {#if confirm && localValue !== value}
+        <div class="confirm-row">
+          <div
+            class="confirm-icon"
+            style="color: #6EC492; width: 20px; height: 20px;"
+            on:click={onConfirmClick}
+          >
+            <Icon name="check" size={20} />
+          </div>
+          <div
+            class="confirm-icon"
+            style="color: #FF344C; width: 17px; height: 17px;"
+            on:click={onResetClick}
+          >
+            <Icon name="close" size={17} />
+          </div>
+        </div>
+      {/if}
     </div>
   </div>
   {#if error}
@@ -178,6 +219,24 @@
     border-width: 1px;
     border-color: #ff344c;
     padding: 1px 16px;
+  }
+
+  .confirm-row {
+    display: flex;
+    align-items: center;
+    height: var(--height-local);
+    gap: 4px;
+
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 2;
+    margin-left: -40px;
+  }
+  .confirm-icon {
+    width: 18px;
+    height: 18px;
+  }
+  .confirm-icon:hover {
+    cursor: pointer;
   }
 
   .error-msg {

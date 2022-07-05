@@ -97,6 +97,13 @@
     <Spacer h={24} />
     <TextInput name="sally" label="I am a textinput" on:change={onChange} />
     <Spacer h={24} />
+    <TextInput
+      name="marvin"
+      label="I am a textinput in confirm mode"
+      confirm
+      on:change={onChange}
+    />
+    <Spacer h={24} />
     <TextArea name="textData" label="Text data" required on:change={onChange} />
     <Spacer h={24} />
     <Row gap={30}>
