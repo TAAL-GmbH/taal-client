@@ -62,6 +62,8 @@
 
   $: {
     gap = label ? '8px' : '0'
+
+    console.log('..: files =', files)
   }
 
   let focused = false
@@ -109,7 +111,7 @@
                 />
               </div>
               <Progress
-                ratio={file.progress}
+                ratio={file.progress || 0}
                 size="small"
                 normalColor="#232D7C"
               />

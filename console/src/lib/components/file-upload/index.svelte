@@ -76,19 +76,23 @@
     // btnRef.focus()
   }
 
+  function toArray(fileList) {
+    return Array.from(fileList)
+  }
+
   function onSelect() {
     inputRef.click()
   }
 
   function onInputChange(e) {
-    dispatch('change', { name, type, value: inputRef.files })
+    dispatch('change', { name, type, value: toArray(inputRef.files) })
   }
 
   let dragOver = false
 
   function onDrop(e) {
     dragOver = false
-    dispatch('change', { name, type, value: e.dataTransfer.files })
+    dispatch('change', { name, type, value: toArray(e.dataTransfer.files) })
   }
   function onDragOver(e) {
     dragOver = true
@@ -242,13 +246,6 @@
     color: #ff344c;
   }
 
-  .disabled,
-  .disabled:active {
-    background-color: #efefef;
-    border-color: #8f8d94;
-    color: #8f8d94;
-  }
-
   .prompt {
     display: flex;
     flex-direction: var(--direction-input-local);
@@ -258,11 +255,22 @@
   .icon {
     width: 44px;
     height: 44px;
+    color: #232d7c;
+  }
+  .disabled .icon {
+    color: #8f8d94;
   }
   .text {
     text-align: center;
   }
   .tui-file-upload.compact .text {
     text-align: left;
+  }
+
+  .disabled,
+  .disabled:active {
+    background-color: #efefef;
+    border-color: #8f8d94;
+    color: #8f8d94;
   }
 </style>

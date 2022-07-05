@@ -1,6 +1,8 @@
 <script>
   import Button from '../../lib/components/button/index.svelte'
   import Dropdown from '../../lib/components/dropdown/index.svelte'
+  import FileUpload from '../../lib/components/file-upload/index.svelte'
+  import FileTransfer from '../../lib/components/file-transfer/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
   import PageWithMenu from '../../lib/components/page/template/menu/index.svelte'
   import Switch from '../../lib/components/switch/index.svelte'
@@ -24,9 +26,17 @@
   let checks = {
     devMode: true,
   }
+  let files = []
+
+  let compactFileUpload = false
+
+  $: {
+    compactFileUpload = checks.devMode || files.length > 0
+  }
 
   function onChange(e) {
     const { name, group, type, value, checked } = e.detail
+    console.log('onChange: name =', name, ' type =', type, ' value =', value)
     switch (type) {
       case 'text':
         textInputs[name] = value || ''
@@ -36,6 +46,9 @@
         break
       case 'checkbox':
         checks[name] = checked || false
+        break
+      case 'file':
+        files = files.concat(value)
         break
     }
   }
@@ -71,20 +84,22 @@
       on:change={onChange}
       on:mount={onInputMount}
     />
-    <Spacer h={24} />
-    <TextInput
-      name="taalClientUrl"
-      label="TAAL Client URL"
-      value={textInputs['taalClientUrl']}
-      on:change={onChange}
-    />
-    <Spacer h={24} />
-    <TextInput
-      name="mimeType"
-      label="MIME type"
-      value={textInputs['mimeType']}
-      on:change={onChange}
-    />
+    {#if checks.devMode}
+      <Spacer h={24} />
+      <TextInput
+        name="taalClientUrl"
+        label="TAAL Client URL"
+        value={textInputs['taalClientUrl']}
+        on:change={onChange}
+      />
+      <Spacer h={24} />
+      <TextInput
+        name="mimeType"
+        label="MIME type"
+        value={textInputs['mimeType']}
+        on:change={onChange}
+      />
+    {/if}
     <Spacer h={24} />
     <TextInput
       name="tag"
@@ -111,33 +126,56 @@
         on:change={onChange}
       />
     </div>
+    {#if checks.devMode}
+      <Spacer h={24} />
+      <TextArea
+        name="textData"
+        label="Text data"
+        required
+        value={textInputs['textData']}
+        on:change={onChange}
+      />
+    {/if}
     <Spacer h={24} />
-    <TextArea
-      name="textData"
-      label="Text data"
+    <FileUpload
+      name="fileUpload"
+      label="File"
       required
-      value={textInputs['textData']}
+      compact={compactFileUpload}
       on:change={onChange}
     />
-    <Spacer h={32} />
-    <div class="sub-row">
-      <Heading value="cURL command" size={2} />
-      <Button
-        variant="ghost"
-        icon="document-duplicate"
-        size="small"
-        on:click={onCopyCurl}
+    {#if files.length > 0}
+      <Spacer h={24} />
+      <FileTransfer name="fileTransfer" label="Files added" {files} />
+    {/if}
+    {#if checks.devMode}
+      <Spacer h={32} />
+      <div class="sub-row">
+        <Heading value="cURL command" size={2} />
+        <Button
+          variant="ghost"
+          icon="document-duplicate"
+          size="small"
+          on:click={onCopyCurl}
+        >
+          Copy
+        </Button>
+      </div>
+      <Spacer h={24} />
+      <TextArea
+        name="copyCurlText"
+        readonly
+        value={textInputs['copyCurlText']}
+        on:change={onChange}
+      />
+    {/if}
+    <Spacer h={64} />
+    <div class="buttons">
+      <Button variant="ghost" size="large">Cancel</Button>
+      <Button size="large" iconAfter="arrow-narrow-right"
+        >Submit transaction</Button
       >
-        Copy
-      </Button>
     </div>
-    <Spacer h={24} />
-    <TextArea
-      name="copyCurlText"
-      readonly
-      value={textInputs['copyCurlText']}
-      on:change={onChange}
-    />
   </div>
 </PageWithMenu>
 
@@ -159,5 +197,12 @@
 
   .drop {
     max-width: 445px;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 24px;
   }
 </style>
