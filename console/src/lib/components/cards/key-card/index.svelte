@@ -3,7 +3,7 @@
   import Field from '../../field/index.svelte'
 
   export let title = ''
-  export let action = 'Upgrade'
+  export let action = 'Add'
   export let usedData = -1
   export let totalData = -1
 
@@ -14,11 +14,11 @@
 
 <div class="tui-key-card">
   <div class="header">
-    <div>Key</div>
-    <!-- <div>{title}</div>
+    <!-- <div>{title}</div>-->
     <Button variant="secondary" size="small" on:click={onAction}>
       {action}
-    </Button> -->
+    </Button>
+    <Button variant="secondary" size="small" on:click={onAction}>Remove</Button>
   </div>
   <div class="body">
     <!-- <Field
@@ -57,7 +57,8 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
+    gap: 10px;
 
     width: 100%;
     height: 60px;

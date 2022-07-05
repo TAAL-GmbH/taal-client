@@ -3,7 +3,6 @@
   import Heading from '../../lib/components/heading/index.svelte'
   import KeyCard from '../../lib/components/cards/key-card/index.svelte'
   import PageWithMenu from '../../lib/components/page/template/menu/index.svelte'
-  import Row from '../../lib/components/layout/row/index.svelte'
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import RegisterKeyPopup from '../../lib/components/popups/register-key-popup/index.svelte'
 
@@ -30,11 +29,11 @@
       <Button icon="plus" on:click={showPopup}>Add new</Button>
     </div>
     <Spacer h={24} />
-    <Row flex gap={16}>
+    <div class="grid">
       <KeyCard />
       <KeyCard />
       <KeyCard />
-    </Row>
+    </div>
   </div>
 </PageWithMenu>
 
@@ -56,5 +55,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    column-gap: 16px;
+    row-gap: 16px;
   }
 </style>
