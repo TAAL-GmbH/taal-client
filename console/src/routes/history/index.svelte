@@ -7,8 +7,31 @@
 
   let filtersOpen = false
 
+  let transactions = []
+
+  const hours24h = 24
+  const hours7d = 168
+  const hours30d = 720
+
+  let hoursBack = hours24h
+
   function onRange(e) {
-    console.log('onRange: detail = ', e.detail)
+    if (e.detail.value == "24H"){
+      hoursBack = hours24h
+      return
+    }
+
+    if (e.detail.value == "1W"){
+      hoursBack = hours7d
+      return
+    }
+    if (e.detail.value == "1M"){
+      hoursBack = hours30d
+    }
+    
+
+
+    console.log('onRange: detail = ', e.detail.value)
   }
 
   function onFilters(e) {
@@ -44,53 +67,82 @@
     },
   ]
 
-  const tableData = [
-    {
-      id: '111119bc38c0648706ef2de8d6668a7cf90d301ee5891c17530e9db96205dbc0',
-      api_key: 'testnet_0b85b7619de806c0aae9075cbb0266cf',
-      data_bytes: 213,
-      created_at: '2022-06-22T08:46:36.259Z',
-      filename: '',
-      secret: '123',
-    },
-    {
-      id: '222219bc38c0648706ef2de8d6668a7cf90d301ee5891c17530e9db96205dbc0',
-      api_key: 'testnet_0b85b7619de806c0aae9075cbb0266cf',
-      data_bytes: 123,
-      created_at: '2022-06-19T08:46:36.259Z',
-      filename: 'names.txt',
-      secret: '456',
-    },
-    {
-      id: '333319bc38c0648706ef2de8d6668a7cf90d301ee5891c17530e9db96205dbc0',
-      api_key: 'testnet_0b85b7619de806c0aae9075cbb0266cf',
-      data_bytes: 456,
-      created_at: '2022-06-26T08:46:36.259Z',
-      filename: '',
-      secret: '789',
-    },
-    {
-      id: '444419bc38c0648706ef2de8d6668a7cf90d301ee5891c17530e9db96205dbc0',
-      api_key: 'testnet_0b85b7619de806c0aae9075cbb0266cf',
-      data_bytes: 2233,
-      created_at: '2022-05-24T08:46:36.259Z',
-      filename: 'todo.doc',
-      secret: '4545454',
-    },
-    {
-      id: '555519bc38c0648706ef2de8d6668a7cf90d301ee5891c17530e9db96205dbc0',
-      api_key: 'testnet_0b85b7619de806c0aae9075cbb0266cf',
-      data_bytes: 34,
-      created_at: '2022-06-30T08:46:36.259Z',
-      filename: '',
-      secret: 'abc',
-    },
-  ]
+  // const tableData = [
+  //   {
+  //     id: '111119bc38c0648706ef2de8d6668a7cf90d301ee5891c17530e9db96205dbc0',
+  //     api_key: 'testnet_0b85b7619de806c0aae9075cbb0266cf',
+  //     data_bytes: 213,
+  //     created_at: '2022-06-22T08:46:36.259Z',
+  //     filename: '',
+  //     secret: '123',
+  //   },
+  //   {
+  //     id: '222219bc38c0648706ef2de8d6668a7cf90d301ee5891c17530e9db96205dbc0',
+  //     api_key: 'testnet_0b85b7619de806c0aae9075cbb0266cf',
+  //     data_bytes: 123,
+  //     created_at: '2022-06-19T08:46:36.259Z',
+  //     filename: 'names.txt',
+  //     secret: '456',
+  //   },
+  //   {
+  //     id: '333319bc38c0648706ef2de8d6668a7cf90d301ee5891c17530e9db96205dbc0',
+  //     api_key: 'testnet_0b85b7619de806c0aae9075cbb0266cf',
+  //     data_bytes: 456,
+  //     created_at: '2022-06-26T08:46:36.259Z',
+  //     filename: '',
+  //     secret: '789',
+  //   },
+  //   {
+  //     id: '444419bc38c0648706ef2de8d6668a7cf90d301ee5891c17530e9db96205dbc0',
+  //     api_key: 'testnet_0b85b7619de806c0aae9075cbb0266cf',
+  //     data_bytes: 2233,
+  //     created_at: '2022-05-24T08:46:36.259Z',
+  //     filename: 'todo.doc',
+  //     secret: '4545454',
+  //   },
+  //   {
+  //     id: '555519bc38c0648706ef2de8d6668a7cf90d301ee5891c17530e9db96205dbc0',
+  //     api_key: 'testnet_0b85b7619de806c0aae9075cbb0266cf',
+  //     data_bytes: 34,
+  //     created_at: '2022-06-30T08:46:36.259Z',
+  //     filename: '',
+  //     secret: 'abc',
+  //   },
+  // ]
 
   function onAction(e) {
     const { name, type, value } = e.detail
     console.log('onAction: type = ', type, ' value = ', value)
   }
+
+
+  function onChangeHoursBack(hoursBack) {
+    fetch(`${BASE_URL}/api/v1/transactions/?hours_back=${hoursBack}`)
+      .then((res) => {
+        if (!res.ok) {
+          return res.text().then((text) => {
+            throw new Error(text)
+          })
+        }
+        return res.json()
+      })
+      .then((data) => {
+        transactions = data.transactions
+      })
+      .catch((err) => {
+        const errJson = JSON.parse(err.message)
+        addNotification({
+          text: `Error: ${errJson.error}`,
+          position: 'bottom-left',
+          type: 'danger',
+          removeAfter: 2000,
+        })
+
+        console.log(err)
+      })
+  }
+  $: onChangeHoursBack(hoursBack)
+
 </script>
 
 <PageWithMenu>
@@ -120,7 +172,7 @@
     <Spacer h={24} />
     <Table
       colDefs={tableColDefs}
-      data={tableData}
+      data={transactions}
       pagination={{
         page: 1,
         pageSize: 15,
