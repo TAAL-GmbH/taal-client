@@ -1,4 +1,6 @@
 <script>
+  import { getNotificationsContext } from 'svelte-notifications'
+
   import Button from '../../lib/components/button/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
   import PageBasic from '../../lib/components/page/template/basic/index.svelte'
@@ -6,7 +8,43 @@
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import Text from '../../lib/components/text/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
+  import Spinner from '../../lib/components/spinner/index.svelte'
+
   import { link } from '../../lib/utils/format'
+  import { spinCount } from '../../lib/stores'
+  import * as api from '../../lib/api'
+
+  const { addNotification } = getNotificationsContext()
+
+  let key = ''
+
+  function onInputChange(e) {
+    key = e.detail.value
+  }
+
+  function register(apiKey) {
+    api.register(
+      apiKey,
+      (data) => {
+        addNotification({
+          text: `API key registered successfully`,
+          position: 'bottom-left',
+          type: 'success',
+          removeAfter: 1000,
+        })
+
+        key = ''
+      },
+      (error) => {
+        addNotification({
+          text: `Error: ${error}`,
+          position: 'bottom-left',
+          type: 'danger',
+          removeAfter: 5000,
+        })
+      }
+    )
+  }
 
   function onCancel() {
     console.log('onCancel')
@@ -14,13 +52,7 @@
 
   function onRegister() {
     console.log('onRegister')
-  }
-
-  let key = ''
-
-  function onInputChange(e) {
-    const target = e.explicitOriginalTarget
-    key = target.value
+    register(key)
   }
 </script>
 
@@ -50,6 +82,10 @@
     </div>
   </div>
 </PageBasic>
+
+{#if $spinCount > 0}
+  <Spinner />
+{/if}
 
 <style>
   .island {
