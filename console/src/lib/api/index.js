@@ -62,7 +62,7 @@ export function getApiKeysUsage(done, fail) {
   return callApi(`${BASE_URL}/api/v1/apikeys/usage`, {}, done, fail)
 }
 
-export function register(apiKey, done, fail) {
+export function registerKey(apiKey, done, fail) {
   return callApi(
     `${BASE_URL}/api/v1/apikeys/${apiKey}`,
     { method: 'POST' },

@@ -41,8 +41,8 @@
     )
   }
 
-  function register(apiKey) {
-    api.register(
+  function registerKey(apiKey) {
+    api.registerKey(
       apiKey,
       (data) => {
         hidePopup()
@@ -69,7 +69,7 @@
 
   function onRegister(e) {
     console.log('onRegister: apiKey = ', e.detail.apiKey)
-    register(e.detail.apiKey)
+    registerKey(e.detail.apiKey)
   }
 
   function onDeactivate(e) {

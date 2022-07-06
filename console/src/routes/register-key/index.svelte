@@ -22,8 +22,8 @@
     key = e.detail.value
   }
 
-  function register(apiKey) {
-    api.register(
+  function registerKey(apiKey) {
+    api.registerKey(
       apiKey,
       (data) => {
         addNotification({
@@ -52,7 +52,7 @@
 
   function onRegister() {
     console.log('onRegister')
-    register(key)
+    registerKey(key)
   }
 </script>
 
