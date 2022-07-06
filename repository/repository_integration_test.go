@@ -257,7 +257,7 @@ func TestInsertTransaction(t *testing.T) {
 		err := repo.InsertTransaction(ctx, tx)
 		is.NoErr(err)
 
-		txsFromDB, err := repo.GetAllTransactions(ctx, 1)
+		txsFromDB, err := repo.GetAllTransactions(ctx, false, 1)
 		is.NoErr(err)
 
 		is.Equal(1, len(txsFromDB))
@@ -284,6 +284,7 @@ func TestGetTransactions(t *testing.T) {
 	tt := []struct {
 		name        string
 		hoursBack   int
+		all         bool
 		expectedTxs []server.Transaction
 	}{
 		{
@@ -333,11 +334,60 @@ func TestGetTransactions(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "all",
+			all:  true,
+			expectedTxs: []server.Transaction{
+				{
+					ID:        "6A4410C3",
+					ApiKey:    "api_key_2",
+					DataBytes: 100,
+					CreatedAt: "2022-05-25 15:10:58.022Z",
+					Filename:  "somepicture2.png",
+				},
+				{
+					ID:        "2BDCFF23",
+					ApiKey:    "api_key_1",
+					DataBytes: 50,
+					CreatedAt: "2022-05-23 15:10:58.022Z",
+					Filename:  "textfile2.txt",
+					Secret:    "1234",
+				},
+				{
+					ID:        "27EC83F0",
+					ApiKey:    "api_key_1",
+					DataBytes: 333,
+					CreatedAt: "2022-05-12 22:10:58.022Z",
+					Filename:  "somepicture5.png",
+				},
+				{
+					ID:        "7650035F",
+					ApiKey:    "api_key_2",
+					DataBytes: 200,
+					CreatedAt: "2022-05-12 15:10:58.022Z",
+					Filename:  "somepicture1.png",
+				},
+				{
+					ID:        "BA93B557",
+					ApiKey:    "api_key_1",
+					DataBytes: 100,
+					CreatedAt: "2022-05-10 15:10:58.022Z",
+					Filename:  "textfile1.txt",
+				},
+				{
+					ID:        "2C34AE2C",
+					ApiKey:    "api_key_1",
+					DataBytes: 40,
+					CreatedAt: "2022-04-28 15:10:58.022Z",
+					Filename:  "textfile0.txt",
+				},
+			},
+		},
 	}
 
 	for _, tc := range tt {
 		t.Run(tc.name, func(t *testing.T) {
-			transactions, err := repo.GetAllTransactions(ctx, tc.hoursBack)
+			transactions, err := repo.GetAllTransactions(ctx, tc.all, tc.hoursBack)
 			is.NoErr(err)
 
 			is.Equal(tc.expectedTxs, transactions)

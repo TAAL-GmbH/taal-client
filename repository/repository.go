@@ -96,15 +96,20 @@ func (r Repository) GetTransaction(ctx context.Context, txid string) (*server.Tr
 	return nil, sql.ErrNoRows
 }
 
-func (r Repository) GetAllTransactions(ctx context.Context, hoursBack int) ([]server.Transaction, error) {
-	now := r.now()
-
-	timeBack := now.Add(-1 * time.Duration(hoursBack) * time.Hour).UTC().Format(ISO8601)
-	query := `SELECT * FROM transactions WHERE created_at >= $1 ORDER BY created_at DESC;`
-
+func (r Repository) GetAllTransactions(ctx context.Context, all bool, hoursBack int) ([]server.Transaction, error) {
 	txs := make([]server.Transaction, 0)
+	var err error
 
-	err := r.db.SelectContext(ctx, &txs, query, timeBack)
+	if all {
+		query := `SELECT * FROM transactions ORDER BY created_at DESC;`
+		err = r.db.SelectContext(ctx, &txs, query)
+	} else {
+		now := r.now()
+		timeBack := now.Add(-1 * time.Duration(hoursBack) * time.Hour).UTC().Format(ISO8601)
+		query := `SELECT * FROM transactions WHERE created_at >= $1 ORDER BY created_at DESC;`
+		err = r.db.SelectContext(ctx, &txs, query, timeBack)
+	}
+
 	if err != nil {
 		return nil, err
 	}

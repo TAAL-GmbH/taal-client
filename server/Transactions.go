@@ -26,7 +26,8 @@ func (s Server) getTransactions(c echo.Context) error {
 	ctx := context.Background()
 
 	hoursBackParam := c.QueryParam("hours_back")
-	var hoursBack int = defaultHoursBack
+	var hoursBack int = 0
+	getAll := hoursBackParam == ""
 
 	if hoursBackParam != "" {
 		hoursBackParsed, err := strconv.Atoi(hoursBackParam)
@@ -39,7 +40,7 @@ func (s Server) getTransactions(c echo.Context) error {
 		hoursBack = hoursBackParsed
 	}
 
-	txs, err := s.repository.GetAllTransactions(ctx, hoursBack)
+	txs, err := s.repository.GetAllTransactions(ctx, getAll, hoursBack)
 	if err != nil {
 		return s.sendError(c, http.StatusInternalServerError, errGetTransactions, errors.Wrap(err, "failed to get transaction information"))
 	}
