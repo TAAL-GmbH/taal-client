@@ -1,5 +1,5 @@
 <script context="module">
-  let initialized = false
+  let firstLoad = true
 </script>
 
 <script>
@@ -31,8 +31,8 @@
 
     console.log(result)
 
-    if (!initialized && result && result.length > 0) {
-      initialized = true
+    if (firstLoad && result?.keys && result?.keys.length > 0) {
+      firstLoad = false
       console.log(
         'on first load, we already have keys and redirect to send data page'
       )
@@ -46,10 +46,12 @@
     <Heading value="Do you have an API key?" />
     <Spacer h={64} />
     <Row gap={16}>
-      <Button variant="secondary" width={236} on:click={onNoKey}>
+      <Button variant="secondary" size="large" width={236} on:click={onNoKey}>
         I don't have an API key
       </Button>
-      <Button width={236} on:click={onKey}>I have an API key</Button>
+      <Button width={236} size="large" on:click={onKey}>
+        I have an API key
+      </Button>
     </Row>
   </div>
 </PageBasic>
@@ -61,6 +63,5 @@
 <style>
   .island {
     text-align: center;
-    margin-bottom: 120px;
   }
 </style>

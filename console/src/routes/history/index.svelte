@@ -16,20 +16,18 @@
   let hoursBack = hours24h
 
   function onRange(e) {
-    if (e.detail.value == "24H"){
+    if (e.detail.value == '24H') {
       hoursBack = hours24h
       return
     }
 
-    if (e.detail.value == "1W"){
+    if (e.detail.value == '1W') {
       hoursBack = hours7d
       return
     }
-    if (e.detail.value == "1M"){
+    if (e.detail.value == '1M') {
       hoursBack = hours30d
     }
-    
-
 
     console.log('onRange: detail = ', e.detail.value)
   }
@@ -115,7 +113,6 @@
     console.log('onAction: type = ', type, ' value = ', value)
   }
 
-
   function onChangeHoursBack(hoursBack) {
     fetch(`${BASE_URL}/api/v1/transactions/?hours_back=${hoursBack}`)
       .then((res) => {
@@ -142,7 +139,6 @@
       })
   }
   $: onChangeHoursBack(hoursBack)
-
 </script>
 
 <PageWithMenu>
@@ -196,8 +192,6 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding-top: 40px;
-    margin-bottom: 100px;
   }
 
   .sub-row {

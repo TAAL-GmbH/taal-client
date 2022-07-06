@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte'
+  import Button from '../../../button/index.svelte'
   import Checkbox from '../../../checkbox/index.svelte'
   import Icon from '../../../icon/index.svelte'
   import Pager from '../../../pager/index.svelte'
@@ -162,7 +163,11 @@
                     class="table-icon active"
                     on:click={() => onActionIcon(actionItem.type, item)}
                   >
-                    <Icon name={actionItem.icon} size={18} />
+                    <Button
+                      variant="ghost"
+                      size="small"
+                      icon={actionItem.icon}
+                    />
                   </div>
                 {/each}
               </td>
@@ -318,10 +323,8 @@
     flex-wrap: nowrap;
   }
   .table-icon {
-    width: 18px;
-    height: 18px;
-    padding: 0 1px 0 3px;
-    color: #232d7c;
+    width: 36px;
+    height: 36px;
   }
   .table-icon.active {
     cursor: pointer;

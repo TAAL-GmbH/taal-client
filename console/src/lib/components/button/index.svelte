@@ -8,8 +8,9 @@
   export let icon = null
   export let iconAfter = null
 
-  // TODO: discuss, remove hack
+  // TODO: discuss, remove hacks
   export let forceDisabledBorderDark = false
+  export let forceRed = false
 
   let hasIcon = false
   let direction = 'row'
@@ -85,6 +86,7 @@
   class:forceDisabledBorderDark
   class:selected
   class:toggle
+  class:forceRed
   style:--height-local={height}
   style:--padding-local={padding}
   style:--fontSize-local={fontSize}
@@ -201,6 +203,14 @@
     font-weight: 600;
   }
 
+  .forceRed,
+  .forceRed:hover,
+  .forceRed:active,
+  .forceRed:focus {
+    background-color: transparent;
+    border-color: #ff344c;
+    color: #ff344c;
+  }
   .disabled,
   .disabled:hover {
     background-color: #efefef;

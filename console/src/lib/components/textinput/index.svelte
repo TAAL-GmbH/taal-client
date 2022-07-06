@@ -187,9 +187,10 @@
   }
 
   label {
-    font-weight: 500;
+    font-weight: 400;
     font-size: 14px;
-    line-height: 16px;
+    line-height: 18px;
+    letter-spacing: -0.02em;
 
     color: #232d7c;
   }

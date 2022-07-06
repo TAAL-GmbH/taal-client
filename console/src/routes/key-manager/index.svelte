@@ -28,7 +28,7 @@
   function getApiKeys() {
     api.getApiKeys(
       (data) => {
-        keys = data
+        keys = data.keys
       },
       (error) => {
         addNotification({
@@ -68,8 +68,12 @@
   }
 
   function onRegister(e) {
-    console.log('onRegister: key = ', e.detail.key)
-    register(e.detail.key)
+    console.log('onRegister: apiKey = ', e.detail.apiKey)
+    register(e.detail.apiKey)
+  }
+
+  function onDeactivate(e) {
+    console.log('onDeactivate: key = ', e.detail.key)
   }
 
   onMount(() => {
@@ -89,7 +93,7 @@
     {#if keys}
       <div class="grid">
         {#each keys as key (key.api_key)}
-          <KeyCard {key} />
+          <KeyCard {key} on:deactivate={onDeactivate} />
         {/each}
       </div>
     {/if}
@@ -110,8 +114,6 @@
     flex-direction: column;
     width: 100%;
     max-width: 920px;
-    padding-top: 40px;
-    margin-bottom: 100px;
   }
 
   .sub-row {
@@ -122,7 +124,7 @@
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
     column-gap: 16px;
     row-gap: 16px;
   }

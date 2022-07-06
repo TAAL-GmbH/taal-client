@@ -76,8 +76,8 @@
     <Spacer h={120} />
     <div class="right">
       <Row gap={16}>
-        <Button variant="ghost" on:click={onCancel}>Cancel</Button>
-        <Button on:click={onRegister}>Register</Button>
+        <Button variant="ghost" size="large" on:click={onCancel}>Cancel</Button>
+        <Button size="large" on:click={onRegister}>Register</Button>
       </Row>
     </div>
   </div>
@@ -93,8 +93,6 @@
     flex-direction: column;
     width: 100%;
     max-width: 920px;
-
-    margin-bottom: 120px;
   }
 
   .right {

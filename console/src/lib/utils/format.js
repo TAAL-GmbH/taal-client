@@ -1,10 +1,12 @@
 import { valueSet } from './types'
 
-export const formatDate = (str, showSeconds = true) => {
+export const formatDate = (str, showSeconds = true, showTime = true) => {
   if (str === '0001-01-01T00:00:00.000Z') {
     return ''
   }
-  return showSeconds
+  return !showTime
+    ? new Date(str).toISOString().slice(0, 10)
+    : showSeconds
     ? new Date(str)
         .toISOString()
         .replace('T', ' ')

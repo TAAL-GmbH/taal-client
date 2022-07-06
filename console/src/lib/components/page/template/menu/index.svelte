@@ -3,7 +3,7 @@
   import { menuLinks, menuActions } from '../../../../stores'
   import Header from '../../../header/index.svelte'
   import Footer from '../../../footer/index.svelte'
-  import ContentBasic from '../../content/basic/index.svelte'
+  import ContentMenu from '../../content/menu/index.svelte'
 
   const location = useLocation()
   const navigate = useNavigate()
@@ -37,9 +37,9 @@
 />
 
 <div class="content-container">
-  <ContentBasic>
+  <ContentMenu>
     <slot />
-  </ContentBasic>
+  </ContentMenu>
 
   <Footer />
 </div>

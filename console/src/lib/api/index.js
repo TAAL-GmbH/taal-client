@@ -37,9 +37,9 @@ export function getApiKeys(done, fail) {
     })
     .then((data) => {
       if (done) {
-        done(data.keys)
+        done(data)
       }
-      return data.keys
+      return data
     })
     .catch((err) => {
       const msg = getErrorMessage(err)

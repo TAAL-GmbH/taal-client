@@ -10,10 +10,10 @@
 
   const dispatch = createEventDispatcher()
 
-  let key = ''
+  let apiKey = ''
 
   function onInputChange(e) {
-    key = e.detail.value
+    apiKey = e.detail.value
   }
 
   function onInputMount(e) {
@@ -24,7 +24,7 @@
     dispatch('close')
   }
   function onRegisterClick() {
-    dispatch('register', { key })
+    dispatch('register', { apiKey })
   }
 </script>
 
@@ -35,7 +35,7 @@
       <TextInput
         name="api-key"
         label="API key"
-        value={key}
+        value={apiKey}
         required
         on:change={onInputChange}
         on:mount={onInputMount}

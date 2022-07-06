@@ -221,19 +221,19 @@
     width: 100%;
   }
 
-  :global(.green) {
+  /* :global(.green) {
     color: green;
   }
   :global(.red) {
     color: red;
-  }
+  } */
   :global(.link) {
     cursor: pointer;
-    color: blue;
+    color: #0094ff;
   }
   :global(.num) {
-    float: right;
-    text-align: right;
-    color: blue;
+    /* float: right;
+    text-align: right; */
+    /* color: blue; */
   }
 </style>
