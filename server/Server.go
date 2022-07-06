@@ -20,11 +20,11 @@ import (
 	"github.com/pkg/errors"
 )
 
-//go:generate moq -pkg service_test -out repository_mock_test.go . Repository
 type Repository interface {
 	InsertKey(ctx context.Context, key Key) error
 	GetKey(ctx context.Context, apiKey string) (Key, error)
 	GetAllKeys(ctx context.Context) ([]Key, error)
+	GetAllKeyUsages(ctx context.Context) ([]KeyUsage, error)
 	InsertTransaction(ctx context.Context, tx Transaction) error
 	GetAllTransactions(ctx context.Context, all bool, hoursBack int) ([]Transaction, error)
 	GetTransactionInfo(ctx context.Context, from time.Time, to time.Time, granularity Granularity) ([]TransactionInfo, error)
