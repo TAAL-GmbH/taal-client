@@ -28,10 +28,13 @@ function getErrorMessage(err) {
   return msg
 }
 
-export function getApiKeys(done, fail) {
+function callApi(url, options = {}, done, fail) {
+  if (!options.method) {
+    options.method = 'GET'
+  }
   incSpinCount()
 
-  return fetch(`${BASE_URL}/api/v1/apikeys`)
+  return fetch(url, options)
     .then((res) => {
       return checkInitialResponse(res)
     })
@@ -51,26 +54,19 @@ export function getApiKeys(done, fail) {
     .finally(decSpinCount)
 }
 
-export function register(apiKey, done, fail) {
-  incSpinCount()
+export function getApiKeys(done, fail) {
+  return callApi(`${BASE_URL}/api/v1/apikeys`, {}, done, fail)
+}
 
-  fetch(`${BASE_URL}/api/v1/apikeys/${apiKey}`, {
-    method: 'POST',
-  })
-    .then((res) => {
-      return checkInitialResponse(res)
-    })
-    .then((_) => {
-      if (done) {
-        done()
-      }
-    })
-    .catch((err) => {
-      const msg = getErrorMessage(err)
-      console.log(msg)
-      if (fail) {
-        fail(msg)
-      }
-    })
-    .finally(decSpinCount)
+export function getApiKeysUsage(done, fail) {
+  return callApi(`${BASE_URL}/api/v1/apikeys/usage`, {}, done, fail)
+}
+
+export function register(apiKey, done, fail) {
+  return callApi(
+    `${BASE_URL}/api/v1/apikeys/${apiKey}`,
+    { method: 'POST' },
+    done,
+    fail
+  )
 }

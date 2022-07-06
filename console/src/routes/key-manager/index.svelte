@@ -26,9 +26,9 @@
   }
 
   function getApiKeys() {
-    api.getApiKeys(
+    api.getApiKeysUsage(
       (data) => {
-        keys = data.keys
+        keys = data.key_usages
       },
       (error) => {
         addNotification({
