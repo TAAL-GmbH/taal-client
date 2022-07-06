@@ -190,9 +190,10 @@
   }
 
   label {
-    font-weight: 500;
+    font-weight: 400;
     font-size: var(--fontSize-local);
-    line-height: 16px;
+    line-height: 18px;
+    letter-spacing: -0.02em;
 
     color: #232d7c;
   }
@@ -225,7 +226,6 @@
     height: 120px;
     padding: 0 25px;
   }
-  .input:active,
   .input.dragOver {
     background-color: #eff8ff;
   }
