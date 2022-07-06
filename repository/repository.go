@@ -50,7 +50,7 @@ func (r Repository) GetKey(ctx context.Context, apiKey string) (server.Key, erro
 	return key, nil
 }
 
-func (r Repository) GetAllKeyUsages(ctx context.Context) ([]server.KeyUsage, error) {
+func (r Repository) GetAllKeysUsage(ctx context.Context) ([]server.KeyUsage, error) {
 	query := `SELECT k.api_key, k.public_key, k.private_key, k.address, k.created_at, k.revoked_at, SUM(t.data_bytes) as data_bytes 
 	FROM keys k JOIN transactions t ON t.api_key = k.api_key GROUP BY k.api_key ORDER BY k.created_at;`
 

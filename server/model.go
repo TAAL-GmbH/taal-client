@@ -28,7 +28,7 @@ type KeyUsage struct {
 	DataBytes int64 `db:"data_bytes" json:"dataBytes"`
 }
 
-type KeyUsages struct {
+type KeysUsage struct {
 	KeysUsage []KeyUsage `json:"key_usages"`
 }
 

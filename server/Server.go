@@ -24,7 +24,7 @@ type Repository interface {
 	InsertKey(ctx context.Context, key Key) error
 	GetKey(ctx context.Context, apiKey string) (Key, error)
 	GetAllKeys(ctx context.Context) ([]Key, error)
-	GetAllKeyUsages(ctx context.Context) ([]KeyUsage, error)
+	GetAllKeysUsage(ctx context.Context) ([]KeyUsage, error)
 	InsertTransaction(ctx context.Context, tx Transaction) error
 	GetAllTransactions(ctx context.Context, all bool, hoursBack int) ([]Transaction, error)
 	GetTransactionInfo(ctx context.Context, from time.Time, to time.Time, granularity Granularity) ([]TransactionInfo, error)
@@ -102,6 +102,7 @@ func New(address string, taal *client.Client, repo Repository) Server {
 	group.DELETE("/apikeys/:apikey", s.revoke)
 	group.POST("/apikeys/:apikey", s.register)
 	group.GET("/apikeys", s.getApiKeys)
+	group.GET("/apikeys/usage", s.getApiKeysUsage)
 
 	group.GET("/settings", s.getSettings)
 	group.PUT("/settings", s.putSetting)

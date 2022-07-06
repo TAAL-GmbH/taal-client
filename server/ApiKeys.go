@@ -17,3 +17,13 @@ func (s Server) getApiKeys(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, Keys{Keys: keys})
 }
+
+func (s Server) getApiKeysUsage(c echo.Context) error {
+	ctx := context.Background()
+	keys, err := s.repository.GetAllKeysUsage(ctx)
+	if err != nil {
+		return s.sendError(c, http.StatusInternalServerError, errAPIKeysFailedToGetKeys, errors.Wrap(err, "failed to get api keys"))
+	}
+
+	return c.JSON(http.StatusOK, KeysUsage{KeysUsage: keys})
+}
