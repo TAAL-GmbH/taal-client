@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte'
+  import { getNotificationsContext } from 'svelte-notifications'
 
   import Button from '../button/index.svelte'
   import Icon from '../icon/index.svelte'
@@ -7,6 +8,7 @@
   import { getInputLabel } from '../../utils/strings'
 
   const dispatch = createEventDispatcher()
+  const { addNotification } = getNotificationsContext()
 
   let type = 'file'
 
@@ -125,6 +127,7 @@
       class:focused
       class:dragOver
       on:drop|preventDefault={onDrop}
+      on:dragenter|preventDefault={onDragOver}
       on:dragover|preventDefault={onDragOver}
       on:dragleave|preventDefault={onDragLeave}
     >

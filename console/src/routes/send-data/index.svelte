@@ -10,6 +10,8 @@
   import Text from '../../lib/components/text/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
   import TextArea from '../../lib/components/textarea/index.svelte'
+  import { valueSet } from '../../lib/utils/types'
+  import { getFileKey } from '../../lib/utils/files'
 
   let textInputs = {
     apiKey: '',
@@ -20,20 +22,86 @@
     copyCurlText:
       'curl \\ \n\t -X POST \\ \n\t -H ‘Authorization: Bearer mainnet_...',
   }
+
   let dropdowns = {
     mode: '',
   }
+
   let checks = {
     devMode: true,
   }
+
   let files = []
+  let imageSrcData = {}
+  let supportedImageSrcDataFileTypes = ['image/png', 'image/jpeg']
+  let fileProgressData = {}
+  // let fileProgressData = {
+  //   'profile.jpg_1643963589484': { state: 'progress', progress: 0.5 },
+  // }
 
   let compactFileUpload = false
 
   $: {
     compactFileUpload = checks.devMode || files.length > 0
 
-    localStorage.setItem('devmode', checks.devMode)
+    // localStorage.setItem('devmode', checks.devMode)
+
+    files.forEach((file) => {
+      if (
+        !imageSrcData[getFileKey(file)] &&
+        supportedImageSrcDataFileTypes.includes(file.type)
+      ) {
+        let reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onloadend = function () {
+          imageSrcData[getFileKey(file)] = reader.result
+        }
+      }
+    })
+  }
+
+  function uploadFile(file) {
+    const url = 'TODO-GET-URL'
+    const xhr = new XMLHttpRequest()
+    const formData = new FormData()
+    const fileKey = getFileKey(file)
+    xhr.open('POST', url, true)
+
+    xhr.upload.addEventListener('progress', function (e) {
+      console.log('progress = ', e.loaded / e.total)
+      fileProgressData[fileKey] = {
+        state: 'progress',
+        progress: e.loaded / e.total,
+      }
+    })
+
+    xhr.addEventListener('readystatechange', function (e) {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        fileProgressData[fileKey] = { state: 'success', progress: 1 }
+
+        addNotification({
+          text: `Successfully uploaded file: ${file.name}`,
+          position: 'bottom-left',
+          type: 'success',
+          removeAfter: 2000,
+        })
+      } else if (xhr.readyState === 4 && xhr.status !== 200) {
+        fileProgressData[fileKey] = { state: 'failure', progress: 1 }
+
+        addNotification({
+          text: `Upload failed for: ${file.name}`,
+          position: 'bottom-left',
+          type: 'danger',
+          removeAfter: 2000,
+        })
+      }
+    })
+
+    // initialise start state
+    fileProgressData[fileKey] = { state: 'progress', progress: 0 }
+
+    formData.append('file', file)
+    xhr.send(formData)
   }
 
   function onChange(e) {
@@ -61,6 +129,23 @@
 
   function onCopyCurl() {
     console.log('onCopyCurl')
+  }
+
+  function onCancelTransfer(e) {
+    const file = e.detail.value
+    const fileKey = getFileKey(file)
+    console.log('onCancelTransfer: file = ', file.name)
+    fileProgressData[fileKey] = { state: 'cancelled', progress: 1 }
+  }
+
+  function onRemoveTransferFile(e) {
+    const file = e.detail.value
+    const fileKey = getFileKey(file)
+    console.log('onRemoveTransferFile: file = ', file.name)
+    files = files.filter((item) => getFileKey(item) !== fileKey)
+    if (imageSrcData[fileKey]) {
+      delete imageSrcData[fileKey]
+    }
   }
 </script>
 
@@ -148,7 +233,15 @@
     />
     {#if files.length > 0}
       <Spacer h={24} />
-      <FileTransfer name="fileTransfer" label="Files added" {files} />
+      <FileTransfer
+        name="fileTransfer"
+        label="Files added"
+        {files}
+        {imageSrcData}
+        {fileProgressData}
+        on:cancel={onCancelTransfer}
+        on:remove={onRemoveTransferFile}
+      />
     {/if}
     {#if checks.devMode}
       <Spacer h={32} />
