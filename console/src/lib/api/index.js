@@ -28,9 +28,12 @@ function getErrorMessage(err) {
   return msg
 }
 
-function callApi(url, options = {}, done, fail) {
+function callApi(url, data, options = {}, done, fail) {
   if (!options.method) {
     options.method = 'GET'
+  }
+  if (data) {
+    options.body = JSON.stringify(data)
   }
   incSpinCount()
 
@@ -54,28 +57,36 @@ function callApi(url, options = {}, done, fail) {
     .finally(decSpinCount)
 }
 
+function get(url, done, fail) {
+  return callApi(url, null, { method: 'GET' }, done, fail)
+}
+
+function post(url, data, done, fail) {
+  return callApi(url, data, { method: 'POST' }, done, fail)
+}
+
+function del(url, done, fail) {
+  return callApi(url, null, { method: 'DELETE' }, done, fail)
+}
+
+// api methods
+
 export function getApiKeys(done, fail) {
-  return callApi(`${BASE_URL}/api/v1/apikeys`, {}, done, fail)
+  return get(`${BASE_URL}/api/v1/apikeys`, done, fail)
 }
 
 export function getApiKeysUsage(done, fail) {
-  return callApi(`${BASE_URL}/api/v1/apikeys/usage`, {}, done, fail)
+  return get(`${BASE_URL}/api/v1/apikeys/usage`, done, fail)
 }
 
 export function registerKey(apiKey, done, fail) {
-  return callApi(
-    `${BASE_URL}/api/v1/apikeys/${apiKey}`,
-    { method: 'POST' },
-    done,
-    fail
-  )
+  return post(`${BASE_URL}/api/v1/apikeys/${apiKey}`, null, done, fail)
 }
 
 export function deleteKey(apiKey, done, fail) {
-  return callApi(
-    `${BASE_URL}/api/v1/apikeys/${apiKey}`,
-    { method: 'DELETE' },
-    done,
-    fail
-  )
+  return del(`${BASE_URL}/api/v1/apikeys/${apiKey}`, done, fail)
+}
+
+export function getTransactions(hours, done, fail) {
+  return get(`${BASE_URL}/api/v1/transactions/?hours_back=${hours}`, done, fail)
 }

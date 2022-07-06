@@ -54,6 +54,7 @@ export const getSortFunction = (colType, sortColumn, sortOrder) => {
           : new Date(b[sortColumn]).getTime() -
             new Date(a[sortColumn]).getTime()
     case ColType.number:
+    case ColType.dataSize:
     case ColType.satoshi:
     case ColType.terraHash:
     case ColType.percent:

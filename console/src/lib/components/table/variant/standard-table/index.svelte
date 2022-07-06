@@ -325,6 +325,7 @@
   .header-icon {
     width: 18px;
     height: 18px;
+    padding: 0 1px 0 3px;
   }
   .action-icon {
     width: 36px;
