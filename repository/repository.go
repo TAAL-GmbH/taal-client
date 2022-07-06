@@ -50,8 +50,30 @@ func (r Repository) GetKey(ctx context.Context, apiKey string) (server.Key, erro
 	return key, nil
 }
 
+func (r Repository) GetAllKeysUsage(ctx context.Context) ([]server.KeyUsage, error) {
+	query := `SELECT k.api_key, k.public_key, k.private_key, k.address, k.created_at, k.revoked_at, SUM(t.data_bytes) as data_bytes 
+	FROM keys k JOIN transactions t ON t.api_key = k.api_key GROUP BY k.api_key ORDER BY k.created_at;`
+
+	keys := make([]server.KeyUsage, 0)
+
+	err := r.db.SelectContext(ctx, &keys, query)
+	if err != nil {
+		return nil, err
+	}
+
+	for idx := range keys {
+		parsedTime, err := time.Parse(ISO8601Sqlite, keys[idx].CreatedAt)
+		if err == nil {
+			createdAtFormatted := parsedTime.Format(ISO8601DBOutput)
+			keys[idx].CreatedAt = createdAtFormatted
+		}
+	}
+
+	return keys, nil
+}
+
 func (r Repository) GetAllKeys(ctx context.Context) ([]server.Key, error) {
-	query := `SELECT * FROM keys WHERE revoked_at IS NULL;`
+	query := `SELECT * FROM keys WHERE revoked_at IS NULL ORDER BY created_at;`
 
 	keys := make([]server.Key, 0)
 

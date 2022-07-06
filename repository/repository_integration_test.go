@@ -219,18 +219,60 @@ func TestGetAllKeys(t *testing.T) {
 
 		expectedKeys := []server.Key{
 			{
-				ApiKey:     "11111",
+				ApiKey:     "api_key_1",
 				PublicKey:  "xskd023k3",
 				PrivateKey: "2099n2dskd",
 				Address:    "ke992kfj0",
 				CreatedAt:  "2022-05-21 15:10:58.022Z",
 			},
 			{
-				ApiKey:     "22222",
+				ApiKey:     "api_key_2",
 				PublicKey:  "adlkfsd9",
 				PrivateKey: "xp3k0cj3m",
 				Address:    "20fk2pdkf",
 				CreatedAt:  "2022-05-24 15:10:58.022Z",
+			},
+		}
+
+		is.Equal(expectedKeys, keys)
+	})
+}
+
+func TestGetAllKeyUsages(t *testing.T) {
+	t.Run("Get all keys Usage", func(t *testing.T) {
+		is := is.New(t)
+		err := prepareTestDatabase()
+		is.NoErr(err)
+
+		now := func() time.Time {
+			return time.Date(2022, 5, 1, 10, 0, 0, 0, time.UTC)
+		}
+
+		repo := repository.NewRepository(db, now)
+		ctx := context.Background()
+		keys, err := repo.GetAllKeyUsages(ctx)
+		is.NoErr(err)
+
+		expectedKeys := []server.KeyUsage{
+			{
+				Key: server.Key{
+					ApiKey:     "api_key_1",
+					PublicKey:  "xskd023k3",
+					PrivateKey: "2099n2dskd",
+					Address:    "ke992kfj0",
+					CreatedAt:  "2022-05-21 15:10:58.022Z",
+				},
+				DataBytes: 523,
+			},
+			{
+				Key: server.Key{
+					ApiKey:     "api_key_2",
+					PublicKey:  "adlkfsd9",
+					PrivateKey: "xp3k0cj3m",
+					Address:    "20fk2pdkf",
+					CreatedAt:  "2022-05-24 15:10:58.022Z",
+				},
+				DataBytes: 300,
 			},
 		}
 
