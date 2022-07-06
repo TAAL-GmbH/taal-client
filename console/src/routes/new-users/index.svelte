@@ -1,4 +1,9 @@
+<script context="module">
+  let initialized = false
+</script>
+
 <script>
+  import { onMount } from 'svelte'
   import { useNavigate } from 'svelte-navigator'
 
   import Button from '../../lib/components/button/index.svelte'
@@ -8,8 +13,10 @@
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import Spinner from '../../lib/components/spinner/index.svelte'
 
+  import { spinCount } from '../../lib/stores'
+  import * as api from '../../lib/api'
+
   const navigate = useNavigate()
-  let showSpinner = false
 
   function onKey() {
     navigate('/register-key')
@@ -18,6 +25,20 @@
   function onNoKey() {
     window.open('https://console.taal.com', '_blank')
   }
+
+  onMount(async () => {
+    const result = await api.getApiKeys()
+
+    console.log(result)
+
+    if (!initialized && result && result.length > 0) {
+      initialized = true
+      console.log(
+        'on first load, we already have keys and redirect to send data page'
+      )
+      navigate('/send-data')
+    }
+  })
 </script>
 
 <PageBasic>
@@ -33,7 +54,7 @@
   </div>
 </PageBasic>
 
-{#if showSpinner}
+{#if $spinCount > 0}
   <Spinner />
 {/if}
 

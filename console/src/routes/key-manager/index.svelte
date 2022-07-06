@@ -1,10 +1,5 @@
-<script context="module">
-  let initialized = false
-</script>
-
 <script>
   import { onMount } from 'svelte'
-  import { useNavigate } from 'svelte-navigator'
   import { getNotificationsContext } from 'svelte-notifications'
 
   import Button from '../../lib/components/button/index.svelte'
@@ -15,7 +10,9 @@
   import RegisterKeyPopup from '../../lib/components/popups/register-key-popup/index.svelte'
   import Spinner from '../../lib/components/spinner/index.svelte'
 
-  const navigate = useNavigate()
+  import { spinCount } from '../../lib/stores'
+  import * as api from '../../lib/api'
+
   const { addNotification } = getNotificationsContext()
 
   let keys
@@ -28,90 +25,46 @@
     popupVisible = false
   }
 
-  let spinCount = 0
-  function showSpinner() {
-    spinCount++
-  }
-  function hideSpinner() {
-    spinCount--
-  }
-
   function getApiKeys() {
-    showSpinner()
-
-    return fetch(`${BASE_URL}/api/v1/apikeys`)
-      .then((res) => {
-        if (!res.ok) {
-          return res.text().then((text) => {
-            throw new Error(text)
-          })
-        }
-
-        return res.json()
-      })
-      .then((data) => {
-        keys = data.keys
-        return data.keys
-      })
-      .catch((err) => {
-        var errMessage = ''
-        try {
-          const errJson = JSON.parse(err.message)
-          errMessage = errJson.error
-        } catch (error) {
-          errMessage = err
-        }
-
+    api.getApiKeys(
+      (data) => {
+        keys = data
+      },
+      (error) => {
         addNotification({
-          text: `Failed to load api keys: ${errMessage}`,
+          text: `Failed to load api keys: ${error}`,
           position: 'bottom-left',
           type: 'danger',
           removeAfter: 2000,
         })
-
-        console.log(errMessage)
-      })
-      .finally(hideSpinner)
+      }
+    )
   }
 
   function register(apiKey) {
-    showSpinner()
-
-    fetch(`${BASE_URL}/api/v1/apikeys/${apiKey}`, {
-      method: 'POST',
-    })
-      .then((res) => {
+    api.register(
+      apiKey,
+      (data) => {
         hidePopup()
 
-        if (!res.ok) {
-          return res.text().then((text) => {
-            throw new Error(text)
-          })
-        } else {
-          addNotification({
-            text: `API key registered successfully`,
-            position: 'bottom-left',
-            type: 'success',
-            removeAfter: 1000,
-          })
-
-          getApiKeys()
-
-          return res.json()
-        }
-      })
-      .catch((err) => {
-        const errJson = JSON.parse(err.message)
         addNotification({
-          text: `Error: ${errJson.error}`,
+          text: `API key registered successfully`,
+          position: 'bottom-left',
+          type: 'success',
+          removeAfter: 1000,
+        })
+
+        getApiKeys()
+      },
+      (error) => {
+        addNotification({
+          text: `Error: ${error}`,
           position: 'bottom-left',
           type: 'danger',
           removeAfter: 5000,
         })
-
-        console.log(err)
-      })
-      .finally(hideSpinner)
+      }
+    )
   }
 
   function onRegister(e) {
@@ -119,16 +72,8 @@
     register(e.detail.key)
   }
 
-  onMount(async () => {
-    const result = await getApiKeys()
-
-    if (!initialized && result && result.length > 0) {
-      initialized = true
-      console.log(
-        'on first load, we already have keys and redirect to send data page'
-      )
-      navigate('/send-data')
-    }
+  onMount(() => {
+    getApiKeys()
   })
 </script>
 
@@ -155,7 +100,7 @@
   <RegisterKeyPopup on:close={hidePopup} on:register={onRegister} />
 {/if}
 
-{#if spinCount > 0}
+{#if $spinCount > 0}
   <Spinner />
 {/if}
 
