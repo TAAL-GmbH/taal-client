@@ -1,35 +1,68 @@
 <script>
+  import { onMount } from 'svelte'
+  import { getNotificationsContext } from 'svelte-notifications'
+
   import Button from '../../lib/components/button/index.svelte'
   import Dropdown from '../../lib/components/dropdown/index.svelte'
   import FileUpload from '../../lib/components/file-upload/index.svelte'
   import FileTransfer from '../../lib/components/file-transfer/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
   import PageWithMenu from '../../lib/components/page/template/menu/index.svelte'
+  import Row from '../../lib/components/layout/row/index.svelte'
   import Switch from '../../lib/components/switch/index.svelte'
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import Text from '../../lib/components/text/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
   import TextArea from '../../lib/components/textarea/index.svelte'
+  import Spinner from '../../lib/components/spinner/index.svelte'
+
+  import { spinCount } from '../../lib/stores'
+  import * as api from '../../lib/api'
+
+  import { copyTextToClipboard } from '../../lib/utils/clipboard'
   import { valueSet } from '../../lib/utils/types'
   import { getFileKey } from '../../lib/utils/files'
 
+  const { addNotification } = getNotificationsContext()
+
+  const stdMimeType = 'text/plain'
+
+  let taalClientURL
+
   let textInputs = {
-    apiKey: '',
     taalClientUrl: '',
     mimeType: '',
+    secret: '',
     tag: '',
     textData: '',
     copyCurlText:
       'curl \\ \n\t -X POST \\ \n\t -H ‘Authorization: Bearer mainnet_...',
   }
 
-  let dropdowns = {
-    mode: '',
-  }
+  // api keys
+  let keys = []
+  $: apiKeyItems = keys.map((key) => ({
+    label: key.api_key,
+    value: key.api_key,
+  }))
 
-  let checks = {
-    devMode: true,
+  // move
+  let dropdowns = {
+    mode: 'raw',
+    apiKey: '',
   }
+  const modeItems = [
+    { label: 'Raw', value: 'raw' },
+    { label: 'Hash', value: 'hash' },
+    { label: 'Encrypt', value: 'encrypt' },
+  ]
+
+  // dev mode
+  let checks = {
+    devMode: localStorage.getItem('devmode') === 'true',
+  }
+  $: localStorage.setItem('devmode', checks.devMode)
+  $: compactFileUpload = checks.devMode || files.length > 0
 
   let files = []
   let imageSrcData = {}
@@ -39,13 +72,7 @@
   //   'profile.jpg_1643963589484': { state: 'progress', progress: 0.5 },
   // }
 
-  let compactFileUpload = false
-
   $: {
-    compactFileUpload = checks.devMode || files.length > 0
-
-    // localStorage.setItem('devmode', checks.devMode)
-
     files.forEach((file) => {
       if (
         !imageSrcData[getFileKey(file)] &&
@@ -55,6 +82,7 @@
         reader.readAsDataURL(file)
         reader.onloadend = function () {
           imageSrcData[getFileKey(file)] = reader.result
+          imageSrcData = imageSrcData // force reactive trigger
         }
       }
     })
@@ -111,7 +139,7 @@
       case 'text':
         textInputs[name] = value || ''
         break
-      case 'dropdown':
+      case 'select':
         dropdowns[name] = value || ''
         break
       case 'checkbox':
@@ -127,8 +155,16 @@
     e.detail.inputRef.focus()
   }
 
-  function onCopyCurl() {
+  async function onCopyCurl() {
     console.log('onCopyCurl')
+    const { ok, error } = await copyTextToClipboard(textInputs.copyCurlText)
+
+    addNotification({
+      text: ok ? `Successfully copied.` : `Failed to copy.`,
+      position: 'bottom-left',
+      type: ok ? 'success' : 'danger',
+      removeAfter: 2000,
+    })
   }
 
   function onCancelTransfer(e) {
@@ -147,6 +183,68 @@
       delete imageSrcData[fileKey]
     }
   }
+
+  function writeData() {
+    api.writeData(
+      {
+        body: fileData ? fileData : data,
+        headers: {
+          Authorization: 'Bearer ' + apiKey,
+          'Content-Type': mimeType,
+          'X-Tag': tag,
+          'X-Filename': filename,
+          'X-Mode': mode,
+          'X-Key': secret,
+        },
+      },
+      (data) => {
+        addNotification({
+          text: `Transaction submitted successfully`,
+          position: 'bottom-left',
+          type: 'success',
+          removeAfter: 1000,
+        })
+
+        // TODO - check if it is fine to write this after potential throw
+        localStorage.setItem('apiKey', apiKey)
+      },
+      (error) => {
+        addNotification({
+          text: `Error: ${error}`,
+          position: 'bottom-left',
+          type: 'danger',
+          removeAfter: 2000,
+        })
+      }
+    )
+
+    reset()
+  }
+
+  function getApiKeys() {
+    api.getApiKeysUsage(
+      (data) => {
+        keys = data.key_usages
+      },
+      (error) => {
+        addNotification({
+          text: `Failed to load api keys: ${error}`,
+          position: 'bottom-left',
+          type: 'danger',
+          removeAfter: 2000,
+        })
+      }
+    )
+  }
+
+  onMount(async () => {
+    // TODO notifications etc
+    const result = await api.getApiKeys()
+    keys = result.keys
+    dropdowns['apiKey'] = keys[0].api_key
+
+    console.log(result)
+  })
 </script>
 
 <PageWithMenu>
@@ -163,11 +261,13 @@
       />
     </div>
     <Spacer h={24} />
-    <TextInput
+    <Dropdown
       name="apiKey"
       label="API key"
       required
-      value={textInputs['apiKey']}
+      value={dropdowns['apiKey']}
+      items={apiKeyItems}
+      disabled={!apiKeyItems || apiKeyItems.length <= 1}
       on:change={onChange}
       on:mount={onInputMount}
     />
@@ -199,19 +299,23 @@
       <Heading value="Transaction data" size={2} />
     </div>
     <Spacer h={24} />
-    <div class="drop">
+    <div class="mode-row">
       <Dropdown
-        class="drop"
         name="mode"
         label="Mode"
         required
         value={dropdowns['mode']}
-        items={[
-          { value: '1', label: 'Mode 1' },
-          { value: '2', label: 'Mode 2' },
-        ]}
+        items={modeItems}
         on:change={onChange}
       />
+      {#if dropdowns['mode'] === 'encrypt'}
+        <TextInput
+          name="secret"
+          label="Secret"
+          value={textInputs['secret']}
+          on:change={onChange}
+        />
+      {/if}
     </div>
     {#if checks.devMode}
       <Spacer h={24} />
@@ -274,6 +378,10 @@
   </div>
 </PageWithMenu>
 
+{#if $spinCount > 0}
+  <Spinner />
+{/if}
+
 <style>
   .island {
     display: flex;
@@ -288,8 +396,11 @@
     align-items: center;
   }
 
-  .drop {
-    max-width: 445px;
+  .mode-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    column-gap: 16px;
+    row-gap: 24px;
   }
 
   .buttons {

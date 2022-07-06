@@ -28,12 +28,9 @@ function getErrorMessage(err) {
   return msg
 }
 
-function callApi(url, data, options = {}, done, fail) {
+function callApi(url, options = {}, done, fail) {
   if (!options.method) {
     options.method = 'GET'
-  }
-  if (data) {
-    options.body = JSON.stringify(data)
   }
   incSpinCount()
 
@@ -57,36 +54,45 @@ function callApi(url, data, options = {}, done, fail) {
     .finally(decSpinCount)
 }
 
-function get(url, done, fail) {
-  return callApi(url, null, { method: 'GET' }, done, fail)
+function get(url, options = {}, done, fail) {
+  return callApi(url, { ...options, method: 'GET' }, done, fail)
 }
 
-function post(url, data, done, fail) {
-  return callApi(url, data, { method: 'POST' }, done, fail)
+function post(url, options = {}, done, fail) {
+  return callApi(url, { ...options, method: 'POST' }, done, fail)
 }
 
-function del(url, done, fail) {
-  return callApi(url, null, { method: 'DELETE' }, done, fail)
+function del(url, options = {}, done, fail) {
+  return callApi(url, { ...options, method: 'DELETE' }, done, fail)
 }
 
 // api methods
 
 export function getApiKeys(done, fail) {
-  return get(`${BASE_URL}/api/v1/apikeys`, done, fail)
+  return get(`${BASE_URL}/api/v1/apikeys`, {}, done, fail)
 }
 
 export function getApiKeysUsage(done, fail) {
-  return get(`${BASE_URL}/api/v1/apikeys/usage`, done, fail)
+  return get(`${BASE_URL}/api/v1/apikeys/usage`, {}, done, fail)
 }
 
 export function registerKey(apiKey, done, fail) {
-  return post(`${BASE_URL}/api/v1/apikeys/${apiKey}`, null, done, fail)
+  return post(`${BASE_URL}/api/v1/apikeys/${apiKey}`, {}, done, fail)
 }
 
 export function deleteKey(apiKey, done, fail) {
-  return del(`${BASE_URL}/api/v1/apikeys/${apiKey}`, done, fail)
+  return del(`${BASE_URL}/api/v1/apikeys/${apiKey}`, {}, done, fail)
 }
 
 export function getTransactions(hours, done, fail) {
-  return get(`${BASE_URL}/api/v1/transactions/?hours_back=${hours}`, done, fail)
+  return get(
+    `${BASE_URL}/api/v1/transactions/?hours_back=${hours}`,
+    {},
+    done,
+    fail
+  )
+}
+
+export function writeTransactions(options, done, fail) {
+  return post(`${BASE_URL}/api/v1/transactions`, options, done, fail)
 }
