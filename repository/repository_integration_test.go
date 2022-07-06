@@ -232,6 +232,13 @@ func TestGetAllKeys(t *testing.T) {
 				Address:    "20fk2pdkf",
 				CreatedAt:  "2022-05-24 15:10:58.022Z",
 			},
+			{
+				ApiKey:     "api_key_4",
+				PublicKey:  "7a2f1cb9",
+				PrivateKey: "cb7168ab",
+				Address:    "5ec39af2",
+				CreatedAt:  "2022-06-10 15:10:58.022Z",
+			},
 		}
 
 		is.Equal(expectedKeys, keys)
@@ -273,6 +280,16 @@ func TestGetAllKeyUsages(t *testing.T) {
 					CreatedAt:  "2022-05-24 15:10:58.022Z",
 				},
 				DataBytes: 300,
+			},
+			{
+				Key: server.Key{
+					ApiKey:     "api_key_4",
+					PublicKey:  "7a2f1cb9",
+					PrivateKey: "cb7168ab",
+					Address:    "5ec39af2",
+					CreatedAt:  "2022-06-10 15:10:58.022Z",
+				},
+				DataBytes: 0,
 			},
 		}
 
