@@ -1628,7 +1628,7 @@ svelte-navigator@^3.1.6:
 
 svelte-notifications@^0.9.95:
   version "0.9.95"
-  resolved "https://registry.npmjs.org/svelte-notifications/-/svelte-notifications-0.9.95.tgz"
+  resolved "https://registry.yarnpkg.com/svelte-notifications/-/svelte-notifications-0.9.95.tgz#f8cfae5133c148f9aa7e04049cd5a0a26b9750ce"
   integrity sha512-lG+b9BH4cUDs6vjNI1vWfoAgsUca3POden08/ZlgyCSkUuuXGYPbhr3d9MF3piMjYWEA94fsyvZPDLFuxcacSg==
 
 svelte2tsx@^0.1.151:

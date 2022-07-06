@@ -29,16 +29,9 @@
       format="progress"
       layout="row"
     /> -->
-    <Field
-      label="Api key"
-      value={key.api_key}
-      copy={true}
-    />
-    <Field
-      label="Address"
-      value={key.address}
-      copy={true}
-    />
+
+    <Field label="Api key" value={key.api_key} copy={true} />
+    <Field label="Address" value={key.address} copy={true} />
     <Field label="Date created" value={key.createdAt} />
   </div>
 </div>

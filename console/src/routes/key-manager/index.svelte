@@ -6,10 +6,14 @@
   import PageWithMenu from '../../lib/components/page/template/menu/index.svelte'
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import RegisterKeyPopup from '../../lib/components/popups/register-key-popup/index.svelte'
+  import Spinner from '../../lib/components/spinner/index.svelte'
+  import { getNotificationsContext } from 'svelte-notifications'
 
-  let popupVisible = false
+  const { addNotification } = getNotificationsContext()
+
   let keys
 
+  let popupVisible = false
   function showPopup() {
     popupVisible = true
   }
@@ -17,11 +21,17 @@
     popupVisible = false
   }
 
-  function onRegister(e) {
-    console.log('onRegister: key = ', e.detail.key)
+  let spinCount = 0
+  function showSpinner() {
+    spinCount++
+  }
+  function hideSpinner() {
+    spinCount--
   }
 
   function getApiKeys() {
+    showSpinner()
+
     fetch(`${BASE_URL}/api/v1/apikeys`)
       .then((res) => {
         if (!res.ok) {
@@ -53,6 +63,52 @@
 
         console.log(errMessage)
       })
+      .finally(hideSpinner)
+  }
+
+  function register(apiKey) {
+    showSpinner()
+
+    fetch(`${BASE_URL}/api/v1/apikeys/${apiKey}`, {
+      method: 'POST',
+    })
+      .then((res) => {
+        hidePopup()
+
+        if (!res.ok) {
+          return res.text().then((text) => {
+            throw new Error(text)
+          })
+        } else {
+          addNotification({
+            text: `API key registered successfully`,
+            position: 'bottom-left',
+            type: 'success',
+            removeAfter: 1000,
+          })
+
+          getApiKeys()
+
+          return res.json()
+        }
+      })
+      .catch((err) => {
+        const errJson = JSON.parse(err.message)
+        addNotification({
+          text: `Error: ${errJson.error}`,
+          position: 'bottom-left',
+          type: 'danger',
+          removeAfter: 5000,
+        })
+
+        console.log(err)
+      })
+      .finally(hideSpinner)
+  }
+
+  function onRegister(e) {
+    console.log('onRegister: key = ', e.detail.key)
+    register(e.detail.key)
   }
 
   onMount(() => {
@@ -70,17 +126,21 @@
     </div>
     <Spacer h={24} />
     {#if keys}
-    <div class="grid">
-      {#each keys as key}
-        <KeyCard {key} />
-      {/each}
-    </div>
+      <div class="grid">
+        {#each keys as key (key.api_key)}
+          <KeyCard {key} />
+        {/each}
+      </div>
     {/if}
   </div>
 </PageWithMenu>
 
 {#if popupVisible}
   <RegisterKeyPopup on:close={hidePopup} on:register={onRegister} />
+{/if}
+
+{#if spinCount > 0}
+  <Spinner />
 {/if}
 
 <style>

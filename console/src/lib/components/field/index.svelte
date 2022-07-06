@@ -1,6 +1,10 @@
 <script>
+  import { getNotificationsContext } from 'svelte-notifications'
   import Icon from '../icon/index.svelte'
   import Progress from '../progress/index.svelte'
+  import { copyTextToClipboard } from '../../utils/clipboard'
+
+  const { addNotification } = getNotificationsContext()
 
   export let label = ''
   export let value = null
@@ -8,9 +12,16 @@
   export let layout = 'column'
   export let copy = false
 
-  function onCopy(value) {
-    // TODO: copy to clipboard
+  async function onCopy(value) {
     console.log('onCopy: value = ', value)
+    const { ok, error } = await copyTextToClipboard(value)
+
+    addNotification({
+      text: ok ? `Successfully copied.` : `Failed to copy.`,
+      position: 'bottom-left',
+      type: ok ? 'success' : 'danger',
+      removeAfter: 2000,
+    })
   }
 </script>
 
