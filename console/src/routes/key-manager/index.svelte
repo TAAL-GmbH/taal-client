@@ -1,5 +1,12 @@
+<script context="module">
+  let initialized = false
+</script>
+
 <script>
   import { onMount } from 'svelte'
+  import { useNavigate } from 'svelte-navigator'
+  import { getNotificationsContext } from 'svelte-notifications'
+
   import Button from '../../lib/components/button/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
   import KeyCard from '../../lib/components/cards/key-card/index.svelte'
@@ -7,8 +14,8 @@
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import RegisterKeyPopup from '../../lib/components/popups/register-key-popup/index.svelte'
   import Spinner from '../../lib/components/spinner/index.svelte'
-  import { getNotificationsContext } from 'svelte-notifications'
 
+  const navigate = useNavigate()
   const { addNotification } = getNotificationsContext()
 
   let keys
@@ -32,7 +39,7 @@
   function getApiKeys() {
     showSpinner()
 
-    fetch(`${BASE_URL}/api/v1/apikeys`)
+    return fetch(`${BASE_URL}/api/v1/apikeys`)
       .then((res) => {
         if (!res.ok) {
           return res.text().then((text) => {
@@ -44,6 +51,7 @@
       })
       .then((data) => {
         keys = data.keys
+        return data.keys
       })
       .catch((err) => {
         var errMessage = ''
@@ -111,8 +119,16 @@
     register(e.detail.key)
   }
 
-  onMount(() => {
-    getApiKeys()
+  onMount(async () => {
+    const result = await getApiKeys()
+
+    if (!initialized && result && result.length > 0) {
+      initialized = true
+      console.log(
+        'on first load, we already have keys and redirect to send data page'
+      )
+      navigate('/send-data')
+    }
   })
 </script>
 
