@@ -45,7 +45,7 @@ export function getApiKeys(done, fail) {
       const msg = getErrorMessage(err)
       console.log(msg)
       if (fail) {
-        fail(errMessage)
+        fail(msg)
       }
     })
     .finally(decSpinCount)
@@ -69,7 +69,7 @@ export function register(apiKey, done, fail) {
       const msg = getErrorMessage(err)
       console.log(msg)
       if (fail) {
-        fail(errMessage)
+        fail(msg)
       }
     })
     .finally(decSpinCount)
