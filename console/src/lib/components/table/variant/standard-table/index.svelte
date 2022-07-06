@@ -87,7 +87,7 @@
               <div class="table-cell-row">
                 {colDef.name}
                 {#if sortEnabled && sortState.sortColumn === colDef.id}
-                  <div class="table-icon">
+                  <div class="header-icon">
                     <Icon
                       name={sortState.sortOrder === SortOrder.asc
                         ? 'chevron-up'
@@ -97,7 +97,7 @@
                   </div>
                 {/if}
                 {#if filtersEnabled && filtersState[colDef.id]}
-                  <div class="table-icon">
+                  <div class="header-icon">
                     <Icon
                       name="filters"
                       size={18}
@@ -160,7 +160,7 @@
               <td>
                 {#each rowIconActions as actionItem (actionItem.event)}
                   <div
-                    class="table-icon active"
+                    class="action-icon active"
                     on:click={() => onActionIcon(actionItem.type, item)}
                   >
                     <Button
@@ -322,11 +322,15 @@
     align-items: center;
     flex-wrap: nowrap;
   }
-  .table-icon {
+  .header-icon {
+    width: 18px;
+    height: 18px;
+  }
+  .action-icon {
     width: 36px;
     height: 36px;
   }
-  .table-icon.active {
+  .action-icon.active {
     cursor: pointer;
   }
   .table-pager {
