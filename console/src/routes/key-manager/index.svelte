@@ -67,13 +67,38 @@
     )
   }
 
+  function deleteKey(apiKey) {
+    api.deleteKey(
+      apiKey,
+      (data) => {
+        addNotification({
+          text: `API key deleted successfully`,
+          position: 'bottom-left',
+          type: 'success',
+          removeAfter: 1000,
+        })
+
+        getApiKeys()
+      },
+      (error) => {
+        addNotification({
+          text: `Error: ${error}`,
+          position: 'bottom-left',
+          type: 'danger',
+          removeAfter: 5000,
+        })
+      }
+    )
+  }
+
   function onRegister(e) {
     console.log('onRegister: apiKey = ', e.detail.apiKey)
     registerKey(e.detail.apiKey)
   }
 
   function onDeactivate(e) {
-    console.log('onDeactivate: key = ', e.detail.key)
+    console.log('onDeactivate: key = ', e.detail.apiKey)
+    deleteKey(e.detail.apiKey)
   }
 
   onMount(() => {

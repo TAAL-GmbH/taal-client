@@ -10,7 +10,7 @@
   export let key
 
   function onAction() {
-    dispatch('deactivate', { key })
+    dispatch('deactivate', { apiKey: key.api_key })
   }
 </script>
 

@@ -70,3 +70,12 @@ export function registerKey(apiKey, done, fail) {
     fail
   )
 }
+
+export function deleteKey(apiKey, done, fail) {
+  return callApi(
+    `${BASE_URL}/api/v1/apikeys/${apiKey}`,
+    { method: 'DELETE' },
+    done,
+    fail
+  )
+}
