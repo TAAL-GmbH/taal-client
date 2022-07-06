@@ -1,16 +1,24 @@
 <script>
   import { fade, fly } from 'svelte/transition'
 
+  export let coverCol = 'rgba(40, 41, 51, 0.7)'
+  export let maxContentW = '900px'
+  export let fadeCoverDuration = 200
+  export let flyContent = true
+
   let w
   let h
-  export let maxContentW = '900px'
 </script>
 
-<div class="cover" transition:fade={{ duration: 200 }} />
+<div
+  class="cover"
+  transition:fade={{ duration: fadeCoverDuration }}
+  style:--cover-col-local={coverCol}
+/>
 
 <div
   class="tui-modal"
-  in:fly={{ y: -200, opacity: 0, duration: 200 }}
+  in:fly={flyContent ? { y: -200, opacity: 0, duration: 200 } : {}}
   out:fade
   bind:clientWidth={w}
   bind:clientHeight={h}
@@ -28,7 +36,7 @@
     right: 0;
     bottom: 0;
     left: 0;
-    background: rgba(40, 41, 51, 0.7);
+    background: var(--cover-col-local);
   }
 
   .tui-modal {
