@@ -51,8 +51,8 @@ func (r Repository) GetKey(ctx context.Context, apiKey string) (server.Key, erro
 }
 
 func (r Repository) GetAllKeysUsage(ctx context.Context) ([]server.KeyUsage, error) {
-	query := `SELECT k.api_key, k.public_key, k.private_key, k.address, k.created_at, k.revoked_at, SUM(t.data_bytes) as data_bytes 
-	FROM keys k JOIN transactions t ON t.api_key = k.api_key GROUP BY k.api_key ORDER BY k.created_at;`
+	query := `SELECT k.api_key, k.public_key, k.private_key, k.address, k.created_at, k.revoked_at, SUM(COALESCE(t.data_bytes,0)) as data_bytes 
+	FROM keys k LEFT JOIN transactions t ON t.api_key = k.api_key WHERE k.revoked_at IS NULL GROUP BY k.api_key ORDER BY k.created_at;`
 
 	keys := make([]server.KeyUsage, 0)
 
@@ -191,4 +191,15 @@ func granularitySecondsToPositionAndFormat(granularitySeconds server.Granularity
 
 	// Day
 	return 11, "2006-01-02"
+}
+
+func (r Repository) DeactivateKey(ctx context.Context, apikey string) error {
+	query := `UPDATE keys SET revoked_at = $1 WHERE api_key = $2;`
+
+	_, err := r.db.ExecContext(ctx, query, r.now().Format(ISO8601), apikey)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
