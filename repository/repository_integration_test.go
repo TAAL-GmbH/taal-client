@@ -232,6 +232,13 @@ func TestGetAllKeys(t *testing.T) {
 				Address:    "20fk2pdkf",
 				CreatedAt:  "2022-05-24 15:10:58.022Z",
 			},
+			{
+				ApiKey:     "api_key_4",
+				PublicKey:  "7a2f1cb9",
+				PrivateKey: "cb7168ab",
+				Address:    "5ec39af2",
+				CreatedAt:  "2022-06-10 15:10:58.022Z",
+			},
 		}
 
 		is.Equal(expectedKeys, keys)
@@ -250,7 +257,7 @@ func TestGetAllKeyUsages(t *testing.T) {
 
 		repo := repository.NewRepository(db, now)
 		ctx := context.Background()
-		keys, err := repo.GetAllKeyUsages(ctx)
+		keys, err := repo.GetAllKeysUsage(ctx)
 		is.NoErr(err)
 
 		expectedKeys := []server.KeyUsage{
@@ -274,9 +281,40 @@ func TestGetAllKeyUsages(t *testing.T) {
 				},
 				DataBytes: 300,
 			},
+			{
+				Key: server.Key{
+					ApiKey:     "api_key_4",
+					PublicKey:  "7a2f1cb9",
+					PrivateKey: "cb7168ab",
+					Address:    "5ec39af2",
+					CreatedAt:  "2022-06-10 15:10:58.022Z",
+				},
+				DataBytes: 0,
+			},
 		}
 
 		is.Equal(expectedKeys, keys)
+	})
+}
+
+func TestDeactivateKey(t *testing.T) {
+	t.Run("Deactivate key", func(t *testing.T) {
+		is := is.New(t)
+		now := func() time.Time {
+			return time.Date(2022, 6, 20, 10, 0, 0, 0, time.UTC)
+		}
+
+		repo := repository.NewRepository(db, now)
+		ctx := context.Background()
+
+		err := repo.DeactivateKey(ctx, "api_key_2")
+		is.NoErr(err)
+
+		key, err := repo.GetKey(ctx, "api_key_2")
+		is.NoErr(err)
+
+		is.Equal("2022-06-20T10:00:00Z", *key.RevokedAt)
+
 	})
 }
 
@@ -309,7 +347,6 @@ func TestInsertTransaction(t *testing.T) {
 		is.Equal(tx, txsFromDB[0])
 
 	})
-
 }
 
 func TestGetTransactions(t *testing.T) {
