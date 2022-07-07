@@ -32,6 +32,7 @@
   export let pager = true
   export let alignPager = 'center'
   export let getRowIconActions
+  export let getRenderProps
   export let getRowClassName
 
   function onFilterClick(colId) {
@@ -139,13 +140,18 @@
                       idField,
                       item
                     ).component}
-                    {...getDisplayProps(
-                      renderCells,
-                      renderTypes,
-                      colDef,
-                      idField,
-                      item
-                    ).props}
+                    {...{
+                      ...getDisplayProps(
+                        renderCells,
+                        renderTypes,
+                        colDef,
+                        idField,
+                        item
+                      ).props,
+                      ...(getRenderProps
+                        ? getRenderProps(name, colDef, idField, item)
+                        : {}),
+                    }}
                   />
                 {:else}
                   {getDisplayProps(

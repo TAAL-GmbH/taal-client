@@ -119,7 +119,6 @@ const defaultColTypeRenderers = {
     component: item[colId] ? RenderStatusText : null,
     props: {
       value: item[colId],
-      status: 'active',
     },
     value: '',
   }),

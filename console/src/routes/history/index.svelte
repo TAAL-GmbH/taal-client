@@ -10,7 +10,11 @@
   import Table from '../../lib/components/table/index.svelte'
   import Spinner from '../../lib/components/spinner/index.svelte'
 
-  import { downloadFileBlob } from '../../lib/utils/downloads'
+  import {
+    downloadFileBlob,
+    filterUnique,
+    getColorFromDistinct,
+  } from '../../lib/utils'
   import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
   import { colDefs } from './data'
@@ -19,10 +23,14 @@
 
   let transactions = []
   let rangeValue = '720'
+  let distinctKeys = []
+
+  $: {
+    distinctKeys = transactions.map((tx) => tx.api_key).filter(filterUnique)
+  }
 
   function onRange(e) {
-    rangeValue = e.detail.value
-    getTransactions(rangeValue)
+    getTransactions(e.detail.value)
   }
 
   function onAction(e) {
@@ -44,6 +52,12 @@
       })
     }
     return icons
+  }
+
+  const getRenderProps = (name, colDef, idField, item) => {
+    return {
+      statusColor: getColorFromDistinct(item.api_key, distinctKeys),
+    }
   }
 
   function getTransactions(hours) {
@@ -138,6 +152,7 @@
         page: 1,
         pageSize: 15,
       }}
+      {getRenderProps}
       {getRowIconActions}
       on:action={onAction}
     />

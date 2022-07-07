@@ -34,6 +34,7 @@
   export let selectable = false
   export let selectedRowIds = []
   export let getRowIconActions
+  export let getRenderProps
   export let getRowClassName
 
   // filters
@@ -175,6 +176,7 @@
       pager,
       alignPager,
       getRowIconActions,
+      getRenderProps,
       getRowClassName,
     }
   }
