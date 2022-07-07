@@ -8,17 +8,51 @@ function decSpinCount() {
   spinCount.update((n) => n - 1)
 }
 
-function checkInitialResponse(res) {
-  if (!res.ok) {
-    return res.text().then((text) => {
-      throw new Error(text)
-    })
-  }
-  return res.json()
+function checkInitialResponse(response) {
+  return new Promise(async (resolve, reject) => {
+    if (response.ok) {
+      let data = null
+
+      const mimeType = response.headers.get('Content-Type') || 'text/plain'
+      if (mimeType.toLowerCase().startsWith('application/json')) {
+        try {
+          data = await response.json()
+        } catch (e) {
+          data = null
+        }
+      } else if (
+        mimeType.toLowerCase().startsWith('application/octet-stream')
+      ) {
+        try {
+          data = await response.blob()
+        } catch (e) {
+          data = null
+        }
+      } else {
+        data = await response.text()
+      }
+
+      resolve({ data })
+    } else {
+      let errorBody = null
+      try {
+        errorBody = await response.json()
+      } catch (e) {
+        errorBody = null
+      }
+
+      reject({
+        code: response.status,
+        message:
+          errorBody?.message || response.statusText || 'Unspecified error.',
+      })
+    }
+  })
 }
 
 function getErrorMessage(err) {
   let msg = ''
+  console.log('getErrorMessage: err = ', err)
   try {
     const errJson = JSON.parse(err.message)
     msg = errJson.error
@@ -35,8 +69,10 @@ function callApi(url, options = {}, done, fail) {
   incSpinCount()
 
   return fetch(url, options)
-    .then((res) => {
-      return checkInitialResponse(res)
+    .then(async (res) => {
+      const { data } = await checkInitialResponse(res)
+      console.log('...data =', data)
+      return data
     })
     .then((data) => {
       if (done) {
@@ -60,6 +96,10 @@ function get(url, options = {}, done, fail) {
 
 function post(url, options = {}, done, fail) {
   return callApi(url, { ...options, method: 'POST' }, done, fail)
+}
+
+function put(url, options = {}, done, fail) {
+  return callApi(url, { ...options, method: 'PUT' }, done, fail)
 }
 
 function del(url, options = {}, done, fail) {
@@ -95,4 +135,12 @@ export function getTransactions(hours, done, fail) {
 
 export function writeTransactions(options, done, fail) {
   return post(`${BASE_URL}/api/v1/transactions`, options, done, fail)
+}
+
+export function getSettings(done, fail) {
+  return get(`${BASE_URL}/api/v1/settings`, {}, done, fail)
+}
+
+export function updateSetting(options, done, fail) {
+  return put(`${BASE_URL}/api/v1/settings`, options, done, fail)
 }

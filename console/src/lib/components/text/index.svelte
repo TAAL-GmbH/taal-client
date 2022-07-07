@@ -23,8 +23,8 @@
         break
       case 4:
         fontSize = '14px'
-        fontWeight = 500
-        lineHeight = '16px'
+        fontWeight = 400
+        lineHeight = '18px'
         break
       case 5:
         fontSize = '12px'
