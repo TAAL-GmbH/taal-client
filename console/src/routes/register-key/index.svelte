@@ -46,8 +46,8 @@
     )
   }
 
-  function onCancel() {
-    console.log('onCancel')
+  function onReset() {
+    console.log('onReset')
   }
 
   function onRegister() {
@@ -76,7 +76,7 @@
     <Spacer h={120} />
     <div class="right">
       <Row gap={16}>
-        <Button variant="ghost" size="large" on:click={onCancel}>Cancel</Button>
+        <Button variant="ghost" size="large" on:click={onReset}>Reset</Button>
         <Button size="large" on:click={onRegister}>Register</Button>
       </Row>
     </div>

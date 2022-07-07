@@ -146,7 +146,13 @@
         checks[name] = checked || false
         break
       case 'file':
-        files = files.concat(value)
+        const add = []
+        value.forEach((file) => {
+          if (!files.some((item) => getFileKey(item) === getFileKey(file))) {
+            add.push(file)
+          }
+        })
+        files = [...files, ...add]
         break
     }
   }
@@ -370,7 +376,7 @@
     {/if}
     <Spacer h={64} />
     <div class="buttons">
-      <Button variant="ghost" size="large">Cancel</Button>
+      <Button variant="ghost" size="large">Reset</Button>
       <Button size="large" iconAfter="arrow-narrow-right"
         >Submit transaction</Button
       >
