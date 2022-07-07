@@ -186,13 +186,7 @@ const defaultColTypeRenderers = {
   }),
 }
 
-export const getDisplayProps = (
-  renderCells,
-  renderTypes,
-  colDef,
-  idField,
-  item
-) => {
+export const getDisplay = (renderCells, renderTypes, colDef, idField, item) => {
   return renderCells && renderCells[colDef.id]
     ? renderCells[colDef.id](idField, item, colDef.id)
     : renderTypes && renderTypes[colDef.type]

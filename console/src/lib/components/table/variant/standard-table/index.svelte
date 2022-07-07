@@ -4,7 +4,7 @@
   import Checkbox from '../../../checkbox/index.svelte'
   import Icon from '../../../icon/index.svelte'
   import Pager from '../../../pager/index.svelte'
-  import { getDisplayProps, SortOrder } from '../../utils'
+  import { getDisplay, SortOrder } from '../../utils'
 
   const dispatch = createEventDispatcher()
 
@@ -131,9 +131,9 @@
             {/if}
             {#each colDefs as colDef (colDef.id)}
               <td>
-                {#if getDisplayProps(renderCells, renderTypes, colDef, idField, item).component}
+                {#if getDisplay(renderCells, renderTypes, colDef, idField, item).component}
                   <svelte:component
-                    this={getDisplayProps(
+                    this={getDisplay(
                       renderCells,
                       renderTypes,
                       colDef,
@@ -141,7 +141,7 @@
                       item
                     ).component}
                     {...{
-                      ...getDisplayProps(
+                      ...getDisplay(
                         renderCells,
                         renderTypes,
                         colDef,
@@ -154,13 +154,8 @@
                     }}
                   />
                 {:else}
-                  {getDisplayProps(
-                    renderCells,
-                    renderTypes,
-                    colDef,
-                    idField,
-                    item
-                  ).value}
+                  {getDisplay(renderCells, renderTypes, colDef, idField, item)
+                    .value}
                 {/if}
               </td>
             {/each}
@@ -345,6 +340,7 @@
     display: flex;
     align-items: center;
     flex-wrap: nowrap;
+    gap: 4px;
   }
   .header-icon {
     width: 18px;
@@ -357,7 +353,6 @@
   .action .ico {
     width: 18px;
     height: 18px;
-    padding: 4px;
   }
   .action .btn {
     width: 36px;
