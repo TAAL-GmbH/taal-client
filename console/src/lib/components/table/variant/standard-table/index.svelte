@@ -8,6 +8,7 @@
 
   const dispatch = createEventDispatcher()
 
+  export let name
   export let colDefs = []
   export let data = []
   export let idField
@@ -30,7 +31,8 @@
   export let hasBoundaryRight = true
   export let pager = true
   export let alignPager = 'center'
-  export let rowIconActions = []
+  export let getRowIconActions
+  export let getRowClassName
 
   function onFilterClick(colId) {
     dispatch('filter', { colId })
@@ -49,7 +51,7 @@
   }
 
   function onActionIcon(type, value) {
-    dispatch('action', { type, value })
+    dispatch('action', { name, type, value })
   }
 </script>
 
@@ -108,7 +110,7 @@
               </div>
             </th>
           {/each}
-          {#if rowIconActions?.length > 0}
+          {#if getRowIconActions}
             <th />
           {/if}
         </tr>
@@ -156,20 +158,36 @@
                 {/if}
               </td>
             {/each}
-            {#if rowIconActions?.length > 0}
+            {#if getRowIconActions}
               <td>
-                {#each rowIconActions as actionItem (actionItem.event)}
-                  <div
-                    class="action-icon active"
-                    on:click={() => onActionIcon(actionItem.type, item)}
-                  >
-                    <Button
-                      variant="ghost"
-                      size="small"
-                      icon={actionItem.icon}
-                    />
+                {#if !disabled}
+                  <div class="table-cell-row">
+                    {#each getRowIconActions(name, item, idField) || [] as actionItem (actionItem.icon)}
+                      <div
+                        class="action"
+                        class:disabled={actionItem.disabled}
+                        on:click={actionItem.disabled
+                          ? null
+                          : () => onActionIcon(actionItem.type, item)}
+                      >
+                        {#if actionItem.render === 'icon'}
+                          <div class="ico">
+                            <Icon name={actionItem.icon} size={18} />
+                          </div>
+                        {:else}
+                          <div class="btn">
+                            <Button
+                              variant="ghost"
+                              size="small"
+                              disabled={actionItem.disabled}
+                              icon={actionItem.icon}
+                            />
+                          </div>
+                        {/if}
+                      </div>
+                    {/each}
                   </div>
-                {/each}
+                {/if}
               </td>
             {/if}
           </tr>
@@ -327,12 +345,20 @@
     height: 18px;
     padding: 0 1px 0 3px;
   }
-  .action-icon {
+  .action {
+    cursor: pointer;
+  }
+  .action .ico {
+    width: 18px;
+    height: 18px;
+    padding: 4px;
+  }
+  .action .btn {
     width: 36px;
     height: 36px;
   }
-  .action-icon.active {
-    cursor: pointer;
+  .action.disabled {
+    cursor: auto;
   }
   .table-pager {
     width: 100%;

@@ -7,13 +7,10 @@
 
   const dispatch = createEventDispatcher()
 
-  //   export let rowIconActions = true
   //   export let selectable = false
   //   export let i18n = {}
   //   export let selectedRowIds = []
   //   export let onRowSelect
-  //   export let getRowIconActions = () => []
-  //   export let onActionClick
   //   export let getRowClassName
   //
   //
@@ -36,7 +33,8 @@
   // more legacy
   export let selectable = false
   export let selectedRowIds = []
-  export let rowIconActions = []
+  export let getRowIconActions
+  export let getRowClassName
 
   // filters
   export let filters = {}
@@ -153,6 +151,7 @@
   let renderProps = {}
   $: {
     renderProps = {
+      name,
       colDefs,
       data: pageData,
       idField,
@@ -175,7 +174,8 @@
       hasBoundaryRight,
       pager,
       alignPager,
-      rowIconActions,
+      getRowIconActions,
+      getRowClassName,
     }
   }
 
@@ -219,21 +219,5 @@
     box-sizing: var(--box-sizing);
 
     width: 100%;
-  }
-
-  /* :global(.green) {
-    color: green;
-  }
-  :global(.red) {
-    color: red;
-  } */
-  :global(.link) {
-    cursor: pointer;
-    color: #0094ff;
-  }
-  :global(.num) {
-    /* float: right;
-    text-align: right; */
-    /* color: blue; */
   }
 </style>

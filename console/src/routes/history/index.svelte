@@ -29,6 +29,23 @@
     download(e.detail.value)
   }
 
+  const getRowIconActions = (tableName, item, idField = 'id') => {
+    const icons = [
+      {
+        icon: 'download',
+        type: 'download',
+      },
+    ]
+    if (item?.secret) {
+      icons.push({
+        icon: 'key',
+        render: 'icon',
+        disabled: true,
+      })
+    }
+    return icons
+  }
+
   function getTransactions(hours) {
     api.getTransactions(
       hours,
@@ -121,9 +138,7 @@
         page: 1,
         pageSize: 15,
       }}
-      rowIconActions={[
-        { icon: 'download', name: 'Download', type: 'download' },
-      ]}
+      {getRowIconActions}
       on:action={onAction}
     />
   </div>

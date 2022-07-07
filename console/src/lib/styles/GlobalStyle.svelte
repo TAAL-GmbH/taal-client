@@ -42,6 +42,14 @@
     font-family: 'Work Sans';
   }
 
+  :global(a),
+  :global(a:hover),
+  :global(a:focus),
+  :global(a:active) {
+    text-decoration: none;
+    color: #0094ff;
+  }
+
   /* :global(:root) {
     --color-primary: #14854f;
     --color-lightGrey: #d2d6dd;
