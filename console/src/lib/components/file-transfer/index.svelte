@@ -76,20 +76,6 @@
   function onRemove(file) {
     dispatch('remove', { name, value: file })
   }
-
-  function getSrcData(file) {
-    if (imageSrcData && imageSrcData[getFileKey(file)]) {
-      return imageSrcData[getFileKey(file)]
-    }
-    return null
-  }
-
-  function getProgressData(file) {
-    if (fileProgressData && fileProgressData[getFileKey(file)]) {
-      return fileProgressData[getFileKey(file)]
-    }
-    return null
-  }
 </script>
 
 <div
@@ -114,9 +100,9 @@
         <div class="item">
           <div class="info">
             <div class="icon">
-              {#if getSrcData(file)}
+              {#if imageSrcData[getFileKey(file)]}
                 <img
-                  src={getSrcData(file)}
+                  src={imageSrcData[getFileKey(file)]}
                   style="width: 24px; height: 24px;"
                   alt="thumb-preview"
                 />
@@ -138,15 +124,15 @@
                 />
               </div>
               <Progress
-                ratio={getProgressData(file)
-                  ? getProgressData(file).progress
+                ratio={fileProgressData[getFileKey(file)]
+                  ? fileProgressData[getFileKey(file)].progress
                   : 0}
                 size="small"
                 normalColor="#232D7C"
               />
             </div>
           </div>
-          {#if getProgressData(file)}
+          {#if fileProgressData[getFileKey(file)]}
             <div class="action" on:click={() => onCancel(file)}>
               <Icon name="close" size={18} />
             </div>

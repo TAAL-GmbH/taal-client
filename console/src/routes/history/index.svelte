@@ -17,7 +17,7 @@
   } from '../../lib/utils'
   import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
-  import { colDefs } from './data'
+  import { colDefs, rangeItems } from './data'
 
   const { addNotification } = getNotificationsContext()
 
@@ -135,12 +135,7 @@
       <ButtonSelect
         name="range"
         value={rangeValue}
-        items={[
-          { label: '24H', value: '24' },
-          { label: '1W', value: '168' },
-          { label: '1M', value: '720' },
-          { label: 'All', value: '' },
-        ]}
+        items={rangeItems}
         on:change={onRange}
       />
     </div>

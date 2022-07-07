@@ -25,3 +25,10 @@ export const colDefs = [
     type: 'string',
   },
 ]
+
+export const rangeItems = [
+  { label: '24H', value: '24' },
+  { label: '1W', value: '168' },
+  { label: '1M', value: '720' },
+  { label: 'All', value: '' },
+]

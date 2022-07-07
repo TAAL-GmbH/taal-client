@@ -69,21 +69,19 @@
   let supportedImageSrcDataFileTypes = ['image/png', 'image/jpeg']
   let fileProgressData = {}
   // let fileProgressData = {
-  //   'profile.jpg_1643963589484': { state: 'progress', progress: 0.5 },
+  //   'Logged out.png_1643790959194': { state: 'progress', progress: 0.5 },
   // }
 
   $: {
     files.forEach((file) => {
+      const key = getFileKey(file)
       if (
-        !imageSrcData[getFileKey(file)] &&
+        !imageSrcData[key] &&
         supportedImageSrcDataFileTypes.includes(file.type)
       ) {
-        let reader = new FileReader()
+        const reader = new FileReader()
         reader.readAsDataURL(file)
-        reader.onloadend = function () {
-          imageSrcData[getFileKey(file)] = reader.result
-          imageSrcData = imageSrcData // force reactive trigger
-        }
+        reader.onloadend = () => imageSrcData[key] = reader.result
       }
     })
   }
@@ -152,7 +150,7 @@
             add.push(file)
           }
         })
-        files = [...files, ...add]
+        files = files.concat(add)
         break
     }
   }
@@ -377,9 +375,9 @@
     <Spacer h={64} />
     <div class="buttons">
       <Button variant="ghost" size="large">Reset</Button>
-      <Button size="large" iconAfter="arrow-narrow-right"
-        >Submit transaction</Button
-      >
+      <Button size="large" iconAfter="arrow-narrow-right">
+        Submit transaction
+      </Button>
     </div>
   </div>
 </PageWithMenu>
