@@ -10,7 +10,7 @@
   import Table from '../../lib/components/table/index.svelte'
   import Spinner from '../../lib/components/spinner/index.svelte'
 
-  import { downloadFile } from '../../lib/utils/downloads'
+  import { downloadFileBlob } from '../../lib/utils/downloads'
   import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
   import { colDefs } from './data'
@@ -62,21 +62,19 @@
         contentType = response.headers.get('content-type')
         return response.blob()
       })
-      .then((blob) => URL.createObjectURL(blob))
-      .then((blobUrl) => {
+      .then((blob) => {
         let filename = ''
-        let txFilename = tx.filename
 
-        if (txFilename === '') {
-          let extension = mime.getExtension(contentType)
-          let filenameSuffix = extension ? '.' + extension : ''
+        if (tx.filename === '') {
+          const extension = mime.getExtension(contentType)
+          const filenameSuffix = extension ? '.' + extension : ''
 
           filename = tx.id + filenameSuffix
         } else {
-          filename = txFilename
+          filename = tx.filename
         }
 
-        downloadFile(blobUrl, filename)
+        downloadFileBlob(filename, blob)
 
         addNotification({
           text: `Successfully downloaded: ${filename}`,
