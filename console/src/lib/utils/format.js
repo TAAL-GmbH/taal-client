@@ -124,7 +124,7 @@ export const dataSize = (val) => {
     unit = 'kB'
   }
 
-  return val.toFixed(2) + ' ' + unit
+  return addNumCommas(val, 2) + ' ' + unit
 }
 
 export const link = (href, text = null, className, external = true) => {
