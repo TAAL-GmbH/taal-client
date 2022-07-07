@@ -1,4 +1,5 @@
 <script>
+  import { useNavigate } from 'svelte-navigator'
   import { getNotificationsContext } from 'svelte-notifications'
 
   import Button from '../../lib/components/button/index.svelte'
@@ -33,7 +34,7 @@
           removeAfter: 1000,
         })
 
-        key = ''
+        navigate('/key-manager')
       },
       (error) => {
         addNotification({
@@ -47,11 +48,10 @@
   }
 
   function onReset() {
-    console.log('onReset')
+    key = ''
   }
 
   function onRegister() {
-    console.log('onRegister')
     registerKey(key)
   }
 </script>

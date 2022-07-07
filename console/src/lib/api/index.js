@@ -50,18 +50,6 @@ function checkInitialResponse(response) {
   })
 }
 
-function getErrorMessage(err) {
-  let msg = ''
-  console.log('getErrorMessage: err = ', err)
-  try {
-    const errJson = JSON.parse(err.message)
-    msg = errJson.error
-  } catch (error) {
-    msg = err
-  }
-  return msg
-}
-
 function callApi(url, options = {}, done, fail) {
   if (!options.method) {
     options.method = 'GET'
@@ -81,10 +69,9 @@ function callApi(url, options = {}, done, fail) {
       return data
     })
     .catch((err) => {
-      const msg = getErrorMessage(err)
-      console.log(msg)
+      console.log(err)
       if (fail) {
-        fail(msg)
+        fail(err.message)
       }
     })
     .finally(decSpinCount)
