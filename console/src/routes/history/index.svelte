@@ -1,5 +1,8 @@
 <script>
   import { onMount } from 'svelte'
+  import { getNotificationsContext } from 'svelte-notifications'
+  import mime from 'mime'
+
   import ButtonSelect from '../../lib/components/button-select/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
   import PageWithMenu from '../../lib/components/page/template/menu/index.svelte'
@@ -7,9 +10,12 @@
   import Table from '../../lib/components/table/index.svelte'
   import Spinner from '../../lib/components/spinner/index.svelte'
 
+  import { downloadFile } from '../../lib/utils/downloads'
   import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
   import { colDefs } from './data'
+
+  const { addNotification } = getNotificationsContext()
 
   let transactions = []
   let rangeValue = '720'
@@ -20,8 +26,7 @@
   }
 
   function onAction(e) {
-    const { name, type, value } = e.detail
-    console.log('onAction: type = ', type, ' value = ', value)
+    download(e.detail.value)
   }
 
   function getTransactions(hours) {
@@ -32,13 +37,62 @@
       },
       (error) => {
         addNotification({
-          text: `Error: ${errJson.error}`,
+          text: `Error: ${error}`,
           position: 'bottom-left',
           type: 'danger',
           removeAfter: 2000,
         })
       }
     )
+  }
+
+  function download(tx) {
+    let contentType = ''
+
+    fetch(`${BASE_URL}/api/v1/transactions/${tx.id}`, {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + tx.api_key,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not OK')
+        }
+        contentType = response.headers.get('content-type')
+        return response.blob()
+      })
+      .then((blob) => URL.createObjectURL(blob))
+      .then((blobUrl) => {
+        let filename = ''
+        let txFilename = tx.filename
+
+        if (txFilename === '') {
+          let extension = mime.getExtension(contentType)
+          let filenameSuffix = extension ? '.' + extension : ''
+
+          filename = tx.id + filenameSuffix
+        } else {
+          filename = txFilename
+        }
+
+        downloadFile(blobUrl, filename)
+
+        addNotification({
+          text: `Successfully downloaded: ${filename}`,
+          position: 'bottom-left',
+          type: 'success',
+          removeAfter: 2000,
+        })
+      })
+      .catch((err) =>
+        addNotification({
+          text: `Error: ${err}`,
+          position: 'bottom-left',
+          type: 'danger',
+          removeAfter: 2000,
+        })
+      )
   }
 
   onMount(() => getTransactions(rangeValue))
