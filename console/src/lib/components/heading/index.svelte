@@ -7,7 +7,7 @@
   let fontSize = '36px'
   let lineHeight = '36px'
   let fontWeight = 700
-  let letterSpacing = '-0.02em'
+  let letterSpacing = '0'
 
   $: {
     switch (size) {

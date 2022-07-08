@@ -235,9 +235,6 @@
     flex-direction: column;
     width: 100%;
     max-width: 920px;
-
-    padding-top: 40px;
-    margin-bottom: 100px;
   }
 
   .sub-row {

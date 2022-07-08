@@ -1,4 +1,7 @@
 <script>
+  import { onMount } from 'svelte'
+  import { getNotificationsContext } from 'svelte-notifications'
+
   import Checkbox from '../../lib/components/checkbox/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
   import PageWithMenu from '../../lib/components/page/template/menu/index.svelte'
@@ -6,26 +9,79 @@
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import Text from '../../lib/components/text/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
+  import Spinner from '../../lib/components/spinner/index.svelte'
 
-  let textInputs = {
-    listenAddress: '',
-    taalUrl: '',
-    taalTimeout: '',
-    fileName: '',
+  import { spinCount } from '../../lib/stores'
+  import * as api from '../../lib/api'
+
+  const { addNotification } = getNotificationsContext()
+
+  let settings = {}
+
+  onMount(() => {
+    getSettings()
+  })
+
+  function getSettings() {
+    api.getSettings(
+      (data) => {
+        addNotification({
+          text: `Settings retrieved successfully`,
+          position: 'bottom-left',
+          type: 'success',
+          removeAfter: 1000,
+        })
+
+        settings = data
+      },
+      (error) => {
+        addNotification({
+          text: `Error: ${error}`,
+          position: 'bottom-left',
+          type: 'danger',
+          removeAfter: 5000,
+        })
+      }
+    )
   }
-  let checks = {
-    checkServer: false,
-    checkTransactions: false,
-  }
-  let radios = {
-    dbMode: '',
+
+  function updateSetting(key, value) {
+    api.updateSetting(
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          key,
+          value,
+        }),
+      },
+      (data) => {
+        settings[key] = value
+
+        addNotification({
+          text: `Setting updated successfully`,
+          position: 'bottom-left',
+          type: 'success',
+          removeAfter: 1000,
+        })
+      },
+      (error) => {
+        addNotification({
+          text: `Error: ${error}`,
+          position: 'bottom-left',
+          type: 'danger',
+          removeAfter: 2000,
+        })
+      }
+    )
   }
 
   function onChange(e) {
     const { name, group, type, value, checked } = e.detail
     // console.log(
     //   'name =',
-    //   radios,
+    //   name,
     //   ' group =',
     //   group,
     //   ' type =',
@@ -35,14 +91,13 @@
     // )
     switch (type) {
       case 'text':
-        textInputs[name] = value || ''
+        updateSetting(name, value || '')
         break
       case 'checkbox':
-        checks[name] = checked || false
+        updateSetting(name, (checked || false).toString())
         break
       case 'radio':
-        radios[group] = checked ? name : ''
-        radios = radios
+        updateSetting(group, checked ? name : '')
         break
     }
   }
@@ -63,7 +118,8 @@
     <TextInput
       name="listenAddress"
       label="Listen address"
-      value={textInputs['listenAddress']}
+      placeholder="localhost:9500"
+      value={settings.listenAddress}
       confirm
       on:change={onChange}
       on:mount={onInputMount}
@@ -78,7 +134,8 @@
     <TextInput
       name="taalUrl"
       label="TAAL URL"
-      value={textInputs['taalUrl']}
+      placeholder="https://api.taal.com"
+      value={settings.taalUrl}
       confirm
       on:change={onChange}
     />
@@ -92,7 +149,8 @@
     <TextInput
       name="taalTimeout"
       label="TAAL timeout"
-      value={textInputs['taalTimeout']}
+      placeholder="10s"
+      value={settings.taalTimeout}
       confirm
       on:change={onChange}
     />
@@ -112,17 +170,17 @@
     />
     <Spacer h={16} />
     <Checkbox
-      name="checkServer"
+      name="debugServer"
       label="Server"
-      checked={checks['checkServer']}
+      checked={settings.debugServer === 'true'}
       labelPlacement="right"
       on:change={onChange}
     />
     <Spacer h={16} />
     <Checkbox
-      name="checkTransactions"
+      name="debugTransactions"
       label="Transactions"
-      checked={checks['checkTransactions']}
+      checked={settings.debugTransactions === 'true'}
       labelPlacement="right"
       on:change={onChange}
     />
@@ -135,32 +193,83 @@
     <Spacer h={16} />
     <div class="radio-row">
       <Radio
-        name="radioLocal"
-        group="dbMode"
+        name="sqlite"
+        group="dbType"
         label="Local"
-        checked={radios['dbMode'] === 'radioLocal'}
+        checked={settings.dbType === 'sqlite'}
         labelPlacement="right"
         on:change={onChange}
       />
       <Radio
-        name="radioRemote"
-        group="dbMode"
+        name="postgres"
+        group="dbType"
         label="Remote"
-        checked={radios['dbMode'] === 'radioRemote'}
+        checked={settings.dbType === 'postgres'}
         labelPlacement="right"
         on:change={onChange}
       />
     </div>
-    <Spacer h={24} />
-    <TextInput
-      name="fileName"
-      label="File name"
-      value={textInputs['fileName']}
-      confirm
-      on:change={onChange}
-    />
+    {#if settings.dbType === 'sqlite'}
+      <Spacer h={24} />
+      <TextInput
+        name="dbFilename"
+        label="File name"
+        placeholder="./taal_client.db"
+        value={settings.dbFilename}
+        confirm
+        on:change={onChange}
+      />
+    {:else}
+      <Spacer h={24} />
+      <TextInput
+        name="dbHost"
+        label="Host"
+        placeholder="localhost"
+        value={settings.dbHost || ''}
+        confirm
+        on:change={onChange}
+      />
+      <Spacer h={24} />
+      <TextInput
+        name="dbPort"
+        label="Port"
+        placeholder="5432"
+        value={settings.dbPort || ''}
+        confirm
+        on:change={onChange}
+      />
+      <Spacer h={24} />
+      <TextInput
+        name="dbName"
+        label="Database name"
+        placeholder="taal_client"
+        value={settings.dbName || ''}
+        confirm
+        on:change={onChange}
+      />
+      <Spacer h={24} />
+      <TextInput
+        name="dbUsername"
+        label="Role"
+        value={settings.dbUsername || ''}
+        confirm
+        on:change={onChange}
+      />
+      <Spacer h={24} />
+      <TextInput
+        name="dbPassword"
+        label="Password"
+        value={settings.dbPassword || ''}
+        confirm
+        on:change={onChange}
+      />
+    {/if}
   </div>
 </PageWithMenu>
+
+{#if $spinCount > 0}
+  <Spinner />
+{/if}
 
 <style>
   .island {
@@ -168,8 +277,6 @@
     flex-direction: column;
     width: 100%;
     max-width: 920px;
-    padding-top: 40px;
-    margin-bottom: 100px;
   }
 
   .sub-row {

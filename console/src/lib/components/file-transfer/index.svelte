@@ -5,6 +5,7 @@
   import Progress from '../progress/index.svelte'
   import Text from '../text/index.svelte'
   import { getInputLabel } from '../../utils/strings'
+  import { getFileKey } from '../../utils/files'
   import { dataSize } from '../../utils/format'
 
   const dispatch = createEventDispatcher()
@@ -18,6 +19,8 @@
   export let required = false
   export let disabled = false
   export let error = ''
+  export let imageSrcData = {}
+  export let fileProgressData = {}
 
   let direction = 'row'
   let justify = 'flex-start'
@@ -62,14 +65,16 @@
 
   $: {
     gap = label ? '8px' : '0'
-
-    console.log('..: files =', files)
   }
 
   let focused = false
 
   function onCancel(file) {
     dispatch('cancel', { name, value: file })
+  }
+
+  function onRemove(file) {
+    dispatch('remove', { name, value: file })
   }
 </script>
 
@@ -95,7 +100,15 @@
         <div class="item">
           <div class="info">
             <div class="icon">
-              <Icon name="bi_file-earmark-image" size={24} />
+              {#if imageSrcData[getFileKey(file)]}
+                <img
+                  src={imageSrcData[getFileKey(file)]}
+                  style="width: 24px; height: 24px;"
+                  alt="thumb-preview"
+                />
+              {:else}
+                <Icon name="bi_file-earmark-image" size={24} />
+              {/if}
             </div>
             <div class="text">
               <div class="labels">
@@ -111,15 +124,23 @@
                 />
               </div>
               <Progress
-                ratio={file.progress || 0}
+                ratio={fileProgressData[getFileKey(file)]
+                  ? fileProgressData[getFileKey(file)].progress
+                  : 0}
                 size="small"
                 normalColor="#232D7C"
               />
             </div>
           </div>
-          <div class="action" on:click={() => onCancel(file)}>
-            <Icon name="close" size={18} />
-          </div>
+          {#if fileProgressData[getFileKey(file)]}
+            <div class="action" on:click={() => onCancel(file)}>
+              <Icon name="close" size={18} />
+            </div>
+          {:else}
+            <div class="action" on:click={() => onRemove(file)}>
+              <Icon name="trash" size={18} />
+            </div>
+          {/if}
         </div>
       {/each}
     </div>
@@ -148,9 +169,10 @@
   }
 
   label {
-    font-weight: 500;
+    font-weight: 400;
     font-size: var(--fontSize-local);
-    line-height: 16px;
+    line-height: 18px;
+    letter-spacing: -0.02em;
 
     color: #232d7c;
   }
@@ -226,6 +248,7 @@
   .action {
     width: 18px;
     height: 18px;
+    color: #232D7C;
   }
   .action:hover {
     cursor: pointer;
@@ -233,5 +256,6 @@
   .disabled .action,
   .disabled .action:hover {
     cursor: auto;
+    color: #8f8d94;
   }
 </style>

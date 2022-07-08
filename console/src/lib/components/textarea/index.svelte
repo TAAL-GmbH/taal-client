@@ -212,9 +212,10 @@
   }
 
   label {
-    font-weight: 500;
+    font-weight: 400;
     font-size: 14px;
-    line-height: 16px;
+    line-height: 18px;
+    letter-spacing: -0.02em;
 
     color: #232d7c;
   }
@@ -245,11 +246,12 @@
     cursor: auto;
   }
   .input.resize .resize-icon {
-    color: #333;
+    color: #232D7C;
     cursor: ns-resize;
   }
   .input.disabled,
   .input.disabled.resize .resize-icon {
+    color: #8f8d94;
     cursor: auto;
   }
 

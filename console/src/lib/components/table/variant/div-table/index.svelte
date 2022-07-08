@@ -1,6 +1,5 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import Button from '../../../button/index.svelte'
   import Checkbox from '../../../checkbox/index.svelte'
   import Icon from '../../../icon/index.svelte'
   import Pager from '../../../pager/index.svelte'
@@ -8,7 +7,6 @@
 
   const dispatch = createEventDispatcher()
 
-  export let name
   export let colDefs = []
   export let data = []
   export let idField
@@ -31,9 +29,7 @@
   export let hasBoundaryRight = true
   export let pager = true
   export let alignPager = 'center'
-  export let getRowIconActions
-  export let getRenderProps
-  export let getRowClassName
+  export let rowIconActions = []
 
   function onFilterClick(colId) {
     dispatch('filter', { colId })
@@ -52,7 +48,7 @@
   }
 
   function onActionIcon(type, value) {
-    dispatch('action', { name, type, value })
+    dispatch('action', { type, value })
   }
 </script>
 
@@ -90,7 +86,7 @@
               <div class="table-cell-row">
                 {colDef.name}
                 {#if sortEnabled && sortState.sortColumn === colDef.id}
-                  <div class="header-icon">
+                  <div class="table-icon">
                     <Icon
                       name={sortState.sortOrder === SortOrder.asc
                         ? 'chevron-up'
@@ -100,7 +96,7 @@
                   </div>
                 {/if}
                 {#if filtersEnabled && filtersState[colDef.id]}
-                  <div class="header-icon">
+                  <div class="table-icon">
                     <Icon
                       name="filters"
                       size={18}
@@ -111,7 +107,7 @@
               </div>
             </th>
           {/each}
-          {#if getRowIconActions}
+          {#if rowIconActions?.length > 0}
             <th />
           {/if}
         </tr>
@@ -140,18 +136,13 @@
                       idField,
                       item
                     ).component}
-                    {...{
-                      ...getDisplay(
-                        renderCells,
-                        renderTypes,
-                        colDef,
-                        idField,
-                        item
-                      ).props,
-                      ...(getRenderProps
-                        ? getRenderProps(name, colDef, idField, item)
-                        : {}),
-                    }}
+                    {...getDisplay(
+                      renderCells,
+                      renderTypes,
+                      colDef,
+                      idField,
+                      item
+                    ).props}
                   />
                 {:else}
                   {getDisplay(renderCells, renderTypes, colDef, idField, item)
@@ -159,36 +150,16 @@
                 {/if}
               </td>
             {/each}
-            {#if getRowIconActions}
+            {#if rowIconActions?.length > 0}
               <td>
-                {#if !disabled}
-                  <div class="table-cell-row">
-                    {#each getRowIconActions(name, item, idField) || [] as actionItem (actionItem.icon)}
-                      <div
-                        class="action"
-                        class:disabled={actionItem.disabled}
-                        on:click={actionItem.disabled
-                          ? null
-                          : () => onActionIcon(actionItem.type, item)}
-                      >
-                        {#if actionItem.render === 'icon'}
-                          <div class="ico">
-                            <Icon name={actionItem.icon} size={18} />
-                          </div>
-                        {:else}
-                          <div class="btn">
-                            <Button
-                              variant="ghost"
-                              size="small"
-                              disabled={actionItem.disabled}
-                              icon={actionItem.icon}
-                            />
-                          </div>
-                        {/if}
-                      </div>
-                    {/each}
+                {#each rowIconActions as actionItem (actionItem.event)}
+                  <div
+                    class="table-icon active"
+                    on:click={() => onActionIcon(actionItem.type, item)}
+                  >
+                    <Icon name={actionItem.icon} size={18} />
                   </div>
-                {/if}
+                {/each}
               </td>
             {/if}
           </tr>
@@ -340,27 +311,15 @@
     display: flex;
     align-items: center;
     flex-wrap: nowrap;
-    gap: 4px;
   }
-  .header-icon {
+  .table-icon {
     width: 18px;
     height: 18px;
     padding: 0 1px 0 3px;
+    color: #232d7c;
   }
-  .action {
+  .table-icon.active {
     cursor: pointer;
-    color: #232D7C;
-  }
-  .action .ico {
-    width: 18px;
-    height: 18px;
-  }
-  .action .btn {
-    width: 36px;
-    height: 36px;
-  }
-  .action.disabled {
-    cursor: auto;
   }
   .table-pager {
     width: 100%;

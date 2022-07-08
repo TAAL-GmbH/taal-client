@@ -1,4 +1,6 @@
 <script>
+  import Notifications from 'svelte-notifications'
+
   import AppOld from './AppOld.svelte'
   import AppNew from './AppNew.svelte'
 
@@ -8,5 +10,7 @@
 {#if old}
   <AppOld />
 {:else}
-  <AppNew />
+  <Notifications>
+    <AppNew />
+  </Notifications>
 {/if}

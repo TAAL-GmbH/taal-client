@@ -1,4 +1,7 @@
 <script>
+  import { useNavigate } from 'svelte-navigator'
+  import { getNotificationsContext } from 'svelte-notifications'
+
   import Button from '../../lib/components/button/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
   import PageBasic from '../../lib/components/page/template/basic/index.svelte'
@@ -6,21 +9,50 @@
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import Text from '../../lib/components/text/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
+  import Spinner from '../../lib/components/spinner/index.svelte'
+
   import { link } from '../../lib/utils/format'
+  import { spinCount } from '../../lib/stores'
+  import * as api from '../../lib/api'
 
-  function onCancel() {
-    console.log('onCancel')
-  }
-
-  function onRegister() {
-    console.log('onRegister')
-  }
+  const { addNotification } = getNotificationsContext()
 
   let key = ''
 
   function onInputChange(e) {
-    const target = e.explicitOriginalTarget
-    key = target.value
+    key = e.detail.value
+  }
+
+  function registerKey(apiKey) {
+    api.registerKey(
+      apiKey,
+      (data) => {
+        addNotification({
+          text: `API key registered successfully`,
+          position: 'bottom-left',
+          type: 'success',
+          removeAfter: 1000,
+        })
+
+        navigate('/key-manager')
+      },
+      (error) => {
+        addNotification({
+          text: `Error: ${error}`,
+          position: 'bottom-left',
+          type: 'danger',
+          removeAfter: 5000,
+        })
+      }
+    )
+  }
+
+  function onReset() {
+    key = ''
+  }
+
+  function onRegister() {
+    registerKey(key)
   }
 </script>
 
@@ -44,12 +76,16 @@
     <Spacer h={120} />
     <div class="right">
       <Row gap={16}>
-        <Button variant="ghost" on:click={onCancel}>Cancel</Button>
-        <Button on:click={onRegister}>Register</Button>
+        <Button variant="ghost" size="large" on:click={onReset}>Reset</Button>
+        <Button size="large" on:click={onRegister}>Register</Button>
       </Row>
     </div>
   </div>
 </PageBasic>
+
+{#if $spinCount > 0}
+  <Spinner />
+{/if}
 
 <style>
   .island {
@@ -57,8 +93,6 @@
     flex-direction: column;
     width: 100%;
     max-width: 920px;
-
-    margin-bottom: 120px;
   }
 
   .right {

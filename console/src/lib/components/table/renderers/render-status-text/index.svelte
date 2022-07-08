@@ -1,12 +1,6 @@
 <script>
   export let value = ''
-  export let status = 'active'
-
-  let statusColor = '#54adff'
-
-  $: {
-    //
-  }
+  export let statusColor = '#54adff'
 </script>
 
 {#if value}

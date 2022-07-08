@@ -1,96 +1,130 @@
 <script>
+  import { onMount } from 'svelte'
+  import { getNotificationsContext } from 'svelte-notifications'
+  import mime from 'mime'
+
   import ButtonSelect from '../../lib/components/button-select/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
   import PageWithMenu from '../../lib/components/page/template/menu/index.svelte'
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import Table from '../../lib/components/table/index.svelte'
+  import Spinner from '../../lib/components/spinner/index.svelte'
 
-  let filtersOpen = false
+  import {
+    downloadFileBlob,
+    filterUnique,
+    getColorFromDistinct,
+  } from '../../lib/utils'
+  import { spinCount } from '../../lib/stores'
+  import * as api from '../../lib/api'
+  import { colDefs, rangeItems } from './data'
+
+  const { addNotification } = getNotificationsContext()
+
+  let transactions = []
+  let rangeValue = '720'
+  let distinctKeys = []
+
+  $: {
+    distinctKeys = transactions.map((tx) => tx.api_key).filter(filterUnique)
+  }
 
   function onRange(e) {
-    console.log('onRange: detail = ', e.detail)
+    getTransactions(e.detail.value)
   }
-
-  function onFilters(e) {
-    console.log('onFilters: detail = ', e.detail)
-    filtersOpen = !filtersOpen
-  }
-
-  const tableColDefs = [
-    {
-      id: 'created_at',
-      name: 'Created at (UTC)',
-      type: 'dateStr',
-    },
-    {
-      id: 'id',
-      name: 'ID',
-      type: 'transactionhash',
-    },
-    {
-      id: 'api_key',
-      name: 'API key used',
-      type: 'apiKey',
-    },
-    {
-      id: 'data_bytes',
-      name: 'Data size',
-      type: 'dataSize',
-    },
-    {
-      id: 'filename',
-      name: 'Filename',
-      type: 'string',
-    },
-  ]
-
-  const tableData = [
-    {
-      id: '111119bc38c0648706ef2de8d6668a7cf90d301ee5891c17530e9db96205dbc0',
-      api_key: 'testnet_0b85b7619de806c0aae9075cbb0266cf',
-      data_bytes: 213,
-      created_at: '2022-06-22T08:46:36.259Z',
-      filename: '',
-      secret: '123',
-    },
-    {
-      id: '222219bc38c0648706ef2de8d6668a7cf90d301ee5891c17530e9db96205dbc0',
-      api_key: 'testnet_0b85b7619de806c0aae9075cbb0266cf',
-      data_bytes: 123,
-      created_at: '2022-06-19T08:46:36.259Z',
-      filename: 'names.txt',
-      secret: '456',
-    },
-    {
-      id: '333319bc38c0648706ef2de8d6668a7cf90d301ee5891c17530e9db96205dbc0',
-      api_key: 'testnet_0b85b7619de806c0aae9075cbb0266cf',
-      data_bytes: 456,
-      created_at: '2022-06-26T08:46:36.259Z',
-      filename: '',
-      secret: '789',
-    },
-    {
-      id: '444419bc38c0648706ef2de8d6668a7cf90d301ee5891c17530e9db96205dbc0',
-      api_key: 'testnet_0b85b7619de806c0aae9075cbb0266cf',
-      data_bytes: 2233,
-      created_at: '2022-05-24T08:46:36.259Z',
-      filename: 'todo.doc',
-      secret: '4545454',
-    },
-    {
-      id: '555519bc38c0648706ef2de8d6668a7cf90d301ee5891c17530e9db96205dbc0',
-      api_key: 'testnet_0b85b7619de806c0aae9075cbb0266cf',
-      data_bytes: 34,
-      created_at: '2022-06-30T08:46:36.259Z',
-      filename: '',
-      secret: 'abc',
-    },
-  ]
 
   function onAction(e) {
-    const { name, type, value } = e.detail
-    console.log('onAction: type = ', type, ' value = ', value)
+    download(e.detail.value)
   }
+
+  const getRowIconActions = (tableName, item, idField = 'id') => {
+    const icons = [
+      {
+        icon: 'download',
+        type: 'download',
+      },
+    ]
+    if (item?.secret) {
+      icons.push({
+        icon: 'key',
+        render: 'icon',
+        disabled: true,
+      })
+    }
+    return icons
+  }
+
+  const getRenderProps = (name, colDef, idField, item) => {
+    return {
+      statusColor: getColorFromDistinct(item.api_key, distinctKeys),
+    }
+  }
+
+  function getTransactions(hours) {
+    api.getTransactions(
+      hours,
+      (data) => {
+        transactions = data.transactions
+      },
+      (error) => {
+        addNotification({
+          text: `Error: ${error}`,
+          position: 'bottom-left',
+          type: 'danger',
+          removeAfter: 2000,
+        })
+      }
+    )
+  }
+
+  function download(tx) {
+    let contentType = ''
+
+    fetch(`${BASE_URL}/api/v1/transactions/${tx.id}`, {
+      method: 'GET',
+      headers: {
+        Authorization: 'Bearer ' + tx.api_key,
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not OK')
+        }
+        contentType = response.headers.get('content-type')
+        return response.blob()
+      })
+      .then((blob) => {
+        let filename = ''
+
+        if (tx.filename === '') {
+          const extension = mime.getExtension(contentType)
+          const filenameSuffix = extension ? '.' + extension : ''
+
+          filename = tx.id + filenameSuffix
+        } else {
+          filename = tx.filename
+        }
+
+        downloadFileBlob(filename, blob)
+
+        addNotification({
+          text: `Successfully downloaded: ${filename}`,
+          position: 'bottom-left',
+          type: 'success',
+          removeAfter: 2000,
+        })
+      })
+      .catch((err) =>
+        addNotification({
+          text: `Error: ${err}`,
+          position: 'bottom-left',
+          type: 'danger',
+          removeAfter: 2000,
+        })
+      )
+  }
+
+  onMount(() => getTransactions(rangeValue))
 </script>
 
 <PageWithMenu>
@@ -100,52 +134,35 @@
     <div class="sub-row">
       <ButtonSelect
         name="range"
-        items={[
-          { label: '24H', value: '24H' },
-          { label: '1W', value: '1W' },
-          { label: '1M', value: '1M' },
-          { label: 'All', value: 'All' },
-        ]}
+        value={rangeValue}
+        items={rangeItems}
         on:change={onRange}
       />
-      <div style="display: flex; gap: 8px;">
-        <ButtonSelect
-          items={[{ label: 'Filters', value: 0, icon: 'filters' }]}
-          focusRect={false}
-          value={filtersOpen ? 0 : -1}
-          on:change={onFilters}
-        />
-      </div>
     </div>
     <Spacer h={24} />
     <Table
-      colDefs={tableColDefs}
-      data={tableData}
+      {colDefs}
+      data={transactions}
       pagination={{
         page: 1,
         pageSize: 15,
       }}
-      filters={{
-        age: {
-          filterType: 'anyOf',
-          selectedValues: [],
-        },
-      }}
-      rowIconActions={[
-        { icon: 'download', name: 'Download', type: 'download' },
-      ]}
+      {getRenderProps}
+      {getRowIconActions}
       on:action={onAction}
     />
   </div>
 </PageWithMenu>
+
+{#if $spinCount > 0}
+  <Spinner />
+{/if}
 
 <style>
   .island {
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding-top: 40px;
-    margin-bottom: 100px;
   }
 
   .sub-row {

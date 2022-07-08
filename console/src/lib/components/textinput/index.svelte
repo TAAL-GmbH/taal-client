@@ -93,13 +93,25 @@
     dispatch('mount', { inputRef })
   })
 
-  function onConfirmClick() {
+  function doConfirm() {
     value = localValue
     dispatch('change', { name, type, value })
   }
 
-  function onResetClick() {
+  function doReset() {
     localValue = value
+  }
+
+  function onKeyDown(e) {
+    if (!e) e = window.event
+    const keyCode = e.code || e.key
+    if (keyCode === 'Enter') {
+      doConfirm()
+      return false
+    } else if (keyCode === 'Escape') {
+      doReset()
+      return false
+    }
   }
 </script>
 
@@ -131,20 +143,21 @@
         on:input={onInputChange}
         on:focus={(e) => (focused = true)}
         on:blur={(e) => (focused = false)}
+        on:keydown={onKeyDown}
       />
       {#if confirm && localValue !== value}
         <div class="confirm-row">
           <div
             class="confirm-icon"
             style="color: #6EC492; width: 20px; height: 20px;"
-            on:click={onConfirmClick}
+            on:click={doConfirm}
           >
             <Icon name="check" size={20} />
           </div>
           <div
             class="confirm-icon"
             style="color: #FF344C; width: 17px; height: 17px;"
-            on:click={onResetClick}
+            on:click={doReset}
           >
             <Icon name="close" size={17} />
           </div>
@@ -174,9 +187,10 @@
   }
 
   label {
-    font-weight: 500;
+    font-weight: 400;
     font-size: 14px;
-    line-height: 16px;
+    line-height: 18px;
+    letter-spacing: -0.02em;
 
     color: #232d7c;
   }

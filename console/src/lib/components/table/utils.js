@@ -54,6 +54,7 @@ export const getSortFunction = (colType, sortColumn, sortOrder) => {
           : new Date(b[sortColumn]).getTime() -
             new Date(a[sortColumn]).getTime()
     case ColType.number:
+    case ColType.dataSize:
     case ColType.satoshi:
     case ColType.terraHash:
     case ColType.percent:
@@ -118,7 +119,6 @@ const defaultColTypeRenderers = {
     component: item[colId] ? RenderStatusText : null,
     props: {
       value: item[colId],
-      status: 'active',
     },
     value: '',
   }),
@@ -186,13 +186,7 @@ const defaultColTypeRenderers = {
   }),
 }
 
-export const getDisplayProps = (
-  renderCells,
-  renderTypes,
-  colDef,
-  idField,
-  item
-) => {
+export const getDisplay = (renderCells, renderTypes, colDef, idField, item) => {
   return renderCells && renderCells[colDef.id]
     ? renderCells[colDef.id](idField, item, colDef.id)
     : renderTypes && renderTypes[colDef.type]
