@@ -55,9 +55,11 @@
   }
 
   const getRenderProps = (name, colDef, idField, item) => {
-    return {
-      statusColor: getColorFromDistinct(item.api_key, distinctKeys),
-    }
+    return colDef === 'api_key'
+      ? {
+          statusColor: getColorFromDistinct(item.api_key, distinctKeys),
+        }
+      : {}
   }
 
   function getTransactions(hours) {
