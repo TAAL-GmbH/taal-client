@@ -33,6 +33,7 @@
   const { addNotification } = getNotificationsContext()
 
   const stdMimeType = 'text/plain'
+  let disableButtonsCount = 0
   let loading = true
   let timeout = 0
 
@@ -142,6 +143,7 @@
     xhr.open('POST', url, true)
 
     xhr.upload.addEventListener('progress', function (e) {
+      disableButtonsCount++
       console.log('progress = ', e.loaded / e.total)
       // TODO: right now the backend does not give proper progress updates
       //       basically (e.loaded / e.total) evaluates to 1 right at the start already
@@ -182,6 +184,7 @@
             removeAfter: 2000,
           })
         }
+        disableButtonsCount--
       }
     })
 
@@ -398,8 +401,18 @@
     {/if}
     <Spacer h={64} />
     <div class="buttons">
-      <Button variant="ghost" size="large" on:click={reset}>Reset</Button>
-      <Button size="large" iconAfter="arrow-narrow-right" on:click={onSubmit}>
+      <Button
+        variant="ghost"
+        size="large"
+        disabled={disableButtonsCount > 0}
+        on:click={reset}>Reset</Button
+      >
+      <Button
+        size="large"
+        iconAfter="arrow-narrow-right"
+        disabled={disableButtonsCount > 0}
+        on:click={onSubmit}
+      >
         Submit transaction
       </Button>
     </div>
