@@ -88,7 +88,7 @@
   }
 
   function onInputChange(e) {
-    dispatch('change', { name, type, value: e.originalTarget.value })
+    dispatch('change', { name, type, value: e.srcElement.value })
   }
 
   onMount(() => {
@@ -246,7 +246,7 @@
     cursor: auto;
   }
   .input.resize .resize-icon {
-    color: #232D7C;
+    color: #232d7c;
     cursor: ns-resize;
   }
   .input.disabled,
