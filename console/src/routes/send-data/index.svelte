@@ -8,10 +8,8 @@
   import FileTransfer from '../../lib/components/file-transfer/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
   import PageWithMenu from '../../lib/components/page/template/menu/index.svelte'
-  import Row from '../../lib/components/layout/row/index.svelte'
   import Switch from '../../lib/components/switch/index.svelte'
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
-  import Text from '../../lib/components/text/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
   import TextArea from '../../lib/components/textarea/index.svelte'
   import Spinner from '../../lib/components/spinner/index.svelte'
@@ -19,50 +17,47 @@
   import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
 
-  import { copyTextToClipboard } from '../../lib/utils/clipboard'
-  import { valueSet } from '../../lib/utils/types'
   import { getFileKey } from '../../lib/utils/files'
+  import {
+    copyCurl,
+    getApiKeys,
+    getCorrectURL,
+    getSettings,
+    modeItems,
+    getStoreValue,
+    setStoreValue,
+    updateStore,
+  } from './utils'
 
   const { addNotification } = getNotificationsContext()
 
   const stdMimeType = 'text/plain'
+  let loading = true
 
-  let taalClientURL
+  let devMode = getStoreValue('devmode') === 'true'
+  let apiKey
+  let taalClientURL = ''
+  let mimeType = stdMimeType
+  let tag = ''
+  let mode = 'raw'
+  let secret = ''
+  let textData = ''
+  let curlCommand = ''
 
-  let textInputs = {
-    taalClientUrl: '',
-    mimeType: '',
-    secret: '',
-    tag: '',
-    textData: '',
-    copyCurlText:
-      'curl \\ \n\t -X POST \\ \n\t -H ‘Authorization: Bearer mainnet_...',
+  $: updateStore('tag', tag, loading)
+  $: updateStore('mode', mode, loading)
+  $: updateStore('secret', secret, loading)
+  $: updateStore('devmode', devMode, loading)
+
+  $: {
+    console.log('devMode =', devMode)
   }
 
-  // api keys
-  let keys = []
-  $: apiKeyItems = keys.map((key) => ({
-    label: key.api_key,
-    value: key.api_key,
-  }))
+  $: compactFileUpload = devMode || files.length > 0
 
-  // move
-  let dropdowns = {
-    mode: 'raw',
-    apiKey: '',
-  }
-  const modeItems = [
-    { label: 'Raw', value: 'raw' },
-    { label: 'Hash', value: 'hash' },
-    { label: 'Encrypt', value: 'encrypt' },
-  ]
-
-  // dev mode
-  let checks = {
-    devMode: localStorage.getItem('devmode') === 'true',
-  }
-  $: localStorage.setItem('devmode', checks.devMode)
-  $: compactFileUpload = checks.devMode || files.length > 0
+  // let files = null
+  let file = null
+  let fileData = null
 
   let files = []
   let imageSrcData = {}
@@ -73,6 +68,23 @@
   // }
 
   $: {
+    if (devMode && files.length > 1) {
+      files = [files[0]]
+    }
+  }
+
+  function onFileSelect(e) {
+    const { value } = e.detail
+    const add = []
+    value.forEach((file) => {
+      if (!files.some((item) => getFileKey(item) === getFileKey(file))) {
+        add.push(file)
+      }
+    })
+    files = devMode ? [add[0]] : files.concat(add)
+  }
+
+  $: {
     files.forEach((file) => {
       const key = getFileKey(file)
       if (
@@ -81,10 +93,38 @@
       ) {
         const reader = new FileReader()
         reader.readAsDataURL(file)
-        reader.onloadend = () => imageSrcData[key] = reader.result
+        reader.onloadend = () => (imageSrcData[key] = reader.result)
       }
     })
   }
+
+  function onCancelTransfer(e) {
+    const file = e.detail.value
+    const fileKey = getFileKey(file)
+    console.log('onCancelTransfer: file = ', file.name)
+    fileProgressData[fileKey] = { state: 'cancelled', progress: 1 }
+  }
+
+  function onRemoveTransferFile(e) {
+    const file = e.detail.value
+    const fileKey = getFileKey(file)
+    console.log('onRemoveTransferFile: file = ', file.name)
+    files = files.filter((item) => getFileKey(item) !== fileKey)
+    if (imageSrcData[fileKey]) {
+      delete imageSrcData[fileKey]
+    }
+  }
+
+  $: {
+    console.log('taalClientURL =', taalClientURL)
+  }
+
+  // api keys
+  let keys = []
+  $: apiKeyItems = keys.map((key) => ({
+    label: key.api_key,
+    value: key.api_key,
+  }))
 
   function uploadFile(file) {
     const url = 'TODO-GET-URL'
@@ -130,62 +170,8 @@
     xhr.send(formData)
   }
 
-  function onChange(e) {
-    const { name, group, type, value, checked } = e.detail
-    console.log('onChange: name =', name, ' type =', type, ' value =', value)
-    switch (type) {
-      case 'text':
-        textInputs[name] = value || ''
-        break
-      case 'select':
-        dropdowns[name] = value || ''
-        break
-      case 'checkbox':
-        checks[name] = checked || false
-        break
-      case 'file':
-        const add = []
-        value.forEach((file) => {
-          if (!files.some((item) => getFileKey(item) === getFileKey(file))) {
-            add.push(file)
-          }
-        })
-        files = checks.devMode ? [add[0]] : files.concat(add)
-        break
-    }
-  }
-
   function onInputMount(e) {
     e.detail.inputRef.focus()
-  }
-
-  async function onCopyCurl() {
-    console.log('onCopyCurl')
-    const { ok, error } = await copyTextToClipboard(textInputs.copyCurlText)
-
-    addNotification({
-      text: ok ? `Successfully copied.` : `Failed to copy.`,
-      position: 'bottom-left',
-      type: ok ? 'success' : 'danger',
-      removeAfter: 2000,
-    })
-  }
-
-  function onCancelTransfer(e) {
-    const file = e.detail.value
-    const fileKey = getFileKey(file)
-    console.log('onCancelTransfer: file = ', file.name)
-    fileProgressData[fileKey] = { state: 'cancelled', progress: 1 }
-  }
-
-  function onRemoveTransferFile(e) {
-    const file = e.detail.value
-    const fileKey = getFileKey(file)
-    console.log('onRemoveTransferFile: file = ', file.name)
-    files = files.filter((item) => getFileKey(item) !== fileKey)
-    if (imageSrcData[fileKey]) {
-      delete imageSrcData[fileKey]
-    }
   }
 
   function writeData() {
@@ -225,29 +211,25 @@
     reset()
   }
 
-  function getApiKeys() {
-    api.getApiKeysUsage(
-      (data) => {
-        keys = data.key_usages
-      },
-      (error) => {
-        addNotification({
-          text: `Failed to load api keys: ${error}`,
-          position: 'bottom-left',
-          type: 'danger',
-          removeAfter: 2000,
-        })
-      }
-    )
+  function reset() {
+    files = []
+    textData = ''
+    mimeType = stdMimeType
   }
 
   onMount(async () => {
-    // TODO notifications etc
-    const result = await api.getApiKeys()
-    keys = result.keys
-    dropdowns['apiKey'] = keys[0].api_key
+    tag = getStoreValue('tag', '')
+    mode = getStoreValue('mode', 'raw')
+    secret = getStoreValue('secret', '')
 
-    console.log(result)
+    const settings = await getSettings(addNotification)
+    taalClientURL = getCorrectURL(settings.listenAddress)
+
+    const keysResult = await getApiKeys(addNotification)
+    keys = keysResult.keys
+    apiKey = getStoreValue('apiKey', keys[0].api_key)
+
+    loading = false
   })
 </script>
 
@@ -260,8 +242,8 @@
       <Switch
         name="devMode"
         label="Developer mode"
-        checked={checks['devMode']}
-        on:change={onChange}
+        checked={devMode}
+        on:change={(e) => (devMode = e.detail.checked)}
       />
     </div>
     <Spacer h={24} />
@@ -269,34 +251,34 @@
       name="apiKey"
       label="API key"
       required
-      value={dropdowns['apiKey']}
+      value={apiKey}
       items={apiKeyItems}
       disabled={!apiKeyItems || apiKeyItems.length <= 1}
-      on:change={onChange}
+      on:change={(e) => (apiKey = e.detail.value)}
       on:mount={onInputMount}
     />
-    {#if checks.devMode}
+    {#if devMode}
       <Spacer h={24} />
       <TextInput
         name="taalClientUrl"
         label="TAAL Client URL"
-        value={textInputs['taalClientUrl']}
-        on:change={onChange}
+        value={taalClientURL}
+        on:change={(e) => (taalClientURL = e.detail.value)}
       />
       <Spacer h={24} />
       <TextInput
         name="mimeType"
         label="MIME type"
-        value={textInputs['mimeType']}
-        on:change={onChange}
+        value={mimeType}
+        on:change={(e) => (mimeType = e.detail.value)}
       />
     {/if}
     <Spacer h={24} />
     <TextInput
       name="tag"
       label="Tag"
-      value={textInputs['tag']}
-      on:change={onChange}
+      value={tag}
+      on:change={(e) => (tag = e.detail.value)}
     />
     <Spacer h={32} />
     <div class="sub-row">
@@ -308,27 +290,27 @@
         name="mode"
         label="Mode"
         required
-        value={dropdowns['mode']}
+        value={mode}
         items={modeItems}
-        on:change={onChange}
+        on:change={(e) => (mode = e.detail.value)}
       />
-      {#if dropdowns['mode'] === 'encrypt'}
+      {#if mode === 'encrypt'}
         <TextInput
           name="secret"
           label="Secret"
-          value={textInputs['secret']}
-          on:change={onChange}
+          value={secret}
+          on:change={(e) => (secret = e.detail.value)}
         />
       {/if}
     </div>
-    {#if checks.devMode}
+    {#if devMode}
       <Spacer h={24} />
       <TextArea
         name="textData"
         label="Text data"
         required
-        value={textInputs['textData']}
-        on:change={onChange}
+        value={textData}
+        on:change={(e) => (textData = e.detail.value)}
       />
     {/if}
     <Spacer h={24} />
@@ -337,7 +319,7 @@
       label="File"
       required
       compact={compactFileUpload}
-      on:change={onChange}
+      on:change={onFileSelect}
     />
     {#if files.length > 0}
       <Spacer h={24} />
@@ -351,7 +333,7 @@
         on:remove={onRemoveTransferFile}
       />
     {/if}
-    {#if checks.devMode}
+    {#if devMode}
       <Spacer h={32} />
       <div class="sub-row">
         <Heading value="cURL command" size={2} />
@@ -359,18 +341,13 @@
           variant="ghost"
           icon="document-duplicate"
           size="small"
-          on:click={onCopyCurl}
+          on:click={() => copyCurl(curlCommand, addNotification)}
         >
           Copy
         </Button>
       </div>
       <Spacer h={24} />
-      <TextArea
-        name="copyCurlText"
-        readonly
-        value={textInputs['copyCurlText']}
-        on:change={onChange}
-      />
+      <TextArea name="curlCommand" readonly value={curlCommand} />
     {/if}
     <Spacer h={64} />
     <div class="buttons">
@@ -382,7 +359,7 @@
   </div>
 </PageWithMenu>
 
-{#if $spinCount > 0}
+{#if $spinCount > 0 || loading}
   <Spinner />
 {/if}
 
