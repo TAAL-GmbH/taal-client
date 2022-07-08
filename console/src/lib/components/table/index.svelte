@@ -35,7 +35,7 @@
   export let selectedRowIds = []
   export let getRowIconActions
   export let getRenderProps
-  export let getRowClassName
+  // export let getRowClassName
 
   // filters
   export let filters = {}
@@ -177,7 +177,7 @@
       alignPager,
       getRowIconActions,
       getRenderProps,
-      getRowClassName,
+      // getRowClassName,
     }
   }
 

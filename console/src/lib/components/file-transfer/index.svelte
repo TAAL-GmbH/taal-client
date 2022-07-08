@@ -133,9 +133,11 @@
             </div>
           </div>
           {#if fileProgressData[getFileKey(file)]}
-            <div class="action" on:click={() => onCancel(file)}>
-              <Icon name="close" size={18} />
-            </div>
+            {#if fileProgressData[getFileKey(file)].progress < 1}
+              <div class="action" on:click={() => onCancel(file)}>
+                <Icon name="close" size={18} />
+              </div>
+            {/if}
           {:else}
             <div class="action" on:click={() => onRemove(file)}>
               <Icon name="trash" size={18} />
@@ -248,7 +250,7 @@
   .action {
     width: 18px;
     height: 18px;
-    color: #232D7C;
+    color: #232d7c;
   }
   .action:hover {
     cursor: pointer;

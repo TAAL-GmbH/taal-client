@@ -26,13 +26,16 @@
     modeItems,
     getStoreValue,
     setStoreValue,
+    getTimeoutMillis,
     updateStore,
   } from './utils'
 
   const { addNotification } = getNotificationsContext()
 
   const stdMimeType = 'text/plain'
+  let disableButtonsCount = 0
   let loading = true
+  let timeout = 0
 
   let devMode = getStoreValue('devmode') === 'true'
   let apiKey
@@ -126,40 +129,62 @@
     value: key.api_key,
   }))
 
+  function onSubmit() {
+    for (const file of files) {
+      uploadFile(file)
+    }
+  }
+
   function uploadFile(file) {
-    const url = 'TODO-GET-URL'
+    const url = `${BASE_URL}/api/v1/transactions`
     const xhr = new XMLHttpRequest()
     const formData = new FormData()
     const fileKey = getFileKey(file)
     xhr.open('POST', url, true)
 
     xhr.upload.addEventListener('progress', function (e) {
+      disableButtonsCount++
       console.log('progress = ', e.loaded / e.total)
-      fileProgressData[fileKey] = {
-        state: 'progress',
-        progress: e.loaded / e.total,
-      }
+      // TODO: right now the backend does not give proper progress updates
+      //       basically (e.loaded / e.total) evaluates to 1 right at the start already
+      //       we don't want to indicate completed progress when upload is still in progress, so
+      //       not doing an update here for now
+      // fileProgressData[fileKey] = {
+      //   state: 'progress',
+      //   progress: e.loaded / e.total,
+      // }
     })
 
     xhr.addEventListener('readystatechange', function (e) {
-      if (xhr.readyState === 4 && xhr.status === 200) {
-        fileProgressData[fileKey] = { state: 'success', progress: 1 }
+      console.log(
+        'readystatechange: xhr.readyState = ',
+        xhr.readyState,
+        ' xhr.status = ',
+        xhr.status
+      )
 
-        addNotification({
-          text: `Successfully uploaded file: ${file.name}`,
-          position: 'bottom-left',
-          type: 'success',
-          removeAfter: 2000,
-        })
-      } else if (xhr.readyState === 4 && xhr.status !== 200) {
-        fileProgressData[fileKey] = { state: 'failure', progress: 1 }
+      // we reached a final state
+      if (xhr.readyState === 4) {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          fileProgressData[fileKey] = { state: 'success', progress: 1 }
 
-        addNotification({
-          text: `Upload failed for: ${file.name}`,
-          position: 'bottom-left',
-          type: 'danger',
-          removeAfter: 2000,
-        })
+          addNotification({
+            text: `Successfully uploaded file: ${file.name}`,
+            position: 'bottom-left',
+            type: 'success',
+            removeAfter: 2000,
+          })
+        } else {
+          fileProgressData[fileKey] = { state: 'failure', progress: 1 }
+
+          addNotification({
+            text: `Upload failed for: ${file.name}`,
+            position: 'bottom-left',
+            type: 'danger',
+            removeAfter: 2000,
+          })
+        }
+        disableButtonsCount--
       }
     })
 
@@ -167,6 +192,18 @@
     fileProgressData[fileKey] = { state: 'progress', progress: 0 }
 
     formData.append('file', file)
+
+    // headers
+    xhr.setRequestHeader('Authorization', 'Bearer ' + apiKey)
+    xhr.setRequestHeader('Content-Type', mimeType)
+    xhr.setRequestHeader('X-Tag', tag)
+    xhr.setRequestHeader('X-Filename', file.name)
+    xhr.setRequestHeader('X-Mode', mode)
+    xhr.setRequestHeader('X-Key', secret)
+
+    // set timeout
+    xhr.timeout = getTimeoutMillis(timeout)
+
     xhr.send(formData)
   }
 
@@ -215,6 +252,8 @@
     files = []
     textData = ''
     mimeType = stdMimeType
+    imageSrcData = {}
+    fileProgressData = {}
   }
 
   onMount(async () => {
@@ -224,9 +263,20 @@
 
     const settings = await getSettings(addNotification)
     taalClientURL = getCorrectURL(settings.listenAddress)
+    timeout = settings.taalTimeout
 
     const keysResult = await getApiKeys(addNotification)
-    keys = keysResult.keys
+    // TODO handle the situation when no api keys are registered yet
+    //      suggestion is to show a message with a redirect button to register key page
+
+    console.log('keysResult = ', keysResult)
+    keys = keysResult.keys || []
+
+    apiKey = getStoreValue('apiKey')
+    if (!apiKey && keys.length > 0) {
+      apiKey = keys[0].api_key
+    }
+
     apiKey = getStoreValue('apiKey', keys[0].api_key)
 
     loading = false
@@ -351,8 +401,18 @@
     {/if}
     <Spacer h={64} />
     <div class="buttons">
-      <Button variant="ghost" size="large">Reset</Button>
-      <Button size="large" iconAfter="arrow-narrow-right">
+      <Button
+        variant="ghost"
+        size="large"
+        disabled={disableButtonsCount > 0}
+        on:click={reset}>Reset</Button
+      >
+      <Button
+        size="large"
+        iconAfter="arrow-narrow-right"
+        disabled={disableButtonsCount > 0}
+        on:click={onSubmit}
+      >
         Submit transaction
       </Button>
     </div>
