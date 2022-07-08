@@ -150,7 +150,7 @@
             add.push(file)
           }
         })
-        files = files.concat(add)
+        files = checks.devMode ? [add[0]] : files.concat(add)
         break
     }
   }

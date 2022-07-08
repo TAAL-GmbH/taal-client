@@ -246,11 +246,12 @@
     cursor: auto;
   }
   .input.resize .resize-icon {
-    color: #333;
+    color: #232D7C;
     cursor: ns-resize;
   }
   .input.disabled,
   .input.disabled.resize .resize-icon {
+    color: #8f8d94;
     cursor: auto;
   }
 

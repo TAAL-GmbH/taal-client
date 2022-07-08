@@ -349,6 +349,7 @@
   }
   .action {
     cursor: pointer;
+    color: #232D7C;
   }
   .action .ico {
     width: 18px;

@@ -248,6 +248,7 @@
   .action {
     width: 18px;
     height: 18px;
+    color: #232D7C;
   }
   .action:hover {
     cursor: pointer;
@@ -255,5 +256,6 @@
   .disabled .action,
   .disabled .action:hover {
     cursor: auto;
+    color: #8f8d94;
   }
 </style>
