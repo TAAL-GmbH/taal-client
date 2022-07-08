@@ -20,15 +20,16 @@ import (
 	"github.com/pkg/errors"
 )
 
-//go:generate moq -pkg service_test -out repository_mock_test.go . Repository
 type Repository interface {
 	InsertKey(ctx context.Context, key Key) error
 	GetKey(ctx context.Context, apiKey string) (Key, error)
 	GetAllKeys(ctx context.Context) ([]Key, error)
+	GetAllKeysUsage(ctx context.Context) ([]KeyUsage, error)
 	InsertTransaction(ctx context.Context, tx Transaction) error
-	GetAllTransactions(ctx context.Context, hoursBack int) ([]Transaction, error)
+	GetAllTransactions(ctx context.Context, all bool, hoursBack int) ([]Transaction, error)
 	GetTransactionInfo(ctx context.Context, from time.Time, to time.Time, granularity Granularity) ([]TransactionInfo, error)
 	GetTransaction(ctx context.Context, txid string) (*Transaction, error)
+	DeactivateKey(ctx context.Context, apikey string) error
 	Health(ctx context.Context) error
 }
 
@@ -99,9 +100,10 @@ func New(address string, taal *client.Client, repo Repository) Server {
 	group.GET("/read/:txid", s.read)
 	group.POST("/register/:apikey", s.register)
 
-	group.DELETE("/apikeys/:apikey", s.revoke)
+	group.DELETE("/apikeys/:apikey", s.deactivate)
 	group.POST("/apikeys/:apikey", s.register)
 	group.GET("/apikeys", s.getApiKeys)
+	group.GET("/apikeys/usage", s.getApiKeysUsage)
 
 	group.GET("/settings", s.getSettings)
 	group.PUT("/settings", s.putSetting)

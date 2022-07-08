@@ -23,6 +23,15 @@ type Keys struct {
 	Keys []Key `json:"keys"`
 }
 
+type KeyUsage struct {
+	Key
+	DataBytes int64 `db:"data_bytes" json:"dataBytes"`
+}
+
+type KeysUsage struct {
+	KeysUsage []KeyUsage `json:"key_usages"`
+}
+
 type Transaction struct {
 	ID        string `db:"id" json:"id"`
 	ApiKey    string `db:"api_key" json:"api_key"`

@@ -25,6 +25,8 @@ func NewRepository(db *sqlx.DB, now func() time.Time) Repository {
 }
 
 const ISO8601 = "2006-01-02T15:04:05.999Z"
+const ISO8601DBOutput = "2006-01-02 15:04:05.999Z"
+const ISO8601Sqlite = "2006-01-02 15:04:05.999+00:00"
 
 func (r Repository) InsertKey(ctx context.Context, key server.Key) error {
 	createdAt := r.now().UTC().Format(ISO8601)
@@ -48,14 +50,44 @@ func (r Repository) GetKey(ctx context.Context, apiKey string) (server.Key, erro
 	return key, nil
 }
 
+func (r Repository) GetAllKeysUsage(ctx context.Context) ([]server.KeyUsage, error) {
+	query := `SELECT k.api_key, k.public_key, k.private_key, k.address, k.created_at, k.revoked_at, SUM(COALESCE(t.data_bytes,0)) as data_bytes 
+	FROM keys k LEFT JOIN transactions t ON t.api_key = k.api_key WHERE k.revoked_at IS NULL GROUP BY k.api_key ORDER BY k.created_at;`
+
+	keys := make([]server.KeyUsage, 0)
+
+	err := r.db.SelectContext(ctx, &keys, query)
+	if err != nil {
+		return nil, err
+	}
+
+	for idx := range keys {
+		parsedTime, err := time.Parse(ISO8601Sqlite, keys[idx].CreatedAt)
+		if err == nil {
+			createdAtFormatted := parsedTime.Format(ISO8601DBOutput)
+			keys[idx].CreatedAt = createdAtFormatted
+		}
+	}
+
+	return keys, nil
+}
+
 func (r Repository) GetAllKeys(ctx context.Context) ([]server.Key, error) {
-	query := `SELECT * FROM keys WHERE revoked_at IS NULL;`
+	query := `SELECT * FROM keys WHERE revoked_at IS NULL ORDER BY created_at;`
 
 	keys := make([]server.Key, 0)
 
 	err := r.db.SelectContext(ctx, &keys, query)
 	if err != nil {
 		return nil, err
+	}
+
+	for idx := range keys {
+		parsedTime, err := time.Parse(ISO8601Sqlite, keys[idx].CreatedAt)
+		if err == nil {
+			createdAtFormatted := parsedTime.Format(ISO8601DBOutput)
+			keys[idx].CreatedAt = createdAtFormatted
+		}
 	}
 
 	return keys, nil
@@ -86,17 +118,30 @@ func (r Repository) GetTransaction(ctx context.Context, txid string) (*server.Tr
 	return nil, sql.ErrNoRows
 }
 
-func (r Repository) GetAllTransactions(ctx context.Context, hoursBack int) ([]server.Transaction, error) {
-	now := r.now()
-
-	timeBack := now.Add(-1 * time.Duration(hoursBack) * time.Hour).UTC().Format(ISO8601)
-	query := `SELECT * FROM transactions WHERE created_at >= $1 ORDER BY created_at DESC;`
-
+func (r Repository) GetAllTransactions(ctx context.Context, all bool, hoursBack int) ([]server.Transaction, error) {
 	txs := make([]server.Transaction, 0)
+	var err error
 
-	err := r.db.SelectContext(ctx, &txs, query, timeBack)
+	if all {
+		query := `SELECT * FROM transactions ORDER BY created_at DESC;`
+		err = r.db.SelectContext(ctx, &txs, query)
+	} else {
+		now := r.now()
+		timeBack := now.Add(-1 * time.Duration(hoursBack) * time.Hour).UTC().Format(ISO8601)
+		query := `SELECT * FROM transactions WHERE created_at >= $1 ORDER BY created_at DESC;`
+		err = r.db.SelectContext(ctx, &txs, query, timeBack)
+	}
+
 	if err != nil {
 		return nil, err
+	}
+
+	for idx := range txs {
+		parsedTime, err := time.Parse(ISO8601Sqlite, txs[idx].CreatedAt)
+		if err == nil {
+			createdAtFormatted := parsedTime.Format(ISO8601DBOutput)
+			txs[idx].CreatedAt = createdAtFormatted
+		}
 	}
 
 	return txs, nil
@@ -146,4 +191,15 @@ func granularitySecondsToPositionAndFormat(granularitySeconds server.Granularity
 
 	// Day
 	return 11, "2006-01-02"
+}
+
+func (r Repository) DeactivateKey(ctx context.Context, apikey string) error {
+	query := `UPDATE keys SET revoked_at = $1 WHERE api_key = $2;`
+
+	_, err := r.db.ExecContext(ctx, query, r.now().Format(ISO8601), apikey)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
