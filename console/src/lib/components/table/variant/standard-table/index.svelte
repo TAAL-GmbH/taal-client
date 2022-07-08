@@ -33,7 +33,7 @@
   export let alignPager = 'center'
   export let getRowIconActions
   export let getRenderProps
-  export let getRowClassName
+  // export let getRowClassName
 
   function onFilterClick(colId) {
     dispatch('filter', { colId })
@@ -200,7 +200,8 @@
     <div class="table-pager">
       <Pager
         {totalItems}
-        {...paginationState}
+        value={paginationState.page}
+        pageSize={paginationState.pageSize}
         {hasBoundaryRight}
         on:change={onPage}
       />
@@ -349,7 +350,7 @@
   }
   .action {
     cursor: pointer;
-    color: #232D7C;
+    color: #232d7c;
   }
   .action .ico {
     width: 18px;
