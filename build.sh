@@ -59,6 +59,9 @@ env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build --trimpath -o build/darwin/a
 env CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build --trimpath -o build/linux/$PROG_NAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 
 env CGO_ENABLED=1 GOOS=windows GOARCH=386 go build --trimpath -o build/windows/$PROG_NAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+cd build/windows
+jar cvf taal-client.zip ./taal-client.exe
+cd ../..
 
 # # env GOOS=windows GOARCH=386 go build --trimpath -o build/windows/$PROG_NAME.exe -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 # ssh root@138.201.123.88 << EOL
@@ -87,7 +90,11 @@ env CGO_ENABLED=1 GOOS=windows GOARCH=386 go build --trimpath -o build/windows/$
 
 if [[ "$?" == "0" ]]; then
   echo $GIT_COMMIT > build/commit.dat
-  echo "${PROG_NAME}: Built $PROG_NAME"
+  echo "${PROG_NAME}: Built $FILENAME"
+
+  cd build
+  tar cvfz ../$FILENAME.tar.gz *  
+  echo "${PROG_NAME}: Artifact $FILENAME.tar.gz"
 else
   echo "${PROG_NAME}: Build FAILED"
 fi
