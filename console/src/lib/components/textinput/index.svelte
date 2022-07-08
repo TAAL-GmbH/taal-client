@@ -1,0 +1,258 @@
+<script>
+  import { createEventDispatcher, onMount } from 'svelte'
+  import Icon from '../icon/index.svelte'
+  import { getInputLabel } from '../../utils/strings'
+
+  const dispatch = createEventDispatcher()
+
+  //   export let type = 'text'
+  let type = 'text'
+
+  export let label = ''
+  export let labelPlacement = 'top'
+  export let required = false
+  export let name = ''
+  export let value = ''
+  export let placeholder = ''
+  export let disabled = false
+  export let error = ''
+
+  // in confirm mode, changes are local until confirm is clicked,
+  // or alternatively changes can be reset to previous non-local value
+  export let confirm = false
+  let localValue = value
+
+  $: {
+    localValue = value
+  }
+
+  // direction
+  let direction = 'row'
+
+  $: {
+    switch (labelPlacement) {
+      case 'top':
+        direction = 'column'
+        break
+      case 'bottom':
+        direction = 'column-reverse'
+        break
+      case 'left':
+        direction = 'row'
+        break
+      case 'right':
+        direction = 'row-reverse'
+        break
+    }
+  }
+
+  // size
+  export let size = 'medium'
+
+  let height = '60px'
+  let padding = '10px 32px'
+  let fontSize = '16px'
+
+  $: {
+    switch (size) {
+      case 'large':
+        height = '60px'
+        padding = '10px 32px'
+        fontSize = '16px'
+        break
+      case 'medium':
+        height = '48px'
+        padding = '10px 32px'
+        fontSize = '16px'
+        break
+      case 'small':
+        height = '36px'
+        padding = '4px 16px'
+        fontSize = '14px'
+        break
+    }
+  }
+
+  let focused = false
+
+  let inputRef
+
+  function onInputParentClick() {
+    inputRef.focus()
+  }
+
+  function onInputChange(e) {
+    if (confirm) {
+      localValue = e.originalTarget.value
+    } else {
+      dispatch('change', { name, type, value: e.originalTarget.value })
+    }
+  }
+
+  onMount(() => {
+    dispatch('mount', { inputRef })
+  })
+
+  function onConfirmClick() {
+    value = localValue
+    dispatch('change', { name, type, value })
+  }
+
+  function onResetClick() {
+    localValue = value
+  }
+</script>
+
+<div
+  class="tui-textinput"
+  style:--height-local={height}
+  style:--padding-local={padding}
+  style:--fontSize-local={fontSize}
+  style:--direction-local={direction}
+>
+  <div class="placement">
+    {#if label}
+      <label for={name}>{getInputLabel(label, required)}</label>
+    {/if}
+    <div
+      class="input"
+      class:disabled
+      class:error={error !== ''}
+      class:focused
+      on:click={onInputParentClick}
+    >
+      <input
+        bind:this={inputRef}
+        {type}
+        {name}
+        value={confirm ? localValue : value}
+        {placeholder}
+        {disabled}
+        on:input={onInputChange}
+        on:focus={(e) => (focused = true)}
+        on:blur={(e) => (focused = false)}
+      />
+      {#if confirm && localValue !== value}
+        <div class="confirm-row">
+          <div
+            class="confirm-icon"
+            style="color: #6EC492; width: 20px; height: 20px;"
+            on:click={onConfirmClick}
+          >
+            <Icon name="check" size={20} />
+          </div>
+          <div
+            class="confirm-icon"
+            style="color: #FF344C; width: 17px; height: 17px;"
+            on:click={onResetClick}
+          >
+            <Icon name="close" size={17} />
+          </div>
+        </div>
+      {/if}
+    </div>
+  </div>
+  {#if error}
+    <div class="error-msg">{error}</div>
+  {/if}
+</div>
+
+<style>
+  .tui-textinput {
+    font-family: var(--font-family);
+    box-sizing: var(--box-sizing);
+
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+
+  .placement {
+    display: flex;
+    flex-direction: var(--direction-local);
+    gap: 8px;
+  }
+
+  label {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 16px;
+
+    color: #232d7c;
+  }
+
+  input {
+    outline: none;
+    border: none;
+    width: 100%;
+    background: none;
+  }
+
+  .input {
+    display: flex;
+    align-items: center;
+    padding: 1px 16px;
+    height: var(--height-local);
+
+    background-color: #ffffff;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #232d7c;
+    border-radius: 4px;
+
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: -0.01em;
+
+    color: #282933;
+  }
+
+  .input.focused {
+    border-width: 2px;
+    border-color: #4a3aff;
+    padding: 0px 15px;
+  }
+
+  .input.error,
+  .input.error.focused {
+    border-width: 1px;
+    border-color: #ff344c;
+    padding: 1px 16px;
+  }
+
+  .confirm-row {
+    display: flex;
+    align-items: center;
+    height: var(--height-local);
+    gap: 4px;
+
+    background-color: rgba(255, 255, 255, 0.8);
+    z-index: 2;
+    margin-left: -40px;
+  }
+  .confirm-icon {
+    width: 18px;
+    height: 18px;
+  }
+  .confirm-icon:hover {
+    cursor: pointer;
+  }
+
+  .error-msg {
+    margin-top: 8px;
+
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: -0.01em;
+
+    color: #ff344c;
+  }
+
+  .disabled,
+  .disabled:active {
+    background-color: #efefef;
+    border-color: #8f8d94;
+  }
+</style>
