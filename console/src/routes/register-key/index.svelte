@@ -24,8 +24,9 @@
     key = e.detail.value
   }
 
-  function registerKey(apiKey) {
-    api.registerKey(
+  async function registerKey(apiKey) {
+    let success = false
+    await api.registerKey(
       apiKey,
       (data) => {
         addNotification({
@@ -35,7 +36,7 @@
           removeAfter: 1000,
         })
 
-        navigate('/key-manager')
+        success = true
       },
       (error) => {
         addNotification({
@@ -46,6 +47,9 @@
         })
       }
     )
+    if (success) {
+      navigate('/key-manager')
+    }
   }
 
   function onReset() {

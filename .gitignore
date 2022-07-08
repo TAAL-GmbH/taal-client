@@ -11,3 +11,4 @@ taal_client.db
 __debug_bin
 build2.sh
 build_linux.sh
+package-lock.json

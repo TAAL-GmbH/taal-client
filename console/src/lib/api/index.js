@@ -44,7 +44,7 @@ function checkInitialResponse(response) {
       reject({
         code: response.status,
         message:
-          errorBody?.message || response.statusText || 'Unspecified error.',
+          errorBody?.error || response.statusText || 'Unspecified error.',
       })
     }
   })
