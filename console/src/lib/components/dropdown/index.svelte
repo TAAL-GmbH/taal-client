@@ -91,7 +91,7 @@
     dispatch('change', {
       name,
       type,
-      value: items[e.originalTarget.selectedIndex].value,
+      value: items[e.srcElement.selectedIndex].value,
     })
     selectRef.focus()
   }
