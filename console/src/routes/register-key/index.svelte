@@ -16,6 +16,7 @@
   import * as api from '../../lib/api'
 
   const { addNotification } = getNotificationsContext()
+  const navigate = useNavigate()
 
   let key = ''
 

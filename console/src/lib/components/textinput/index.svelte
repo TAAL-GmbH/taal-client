@@ -82,7 +82,6 @@
   }
 
   function onInputChange(e) {
-    console.log('onInputChange: e =', e)
     if (confirm) {
       localValue = e.srcElement.value
     } else {
