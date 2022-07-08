@@ -47,13 +47,14 @@ npm run build
 cd ..
 
 
-mkdir -p build/darwin
+mkdir -p build/darwin/intel
+mkdir -p build/darwin/arm
 mkdir -p build/windows
 mkdir -p build/linux
 
-env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build --trimpath -o build/darwin/${PROG_NAME}_intel -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build --trimpath -o build/darwin/${PROG_NAME}_arm -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-lipo -create -output build/darwin/$PROG_NAME build/darwin/${PROG_NAME}_intel build/darwin/${PROG_NAME}_arm
+env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build --trimpath -o build/darwin/intel/${PROG_NAME} -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build --trimpath -o build/darwin/arm/${PROG_NAME} -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+#lipo -create -output build/darwin/$PROG_NAME build/darwin/intel/${PROG_NAME} build/darwin/arm/${PROG_NAME}
 
 env CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build --trimpath -o build/linux/$PROG_NAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 
