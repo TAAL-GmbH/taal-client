@@ -58,7 +58,8 @@ env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build --trimpath -o build/darwin/a
 
 env CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build --trimpath -o build/linux/$PROG_NAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 
-env CGO_ENABLED=1 GOOS=windows GOARCH=386 go build --trimpath -o build/windows/$PROG_NAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+# env CGO_ENABLED=1 GOOS=windows GOARCH=386 go build --trimpath -o build/windows/$PROG_NAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+env CGO_ENABLED=1 GOOS=windows GOARCH=386 CC="i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp" /root/go/bin/go build  --trimpath  -o build/windows/$PROG_NAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 cd build/windows
 jar cvf taal-client.zip ./taal-client.exe
 cd ../..
