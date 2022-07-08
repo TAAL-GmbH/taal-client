@@ -43,6 +43,23 @@ export function getCorrectURL(url) {
   }
 }
 
+export function getTimeoutMillis(timeout) {
+  let t = timeout.trim()
+  let factor = 1
+  let numStr = '1'
+  if (t.includes('ms')) {
+    factor = 1
+    numStr = t.split('ms').join('')
+  } else if (t.includes('s')) {
+    factor = 1000
+    numStr = t.split('s').join('')
+  } else if (t.includes('m')) {
+    factor = 60000
+    numStr = t.split('m').join('')
+  }
+  return parseInt(numStr) * factor
+}
+
 export function getApiKeys(addNotification) {
   return api.getApiKeys(
     (data) => {
