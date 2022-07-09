@@ -82,37 +82,11 @@ cd build/windows
 jar cvf taal-client.zip ./taal-client.exe
 cd ../..
 
-# # env GOOS=windows GOARCH=386 go build --trimpath -o build/windows/$PROG_NAME.exe -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-# ssh root@138.201.123.88 << EOL
-#   cd taal-client
-#   git reset --hard
-#   git pull ordishs master
-
-#   rm -f taal-client
-#   rm -f taal-client.exe
-
-#   cd console
-#   npm i
-#   npm run build
-#   cd ..
-
-#   CGO_ENABLED=1 /root/go/bin/go build --trimpath -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-
-#   CGO_ENABLED=1 GOOS=windows GOARCH=386 CC="i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp" /root/go/bin/go build  --trimpath -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-# EOL
-
-# scp root@138.201.123.88:./taal-client/taal-client build/linux/
-# scp root@138.201.123.88:./taal-client/taal-client.exe build/windows/
-# cd build/windows
-# jar cvf taal-client.zip ./taal-client.exe
-# cd ../..
-
 if [[ "$?" == "0" ]]; then
   echo $GIT_COMMIT > build/commit.dat
-  echo "${PROG_NAME}: Built $FILENAME"
-
+  
   cd build
-  tar cvfz ../$FILENAME.tar.gz *  
+  tar cvfz ../${PROG_NAME}.tar.gz *  
   echo "${PROG_NAME}: Artifact $FILENAME.tar.gz"
 else
   echo "${PROG_NAME}: Build FAILED"
