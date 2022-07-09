@@ -42,8 +42,8 @@ rm -rf build
 echo "${PROG_NAME}: Building..."
 
 cd console
-/opt/homebrew/bin/npm i
-/opt/homebrew/bin/npm run build
+npm i
+npm run build
 cd ..
 
 
@@ -64,8 +64,8 @@ ssh taal@www.masa.gi << EOL
   mkdir -p build/darwin/arm
 
   cd console
-  npm i
-  npm run build
+  /opt/homebrew/bin/npm i
+  /opt/homebrew/bin/npm run build
   cd ..
 
   env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 /opt/homebrew/bin/go build --trimpath  -o build/${PROG_NAME}_amd64 -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
