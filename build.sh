@@ -42,8 +42,8 @@ rm -rf build
 echo "${PROG_NAME}: Building..."
 
 cd console
-npm i
-npm run build
+/opt/homebrew/bin/npm i
+/opt/homebrew/bin/npm run build
 cd ..
 
 
