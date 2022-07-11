@@ -55,11 +55,16 @@
   }
 
   const getRenderProps = (name, colDef, idField, item) => {
-    return colDef.id === 'api_key'
-      ? {
-          statusColor: getColorFromDistinct(item.api_key, distinctKeys),
-        }
-      : {}
+    let obj = {}
+    if (colDef.id === 'api_key') {
+      obj.statusColor = getColorFromDistinct(item.api_key, distinctKeys)
+    }
+    if (colDef.id === 'id') {
+      obj.href = item.api_key.includes('testnet')
+        ? `https://test.whatsonchain.com/tx/${item.id}`
+        : `https://whatsonchain.com/tx/${item.id}`
+    }
+    return obj
   }
 
   function getTransactions(hours) {
