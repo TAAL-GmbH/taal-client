@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 source ~/.nvm/nvm.sh
 
@@ -9,9 +9,12 @@ case $i in
     FORCE="true"
     shift # past argument=value
     ;;
-
+    --build=*)
+    BUILD="${i#*=}"
+    shift # past argument=value
+    ;;
     *)
-      # unknown option: ignore
+          # unknown option: ignore
     ;;
 esac
 done
@@ -82,12 +85,18 @@ cd build/windows
 jar cvf taal-client.zip ./taal-client.exe
 cd ../..
 
+if [[ $BUILD == "" ]]; then
+  FILENAME=${PROG_NAME}_${GIT_COMMIT}
+else
+  FILENAME=${PROG_NAME}_${GIT_COMMIT}_${BUILD}
+fi
+
 if [[ "$?" == "0" ]]; then
   echo $GIT_COMMIT > build/commit.dat
   
   cd build
-  tar cvfz ../${PROG_NAME}.tar.gz *  
-  echo "${PROG_NAME}: Artifact $FILENAME.tar.gz"
+  tar cvfz ../$FILENAME.tar.gz ./*
+  echo "${PROG_NAME}: Built $FILENAME"
 else
   echo "${PROG_NAME}: Build FAILED"
 fi
