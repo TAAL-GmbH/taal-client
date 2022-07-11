@@ -53,10 +53,33 @@
   $: updateStore('secret', secret, loading)
   $: updateStore('devmode', devMode, loading)
 
-  $: {
-    console.log('devMode =', devMode)
+  $: compactFileUpload = devMode || files.length > 0
 
+  // let files = null
+  let file = null
+  let fileData = null
+  let filename = ''
+
+  let files = []
+  let imageSrcData = {}
+  let supportedImageSrcDataFileTypes = ['image/png', 'image/jpeg']
+  let fileProgressData = {}
+  // let fileProgressData = {
+  //   'Logged out.png_1643790959194': { state: 'progress', progress: 0.5 },
+  // }
+
+  let inputDataDisabled = files?.length > 0
+
+  $: {
     if (devMode) {
+      if (files.length > 1) {
+        files = [files[0]]
+      }
+
+      if (files.length > 0) {
+        setFieldsFromFile(files[0])
+      }
+
       curlCommand = getCurlCommand(
         apiKey,
         mimeType,
@@ -67,27 +90,30 @@
         taalClientURL,
         files[0]
       )
+
+      inputDataDisabled = files?.length > 0
     }
   }
 
-  $: compactFileUpload = devMode || files.length > 0
+  function setFieldsFromFile(file) {
+    mimeType = file.type
+    filename = file.name
 
-  // let files = null
-  let file = null
-  let fileData = null
-
-  let files = []
-  let imageSrcData = {}
-  let supportedImageSrcDataFileTypes = ['image/png', 'image/jpeg']
-  let fileProgressData = {}
-  // let fileProgressData = {
-  //   'Logged out.png_1643790959194': { state: 'progress', progress: 0.5 },
-  // }
-
-  $: {
-    if (devMode && files.length > 1) {
-      files = [files[0]]
+    if (file.type.startsWith('text/')) {
+      const fr = new FileReader()
+      fr.onload = function () {
+        textData = fr.result
+      }
+      fr.readAsText(file)
+    } else {
+      textData = `< ${file.name} >`
     }
+
+    const fr = new FileReader()
+    fr.onload = function () {
+      fileData = fr.result
+    }
+    fr.readAsArrayBuffer(file)
   }
 
   function onFileSelect(e) {
@@ -336,6 +362,7 @@
         name="mimeType"
         label="MIME type"
         value={mimeType}
+        disabled={inputDataDisabled}
         on:change={(e) => (mimeType = e.detail.value)}
       />
     {/if}
@@ -376,6 +403,7 @@
         label="Text data"
         required
         value={textData}
+        disabled={inputDataDisabled}
         on:change={(e) => (textData = e.detail.value)}
       />
     {/if}
