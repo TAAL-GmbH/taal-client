@@ -124,10 +124,14 @@
 
   // api keys
   let keys = []
-  $: apiKeyItems = keys.map((key) => ({
-    label: key.api_key,
-    value: key.api_key,
-  }))
+  let apiKeyItems = []
+
+  $: {
+    apiKeyItems = keys.map((key) => ({
+      label: key.api_key,
+      value: key.api_key,
+    }))
+  }
 
   function onSubmit() {
     for (const file of files) {
@@ -276,8 +280,6 @@
     if (!apiKey && keys.length > 0) {
       apiKey = keys[0].api_key
     }
-
-    apiKey = getStoreValue('apiKey', keys[0].api_key)
 
     loading = false
   })
