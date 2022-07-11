@@ -199,6 +199,7 @@
     outline: none;
     border: none;
     width: 100%;
+    font-size: var(--fontSize-local);
     background: none;
   }
 
@@ -215,7 +216,7 @@
     border-radius: 4px;
 
     font-weight: 400;
-    font-size: 16px;
+    font-size: var(--fontSize-local);
     line-height: 24px;
     letter-spacing: -0.01em;
 

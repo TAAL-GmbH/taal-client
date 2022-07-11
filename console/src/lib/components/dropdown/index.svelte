@@ -228,7 +228,7 @@
     background: white;
 
     font-weight: 400;
-    font-size: 14px;
+    font-size: var(--fontSize-local);
     line-height: 24px;
     letter-spacing: -0.01em;
 
@@ -264,6 +264,7 @@
     outline: none;
     border: none;
     width: calc(100% - var(--icon-size-local));
+    font-size: var(--fontSize-local);
     background: none;
     appearance: none;
     pointer-events: none;
@@ -282,7 +283,7 @@
     border-radius: 4px;
 
     font-weight: 400;
-    font-size: 16px;
+    font-size: var(--fontSize-local);
     line-height: 24px;
     letter-spacing: -0.01em;
 
