@@ -55,7 +55,7 @@
   }
 
   const getRenderProps = (name, colDef, idField, item) => {
-    return colDef === 'api_key'
+    return colDef.id === 'api_key'
       ? {
           statusColor: getColorFromDistinct(item.api_key, distinctKeys),
         }
