@@ -441,7 +441,7 @@
         </Button>
       </div>
       <Spacer h={24} />
-      <TextArea name="curlCommand" readonly value={curlCommand} />
+      <TextArea name="curlCommand" readonly minH={160} value={curlCommand} />
     {/if}
     <Spacer h={64} />
     <div class="buttons">

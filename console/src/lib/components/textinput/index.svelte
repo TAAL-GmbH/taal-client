@@ -199,8 +199,13 @@
     outline: none;
     border: none;
     width: 100%;
-    font-size: var(--fontSize-local);
     background: none;
+
+    font-weight: 400;
+    font-size: var(--fontSize-local);
+    font-family: var(--font-family);
+    line-height: 24px;
+    letter-spacing: -0.01em;
   }
 
   .input {

@@ -2,6 +2,7 @@
   import { createEventDispatcher, onMount, afterUpdate } from 'svelte'
   import Icon from '../icon/index.svelte'
   import { drag } from '../../actions/drag'
+  import { clamp } from '../../utils/numbers'
   import { getInputLabel } from '../../utils/strings'
 
   const dispatch = createEventDispatcher()
@@ -47,7 +48,7 @@
   export let size = 'medium'
 
   let height = 120
-  let nativeHeight = 100
+  let nativeHeight = 60
   let padding = '10px 32px'
   let paddingFocused = '9px 31px'
   let fontSize = '16px'
@@ -55,26 +56,22 @@
   $: {
     switch (size) {
       case 'large':
-        height = 120
-        nativeHeight = 100
+        height = clamp(120, minH, maxH)
         padding = '10px 32px'
         paddingFocused = '9px 31px'
         fontSize = '16px'
         break
       case 'medium':
-        height = 108
-        nativeHeight = 88
+        height = clamp(108, minH, maxH)
         padding = '10px 17px'
         paddingFocused = '9px 16px'
         fontSize = '16px'
         break
       case 'small':
-        height = 84
-        nativeHeight = 76
+        height = clamp(84, minH, maxH)
         padding = '4px 16px'
         paddingFocused = '3px 15px'
         fontSize = '14px'
-        nativeHeight = '112px'
         break
     }
   }
@@ -102,17 +99,12 @@
 
   function updateSize() {
     let newNativeHeight = inputRef.scrollHeight - 4
-
-    let newHeight =
-      size === 'small' ? newNativeHeight + 8 : newNativeHeight + 20
-    if (minH !== -1) {
-      newHeight = Math.max(newHeight, minH)
-    }
-    if (maxH !== -1) {
-      newHeight = Math.min(newHeight, maxH)
-    }
-
     nativeHeight = newNativeHeight
+
+    // let newHeight =
+    //   size === 'small' ? newNativeHeight + 8 : newNativeHeight + 20
+    // newHeight = clamp(newHeight, minH, maxH)
+
     // height = newHeight
   }
 
@@ -132,12 +124,8 @@
     }
     const { x, y } = e.detail
     let newHeight = dragStartH + y
-    if (minH !== -1) {
-      newHeight = Math.max(newHeight, minH)
-    }
-    if (maxH !== -1) {
-      newHeight = Math.min(newHeight, maxH)
-    }
+    newHeight = clamp(newHeight, minH, maxH)
+
     height = newHeight
   }
 
@@ -229,10 +217,15 @@
     border: none;
     height: var(--native-height-local);
     width: 100%;
-    font-size: var(--fontSize-local);
     resize: none;
     overflow: hidden;
     background: none;
+
+    font-weight: 400;
+    font-size: var(--fontSize-local);
+    font-family: var(--font-family);
+    line-height: 24px;
+    letter-spacing: -0.01em;
   }
 
   .control-container {
