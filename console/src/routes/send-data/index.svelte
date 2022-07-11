@@ -22,6 +22,7 @@
     copyCurl,
     getApiKeys,
     getCorrectURL,
+    getCurlCommand,
     getSettings,
     modeItems,
     getStoreValue,
@@ -54,6 +55,19 @@
 
   $: {
     console.log('devMode =', devMode)
+
+    if (devMode) {
+      curlCommand = getCurlCommand(
+        apiKey,
+        mimeType,
+        tag,
+        mode,
+        secret,
+        textData,
+        taalClientURL,
+        files[0]
+      )
+    }
   }
 
   $: compactFileUpload = devMode || files.length > 0

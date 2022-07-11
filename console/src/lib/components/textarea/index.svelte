@@ -1,5 +1,5 @@
 <script>
-  import { createEventDispatcher, onMount } from 'svelte'
+  import { createEventDispatcher, onMount, afterUpdate } from 'svelte'
   import Icon from '../icon/index.svelte'
   import { drag } from '../../actions/drag'
   import { getInputLabel } from '../../utils/strings'
@@ -90,6 +90,10 @@
   function onInputChange(e) {
     dispatch('change', { name, type, value: e.srcElement.value })
   }
+
+  afterUpdate(() => {
+    updateSize()
+  })
 
   onMount(() => {
     dispatch('mount', { inputRef })
