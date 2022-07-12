@@ -216,7 +216,7 @@
     border-color: #232d7c;
     border-radius: 0 0 4px 4px;
 
-    border-top: 1px dashed #8f8d94;
+    border-top: 1px solid #232d7c;
   }
   .list-item {
     display: flex;
