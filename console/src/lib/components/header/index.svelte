@@ -57,10 +57,13 @@
     open = !open
     dispatch('toggle-menu', { open })
   }
+
+  // box-shadow: 0px 1px 10px rgba(46, 46, 46, 0.1);
 </script>
 
 <div
   class="tui-header"
+  class:small={$mediaSize === 'small'}
   style:--gutter-local={gutter + 'px'}
   style:--height-local={height + 'px'}
   style:--content-margin-left={contentMarginLeft + 'px'}
@@ -120,6 +123,9 @@
     padding: 0 var(--gutter-local);
 
     background-color: #ffffff;
+  }
+  .tui-header.small {
+    box-shadow: 0px 1px 10px rgba(46, 46, 46, 0.1);
   }
 
   .icon {

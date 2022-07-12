@@ -1,8 +1,8 @@
 <script>
   import { Router, Route } from 'svelte-navigator'
   import { menuLinks, menuActions, mediaSize } from './lib/stores'
-  import { query } from './actions'
-  import { medium, large } from './styles/breakpoints'
+  import { query } from './lib/actions'
+  import { medium, large } from './lib/styles/breakpoints'
   import GlobalStyle from './lib/styles/GlobalStyle.svelte'
   import NewUsers from './routes/new-users/index.svelte'
   import RegisterKey from './routes/register-key/index.svelte'

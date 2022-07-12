@@ -1,6 +1,11 @@
 <script>
   import { useLocation, useNavigate } from 'svelte-navigator'
-  import { menuLinks, menuActions, mediaSize } from '../../../../stores'
+  import {
+    headerHeight,
+    menuLinks,
+    menuActions,
+    mediaSize,
+  } from '../../../../stores'
   import Header from '../../../header/index.svelte'
   import Footer from '../../../footer/index.svelte'
   import ContentMenu from '../../content/menu/index.svelte'
@@ -31,6 +36,8 @@
   function onToggleMenu(e) {
     showSidebarMenu = e.detail.open
   }
+
+  console.log('$headerHeight = ', $headerHeight)
 </script>
 
 <Header
@@ -43,7 +50,7 @@
   on:toggle-menu={onToggleMenu}
 />
 
-<div class="content-container">
+<div class="content-container" style:--top-local={$headerHeight + 'px'}>
   <ContentMenu>
     <slot />
   </ContentMenu>
@@ -58,9 +65,9 @@
 <style>
   .content-container {
     position: absolute;
-    top: 80px;
+    top: var(--top-local);
     width: 100%;
-    height: calc(100% - 80px);
+    height: calc(100% - var(--top-local));
     overflow-x: hidden;
     overflow-y: auto;
   }

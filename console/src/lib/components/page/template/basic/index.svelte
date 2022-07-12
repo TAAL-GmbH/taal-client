@@ -1,4 +1,5 @@
 <script>
+  import { headerHeight } from '../../../../stores'
   import Header from '../../../header/index.svelte'
   import Footer from '../../../footer/index.svelte'
   import ContentBasic from '../../content/basic/index.svelte'
@@ -6,7 +7,7 @@
 
 <Header showLinks={false} showActions={false} />
 
-<div class="content-container">
+<div class="content-container" style:--top-local={$headerHeight + 'px'}>
   <ContentBasic>
     <slot />
   </ContentBasic>
@@ -17,9 +18,9 @@
 <style>
   .content-container {
     position: absolute;
-    top: 80px;
+    top: var(--top-local);
     width: 100%;
-    height: calc(100% - 80px);
+    height: calc(100% - var(--top-local));
     overflow-x: hidden;
     overflow-y: auto;
   }
