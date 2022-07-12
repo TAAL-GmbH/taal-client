@@ -7,8 +7,8 @@ export const modeItems = [
   { label: 'Encrypt', value: 'encrypt' },
 ]
 
-export function getStoreValue(key, value, defaultValue) {
-  return localStorage.getItem(key, value) || defaultValue
+export function getStoreValue(key, defaultValue) {
+  return localStorage.getItem(key) || defaultValue
 }
 
 export function setStoreValue(key, value) {

@@ -22,6 +22,7 @@
     copyCurl,
     getApiKeys,
     getCorrectURL,
+    getCurlCommand,
     getSettings,
     modeItems,
     getStoreValue,
@@ -52,15 +53,12 @@
   $: updateStore('secret', secret, loading)
   $: updateStore('devmode', devMode, loading)
 
-  $: {
-    console.log('devMode =', devMode)
-  }
-
   $: compactFileUpload = devMode || files.length > 0
 
   // let files = null
   let file = null
   let fileData = null
+  let filename = ''
 
   let files = []
   let imageSrcData = {}
@@ -70,10 +68,52 @@
   //   'Logged out.png_1643790959194': { state: 'progress', progress: 0.5 },
   // }
 
+  let inputDataDisabled = files?.length > 0
+
   $: {
-    if (devMode && files.length > 1) {
-      files = [files[0]]
+    if (devMode) {
+      if (files.length > 1) {
+        files = [files[0]]
+      }
+
+      if (files.length > 0) {
+        setFieldsFromFile(files[0])
+      }
+
+      curlCommand = getCurlCommand(
+        apiKey,
+        mimeType,
+        tag,
+        mode,
+        secret,
+        textData,
+        taalClientURL,
+        files[0]
+      )
+
+      inputDataDisabled = files?.length > 0
     }
+  }
+
+  function setFieldsFromFile(file) {
+    mimeType = file.type
+    filename = file.name
+
+    if (file.type.startsWith('text/')) {
+      const fr = new FileReader()
+      fr.onload = function () {
+        textData = fr.result
+      }
+      fr.readAsText(file)
+    } else {
+      textData = `< ${file.name} >`
+    }
+
+    const fr = new FileReader()
+    fr.onload = function () {
+      fileData = fr.result
+    }
+    fr.readAsArrayBuffer(file)
   }
 
   function onFileSelect(e) {
@@ -124,10 +164,14 @@
 
   // api keys
   let keys = []
-  $: apiKeyItems = keys.map((key) => ({
-    label: key.api_key,
-    value: key.api_key,
-  }))
+  let apiKeyItems = []
+
+  $: {
+    apiKeyItems = keys.map((key) => ({
+      label: key.api_key,
+      value: key.api_key,
+    }))
+  }
 
   function onSubmit() {
     for (const file of files) {
@@ -277,8 +321,6 @@
       apiKey = keys[0].api_key
     }
 
-    apiKey = getStoreValue('apiKey', keys[0].api_key)
-
     loading = false
   })
 </script>
@@ -320,6 +362,7 @@
         name="mimeType"
         label="MIME type"
         value={mimeType}
+        disabled={inputDataDisabled}
         on:change={(e) => (mimeType = e.detail.value)}
       />
     {/if}
@@ -360,6 +403,7 @@
         label="Text data"
         required
         value={textData}
+        disabled={inputDataDisabled}
         on:change={(e) => (textData = e.detail.value)}
       />
     {/if}
@@ -397,7 +441,7 @@
         </Button>
       </div>
       <Spacer h={24} />
-      <TextArea name="curlCommand" readonly value={curlCommand} />
+      <TextArea name="curlCommand" readonly minH={160} value={curlCommand} />
     {/if}
     <Spacer h={64} />
     <div class="buttons">
