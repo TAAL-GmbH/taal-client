@@ -1,8 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import { headerHeight } from '../../stores'
-  import { query } from '../../actions'
-  import { medium, large } from '../../styles/breakpoints'
+  import { headerHeight, mediaSize } from '../../stores'
 
   import Button from '../button/index.svelte'
   import Icon from '../icon/index.svelte'
@@ -26,13 +24,9 @@
   let showMenu = true
   let contentMarginLeft = 0
 
-  $: isMedium = query(medium)
-  $: isLarge = query(large)
-  $: mediaSize = $isLarge ? 'large' : $isMedium ? 'medium' : 'small'
-
   $: {
     gutter = 22
-    if (mediaSize === 'large') {
+    if ($mediaSize === 'large') {
       gutter = 180
     }
 
@@ -41,7 +35,7 @@
     showMenu = true
     contentMarginLeft = 0
 
-    if (mediaSize === 'small') {
+    if ($mediaSize === 'small') {
       height = 60
       showMobile = true
       showMenu = false

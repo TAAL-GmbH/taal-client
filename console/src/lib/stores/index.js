@@ -5,6 +5,9 @@ export const menuLinks = writable([])
 export const menuActions = writable([])
 export const headerHeight = writable(0)
 
+// media queries
+export const mediaSize = writable(0)
+
 // content
 export const pageContentOffsetX = writable(0)
 

@@ -1,6 +1,8 @@
 <script>
   import { Router, Route } from 'svelte-navigator'
-  import { menuLinks, menuActions } from './lib/stores'
+  import { menuLinks, menuActions, mediaSize } from './lib/stores'
+  import { query } from './actions'
+  import { medium, large } from './styles/breakpoints'
   import GlobalStyle from './lib/styles/GlobalStyle.svelte'
   import NewUsers from './routes/new-users/index.svelte'
   import RegisterKey from './routes/register-key/index.svelte'
@@ -43,6 +45,12 @@
       component: SendData,
     },
   ]
+
+  $: isMedium = query(medium)
+  $: isLarge = query(large)
+  $: {
+    $mediaSize = $isLarge ? 'large' : $isMedium ? 'medium' : 'small'
+  }
 
   export let url = ''
 </script>

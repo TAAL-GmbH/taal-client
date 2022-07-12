@@ -1,8 +1,6 @@
 <script>
   import { useLocation, useNavigate } from 'svelte-navigator'
-  import { menuLinks, menuActions } from '../../../../stores'
-  import { query } from '../../../../actions'
-  import { medium, large } from '../../../../styles/breakpoints'
+  import { menuLinks, menuActions, mediaSize } from '../../../../stores'
   import Header from '../../../header/index.svelte'
   import Footer from '../../../footer/index.svelte'
   import ContentMenu from '../../content/menu/index.svelte'
@@ -25,10 +23,6 @@
       selected: route.path === $location.pathname,
     }))
   }
-
-  $: isMedium = query(medium)
-  $: isLarge = query(large)
-  $: mediaSize = $isLarge ? 'large' : $isMedium ? 'medium' : 'small'
 
   function onMenuItem(e) {
     navigate(e.detail.path)
@@ -57,7 +51,7 @@
   <Footer />
 </div>
 
-{#if showSidebarMenu && mediaSize === 'small'}
+{#if showSidebarMenu && $mediaSize === 'small'}
   <Sidebar {links} on:link={onMenuItem} />
 {/if}
 

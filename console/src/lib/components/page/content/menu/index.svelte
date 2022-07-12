@@ -1,21 +1,7 @@
 <script>
-  import { pageContentOffsetX } from '../../../../stores'
-  import { query } from '../../../../actions'
-  import { medium, large } from '../../../../styles/breakpoints'
+  import { pageContentOffsetX, mediaSize } from '../../../../stores'
 
-  let gutterW = 180
-
-  $: isMedium = query(medium)
-  $: isLarge = query(large)
-  $: mediaSize = $isLarge ? 'large' : $isMedium ? 'medium' : 'small'
-
-  $: {
-    gutterW = 180
-
-    if (mediaSize !== 'large') {
-      gutterW = 22
-    }
-  }
+  $: gutterW = $mediaSize !== 'large' ? 22 : 180
 </script>
 
 <div
