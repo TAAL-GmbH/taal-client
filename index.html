@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>Taal Client: Downloads</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="Content-Type" content="text/xhtml; charset=utf-8" />
+
+  <meta name="theme-color" content="#336791" />
+  <link href="/media/css/fontawesome.css?a0583746" rel="stylesheet">
+  <link rel="stylesheet" href="/media/css/bootstrap-4.4.1.min.css">
+  <link rel="shortcut icon" href="/favicon.ico" />
+
+  <link rel="stylesheet" type="text/css" href="/media/css/base.css?a0583746">
+</head>
+
+<body>
+
+  <div class="container-fluid margin">
+    <div class="row">
+      <div class="col-lg-10">
+        <div>
+          <h1>Taal Client Downloads</h1>
+
+          <p>Select your operating system family:</p>
+
+          <a role="button" id="btn-download-linux" class="btn btn-outline-dark btn-download"
+            href="/linux/taal-client">
+            Linux<br />
+            <img class="logo" src="/media/img/linux.svg" alt="Linux Logo" />
+          </a>
+          <a role="button" class="btn btn-outline-dark btn-download"
+            href="/darwin/taal-client">
+            macOS<br />
+            <img class="logo" src="/media/img/apple.png" alt="Apple Logo" />
+          </a>
+          <a role="button" class="btn btn-outline-dark btn-download"
+            href="/windows/taal-client.exe">
+            Windows (EXE)<br />
+            <img class="logo" src="/media/img/windows.svg" alt="Windows Logo" />
+          </a>
+          <a role="button" class="btn btn-outline-dark btn-download"
+            href="/windows/taal-client.zip">
+            Windows (ZIP)<br />
+            <img class="logo" src="/media/img/windows.svg" alt="Windows Logo" />
+          </a>
+
+          <h3>Source code</h3>
+
+          <p>
+            The source code can be found in <a
+              href="https://github.com/TAAL-GmbH/taal-client">https://github.com/TAAL-GmbH/taal-client</a>
+          </p>
+
+          <h3>Instructions</h3>
+
+          <p>Before this client can be used, a valid Taal APIKey needs to be registered in order to bind it with a public key.</p>
+
+          <p>1. Register at <a href="https://console.taal.com/register">https://console.taal.com/register</a></p>
+          <p>2. Obtain a FREE APIKey</p>
+          <p>3. Make sure the TaalClient is running</p>
+          <p>4. Register the APIKey in TaalClient via the Settings page which can be found at <a href="http://localhost:9500">http://localhost:9500</a></p>
+
+          <pre>
+Usage
+-----
+taal-client
+  Starts listening for requests on :9500.  This value can be changed via the console (https://localhost:9500) or in the settings.conf file.
+  
+  All requests will be sent to https://api.taal.com by default unless overridden  via the console (https://localhost:9500) or in the settings.conf file.
+          </pre>
+
+          <h3>cURL example</h3>
+          <p>
+            To write data, you fire a POST request to http://localhost:9500/api/v1/transactions.  The payload of the POST will be written
+            to the blockchain along with the MIME type that's provided in the Content-Type header.</p>
+            
+            <p>Optionally, there is an additional header that can be set:
+            <br />  
+              X-Tag - the value of this header will be prefixed to the MIME type and payload in the transaction.
+            </p>
+
+            </header>
+            <pre>
+curl \
+  -X POST \
+  -H 'Content-Type: text/plain' \
+  -d 'Hello world.' \
+http://localhost:9500/api/v1/transactions
+            </pre>
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

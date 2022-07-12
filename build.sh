@@ -67,8 +67,8 @@ ssh taal@www.masa.gi << EOL
   mkdir -p build/darwin/arm
 
   cd console
-  /opt/homebrew/bin/npm i
-  /opt/homebrew/bin/npm run build
+  PATH=$PATH:/opt/homebrew/bin npm i
+  PATH=$PATH:/opt/homebrew/bin npm run build
   cd ..
 
   env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 /opt/homebrew/bin/go build --trimpath  -o build/${PROG_NAME}_amd64 -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
@@ -76,7 +76,7 @@ ssh taal@www.masa.gi << EOL
   lipo -create -output build/$PROG_NAME build/${PROG_NAME}_amd64 build/${PROG_NAME}_arm64
 EOL
 
-scp taal@www.masa.gi:./taal-client/build/* ./build/darwin 
+scp -r taal@www.masa.gi:./taal-client/build/* ./build/darwin 
 
 env CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build --trimpath -o build/linux/$PROG_NAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 

@@ -315,10 +315,10 @@
     padding: 5px;
   }
 
-  .table td input {
+  /* .table td input {
     vertical-align: middle;
     margin-top: -2px;
-  }
+  } */
 
   .table td + td {
     padding-left: 15px;
@@ -327,7 +327,7 @@
     padding-left: 10px;
   }
 
-  .table tr.selected {
+  /* .table tr.selected {
     background: lightgreen;
   }
   .table tr.locked {
@@ -335,7 +335,7 @@
   }
   .table tr.lockedSelf {
     background: lightcyan;
-  }
+  } */
 
   .table-cell-row {
     display: flex;

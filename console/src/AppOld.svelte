@@ -85,7 +85,4 @@
   .client {
     margin-left: 5px;
   }
-  /**/
-  .content {
-  }
 </style>
