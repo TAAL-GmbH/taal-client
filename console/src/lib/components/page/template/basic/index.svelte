@@ -22,7 +22,5 @@
     height: calc(100% - 80px);
     overflow-x: hidden;
     overflow-y: auto;
-
-    /* justify-content: stretch; */
   }
 </style>
