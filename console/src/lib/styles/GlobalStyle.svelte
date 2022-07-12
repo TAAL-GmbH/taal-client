@@ -45,6 +45,7 @@
   :global(a),
   :global(a:hover),
   :global(a:focus),
+  :global(a:visited),
   :global(a:active) {
     text-decoration: none;
     color: #0094ff;
