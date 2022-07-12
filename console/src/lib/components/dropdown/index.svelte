@@ -228,7 +228,8 @@
     background: white;
 
     font-weight: 400;
-    font-size: 14px;
+    font-size: var(--fontSize-local);
+    font-family: var(--font-family);
     line-height: 24px;
     letter-spacing: -0.01em;
 
@@ -267,6 +268,12 @@
     background: none;
     appearance: none;
     pointer-events: none;
+
+    font-weight: 400;
+    font-size: var(--fontSize-local);
+    font-family: var(--font-family);
+    line-height: 24px;
+    letter-spacing: -0.01em;
   }
 
   .select {
@@ -282,7 +289,7 @@
     border-radius: 4px;
 
     font-weight: 400;
-    font-size: 16px;
+    font-size: var(--fontSize-local);
     line-height: 24px;
     letter-spacing: -0.01em;
 
