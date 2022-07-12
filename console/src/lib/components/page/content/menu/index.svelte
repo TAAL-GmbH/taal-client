@@ -5,13 +5,11 @@
 
   let gutterW = 180
 
-  let mediaSize = 'small'
   $: isMedium = query(medium)
   $: isLarge = query(large)
+  $: mediaSize = $isLarge ? 'large' : $isMedium ? 'medium' : 'small'
 
   $: {
-    mediaSize = $isLarge ? 'large' : $isMedium ? 'medium' : 'small'
-
     gutterW = 180
 
     if (mediaSize !== 'large') {

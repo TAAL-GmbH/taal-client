@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte'
+  import { headerHeight } from '../../stores'
   import { query } from '../../actions'
   import { medium, large } from '../../styles/breakpoints'
 
@@ -25,13 +26,11 @@
   let showMenu = true
   let contentMarginLeft = 0
 
-  let mediaSize = 'small'
   $: isMedium = query(medium)
   $: isLarge = query(large)
+  $: mediaSize = $isLarge ? 'large' : $isMedium ? 'medium' : 'small'
 
   $: {
-    mediaSize = $isLarge ? 'large' : $isMedium ? 'medium' : 'small'
-
     gutter = 22
     if (mediaSize === 'large') {
       gutter = 180
@@ -48,6 +47,8 @@
       showMenu = false
       contentMarginLeft = showMobile && !hasMenu ? 60 : 0
     }
+
+    $headerHeight = height
   }
 
   function onLink(item) {
@@ -59,8 +60,8 @@
   }
 
   function onToggle() {
-    dispatch('toggle-menu')
     open = !open
+    dispatch('toggle-menu', { open })
   }
 </script>
 
