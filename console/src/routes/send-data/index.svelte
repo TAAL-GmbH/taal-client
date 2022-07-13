@@ -27,14 +27,13 @@
     modeItems,
     getStoreValue,
     setStoreValue,
-    getTimeoutMillis,
     updateStore,
   } from './utils'
 
   const { addNotification } = getNotificationsContext()
 
   const stdMimeType = 'text/plain'
-  let disableButtonsCount = 0
+  let dataTransmissionInProgress = false
   let loading = true
   let timeout = 0
 
@@ -64,41 +63,33 @@
     }))
   }
 
-  $: compactFileUpload = devMode || files.length > 0
-
-  // let files = null
-  let file = null
-  let fileData = null
-  let filename = ''
-
+  // files
   let files = []
   let imageSrcData = {}
   let supportedImageSrcDataFileTypes = ['image/png', 'image/jpeg']
   let fileProgressData = {}
-  // let fileProgressData = {
-  //   'Logged out.png_1643790959194': { state: 'progress', progress: 0.5 },
-  // }
+  let fileDataMap = {}
 
-  let inputDataDisabled = files.length > 0
-  let submitButtonIsDisabled = true
-  let submitButtonText = 'Submit transaction'
+  $: compactFileUpload = devMode || files.length > 0
+  $: inputDataDisabled = files.length > 0
+
+  $: submitButtonIsDisabled = devMode
+    ? !textData || !mimeType || !apiKey || dataTransmissionInProgress
+    : files.length === 0 || !apiKey || dataTransmissionInProgress
+
+  $: submitButtonText =
+    files.length > 1
+      ? `Submit ${files.length} transactions`
+      : 'Submit transaction'
 
   $: {
     if (devMode) {
-      // dev mode
-      submitButtonText = 'Submit transaction'
-      submitButtonIsDisabled =
-        !textData || !mimeType || !apiKey || disableButtonsCount > 0
-
       if (files.length > 1) {
         files = [files[0]]
       }
 
-      inputDataDisabled = false
-
       if (files.length > 0) {
         setFieldsFromFile(files[0])
-        inputDataDisabled = true
       }
 
       curlCommand = getCurlCommand(
@@ -111,20 +102,11 @@
         taalClientURL,
         files[0]
       )
-    } else {
-      // standard mode
-      submitButtonText =
-        files.length > 1
-          ? `Submit ${files.length} transactions`
-          : 'Submit transaction'
-      submitButtonIsDisabled =
-        files.length === 0 || !apiKey || disableButtonsCount > 0
     }
   }
 
   function setFieldsFromFile(file) {
     mimeType = file.type
-    filename = file.name
 
     if (file.type.startsWith('text/')) {
       const fr = new FileReader()
@@ -135,12 +117,6 @@
     } else {
       textData = `< ${file.name} >`
     }
-
-    const fr = new FileReader()
-    fr.onload = function () {
-      fileData = fr.result
-    }
-    fr.readAsArrayBuffer(file)
   }
 
   function onFileSelect(e) {
@@ -157,6 +133,7 @@
   $: {
     files.forEach((file) => {
       const key = getFileKey(file)
+      // do img data
       if (
         !imageSrcData[key] &&
         supportedImageSrcDataFileTypes.includes(file.type)
@@ -165,145 +142,95 @@
         reader.readAsDataURL(file)
         reader.onloadend = () => (imageSrcData[key] = reader.result)
       }
+      // save file data into map
+      if (!fileDataMap[key]) {
+        const reader = new FileReader()
+        reader.onload = () => (fileDataMap[key] = reader.result)
+        reader.onerror = () => {
+          addNotification({
+            text: `Error: ${reader.error}`,
+            position: 'bottom-left',
+            type: 'danger',
+            removeAfter: 2000,
+          })
+        }
+        reader.readAsArrayBuffer(file)
+      }
     })
   }
 
   function onCancelTransfer(e) {
     const file = e.detail.value
     const fileKey = getFileKey(file)
-    console.log('onCancelTransfer: file = ', file.name)
     fileProgressData[fileKey] = { state: 'cancelled', progress: 1 }
   }
 
   function onRemoveTransferFile(e) {
     const file = e.detail.value
     const fileKey = getFileKey(file)
-    console.log('onRemoveTransferFile: file = ', file.name)
     files = files.filter((item) => getFileKey(item) !== fileKey)
     if (imageSrcData[fileKey]) {
       delete imageSrcData[fileKey]
     }
+    if (fileDataMap[fileKey]) {
+      delete fileDataMap[fileKey]
+    }
+    if (fileProgressData[fileKey]) {
+      delete fileProgressData[fileKey]
+    }
     if (files.length === 0) {
       textData = ''
-      fileData = null
-      filename = ''
       mimeType = stdMimeType
     }
   }
 
-  $: {
-    console.log('taalClientURL =', taalClientURL)
-  }
-
-  let checkUploadsCompleteIntervalId = null
-
-  function checkUploadsComplete() {
-    if (checkUploadsCompleteIntervalId) {
-      clearInterval(checkUploadsCompleteIntervalId)
-    }
-    checkUploadsCompleteIntervalId = setInterval(() => {
-      if (disableButtonsCount === 0) {
-        clearInterval(checkUploadsCompleteIntervalId)
-        checkUploadsCompleteIntervalId = null
-        reset()
-      }
-    }, 2000)
-  }
-
   function onSubmit() {
-    if (files.length > 0) {
-      for (const file of files) {
-        uploadFile(file)
-      }
-      checkUploadsComplete()
-    } else {
-      writeData()
-    }
-  }
-
-  function uploadFile(file) {
-    const url = `${BASE_URL}/api/v1/transactions`
-    const xhr = new XMLHttpRequest()
-    const formData = new FormData()
-    const fileKey = getFileKey(file)
-    xhr.open('POST', url, true)
-
-    disableButtonsCount++
-
-    xhr.upload.addEventListener('progress', function (e) {
-      console.log('progress = ', e.loaded / e.total)
-      // TODO: right now the backend does not give proper progress updates
-      //       basically (e.loaded / e.total) evaluates to 1 right at the start already
-      //       we don't want to indicate completed progress when upload is still in progress, so
-      //       not doing an update here for now
-      // fileProgressData[fileKey] = {
-      //   state: 'progress',
-      //   progress: e.loaded / e.total,
-      // }
-    })
-
-    xhr.addEventListener('readystatechange', function (e) {
-      console.log(
-        'readystatechange: xhr.readyState = ',
-        xhr.readyState,
-        ' xhr.status = ',
-        xhr.status
-      )
-
-      // we reached a final state
-      if (xhr.readyState === 4) {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          fileProgressData[fileKey] = { state: 'success', progress: 1 }
-
-          addNotification({
-            text: `Successfully uploaded file: ${file.name}`,
-            position: 'bottom-left',
-            type: 'success',
-            removeAfter: 2000,
-          })
-        } else {
-          fileProgressData[fileKey] = { state: 'failure', progress: 1 }
-
-          addNotification({
-            text: `Upload failed for: ${file.name}`,
-            position: 'bottom-left',
-            type: 'danger',
-            removeAfter: 2000,
-          })
-        }
-        disableButtonsCount--
-      }
-    })
-
-    // initialise start state
-    fileProgressData[fileKey] = { state: 'progress', progress: 0 }
-
-    formData.append('file', file)
-
-    // headers
-    xhr.setRequestHeader('Authorization', 'Bearer ' + apiKey)
-    xhr.setRequestHeader('Content-Type', file.type)
-    xhr.setRequestHeader('X-Tag', tag)
-    xhr.setRequestHeader('X-Filename', file.name)
-    xhr.setRequestHeader('X-Mode', mode)
-    xhr.setRequestHeader('X-Key', secret)
-
-    // set timeout
-    xhr.timeout = getTimeoutMillis(timeout)
-
-    xhr.send(formData)
+    writeData()
   }
 
   function onInputMount(e) {
     e.detail.inputRef.focus()
   }
 
-  async function writeData() {
-    disableButtonsCount++
+  function writeData() {
+    dataTransmissionInProgress = true
 
-    await api.writeData(
+    if (files.length > 0) {
+      Promise.all(
+        files.map((file) => {
+          const key = getFileKey(file)
+          fileProgressData[key] = { state: 'progress', progress: 0 }
+          writeDataItem(fileDataMap[key], file.type, file.name)
+        })
+      ).finally(() => {
+        console.log('file transmission finished')
+        files.forEach((file) => {
+          const key = getFileKey(file)
+          fileProgressData[key] = { state: 'done', progress: 1 }
+        })
+        onTransmissionEnd()
+      })
+    } else {
+      Promise.all([writeDataItem(textData, mimeType, '')]).finally(() => {
+        console.log('data transmission finished')
+        onTransmissionEnd()
+      })
+    }
+  }
+
+  function onTransmissionEnd() {
+    setTimeout(() => {
+      dataTransmissionInProgress = false
+      reset()
+      setStoreValue('tag', tag)
+      setStoreValue('apiKey', apiKey)
+    }, 1000)
+  }
+
+  function writeDataItem(data, mimeType, filename) {
+    return api.writeTransaction(
       {
-        body: fileData ? fileData : data,
+        body: data,
         headers: {
           Authorization: 'Bearer ' + apiKey,
           'Content-Type': mimeType,
@@ -320,8 +247,6 @@
           type: 'success',
           removeAfter: 1000,
         })
-
-        setStoreValue('apiKey', apiKey)
       },
       (error) => {
         addNotification({
@@ -332,9 +257,6 @@
         })
       }
     )
-
-    reset()
-    disableButtonsCount--
   }
 
   function reset() {
@@ -342,6 +264,7 @@
     textData = ''
     mimeType = stdMimeType
     imageSrcData = {}
+    fileDataMap = {}
     fileProgressData = {}
   }
 
@@ -358,7 +281,6 @@
     // TODO handle the situation when no api keys are registered yet
     //      suggestion is to show a message with a redirect button to register key page
 
-    console.log('keysResult = ', keysResult)
     keys = keysResult.keys || []
 
     apiKey = getStoreValue('apiKey')
