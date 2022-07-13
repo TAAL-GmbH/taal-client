@@ -1,25 +1,29 @@
 <script>
+  import { mediaSize } from '../../stores/index'
+
   export let size = 1
   export let color = '#232D7C'
   export let value = ''
   export let html = false
 
-  let fontSize = '36px'
-  let lineHeight = '36px'
+  let fontSize = 36
+  let lineHeight = 36
   let fontWeight = 700
   let letterSpacing = '0'
+
+  $: mediaSmall = $mediaSize === 'small'
 
   $: {
     switch (size) {
       case 1:
-        fontSize = '36px'
+        fontSize = mediaSmall ? 24 : 36
         fontWeight = 700
         break
       case 2:
-        fontSize = '24px'
+        fontSize = 24
         break
       case 5:
-        fontSize = '16px'
+        fontSize = 16
         break
     }
   }
@@ -28,10 +32,10 @@
 <div
   class="tui-heading"
   style:--color-local={color}
-  style:--font-size-local={fontSize}
+  style:--font-size-local={fontSize + 'px'}
   style:--font-weight-local={fontWeight}
   style:--letting-spacing-local={letterSpacing}
-  style:--line-height-local={lineHeight}
+  style:--line-height-local={lineHeight + 'px'}
 >
   {#if html}
     {@html value}
