@@ -20,7 +20,7 @@
         fontWeight = 700
         break
       case 2:
-        fontSize = 24
+        fontSize = mediaSmall ? 18 : 24
         break
       case 5:
         fontSize = 16
