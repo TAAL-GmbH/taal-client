@@ -1,5 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte'
+  import { headerHeight, mediaSize } from '../../stores'
 
   import Button from '../button/index.svelte'
   import Icon from '../icon/index.svelte'
@@ -10,11 +11,39 @@
   export let links = []
   export let actions = []
 
-  export let showMobile = false
-  export let open = true
+  $: hasMenu = links.length > 0
+
+  let open = false
   export let showLinks = true
   export let showActions = true
   export let dataKey = 'path'
+
+  let gutter = 22
+  let height = 80
+  let showMobile = false
+  let showMenu = true
+  let contentMarginLeft = 0
+
+  $: {
+    gutter = 22
+    if ($mediaSize === 'large') {
+      gutter = 180
+    }
+
+    height = 80
+    showMobile = false
+    showMenu = true
+    contentMarginLeft = 0
+
+    if ($mediaSize === 'small') {
+      height = 60
+      showMobile = true
+      showMenu = false
+      contentMarginLeft = showMobile && !hasMenu ? 60 : 0
+    }
+
+    $headerHeight = height
+  }
 
   function onLink(item) {
     dispatch('link', item)
@@ -25,14 +54,23 @@
   }
 
   function onToggle() {
-    dispatch('toggle-menu')
+    open = !open
+    dispatch('toggle-menu', { open })
   }
+
+  // box-shadow: 0px 1px 10px rgba(46, 46, 46, 0.1);
 </script>
 
-<div class="tui-header">
-  {#if showMobile}
+<div
+  class="tui-header"
+  class:small={$mediaSize === 'small'}
+  style:--gutter-local={gutter + 'px'}
+  style:--height-local={height + 'px'}
+  style:--content-margin-left={contentMarginLeft + 'px'}
+>
+  {#if showMobile && hasMenu}
     <div class="icon" on:click={(e) => onToggle()}>
-      <Icon name={open ? 'close' : 'menu'} />
+      <Icon name={open ? 'close' : 'menu'} size={30} />
     </div>
   {/if}
   <div class="content">
@@ -40,7 +78,7 @@
       <Logo name="taal-blue" height={38} width={93} />
       <Logo name="client" height={38} width={116} />
     </div>
-    {#if showLinks}
+    {#if showLinks && hasMenu && showMenu}
       <div class="links">
         {#each links as link (link[dataKey])}
           <Button
@@ -69,6 +107,8 @@
 
 <style>
   .tui-header {
+    font-family: var(--font-family);
+    box-sizing: var(--box-sizing);
     display: flex;
     align-items: center;
 
@@ -77,18 +117,23 @@
     right: 0;
     left: 0;
 
-    height: 80px;
-    max-height: 80px;
+    height: var(--height-local);
+    max-height: var(--height-local);
+    width: 100%;
+    padding: 0 var(--gutter-local);
 
     background-color: #ffffff;
   }
+  .tui-header.small {
+    box-shadow: 0px 1px 10px rgba(46, 46, 46, 0.1);
+  }
 
   .icon {
-    position: absolute;
-    left: 15px;
-    top: 28px;
+    width: 30px;
+    height: 30px;
+    margin-right: 30px;
     cursor: pointer;
-    z-index: 1;
+    color: #232d7c;
   }
 
   .content {
@@ -97,9 +142,8 @@
     align-items: center;
     justify-content: stretch;
 
-    width: calc(100% - 120px);
-    max-width: calc(100% - 120px);
-    padding: 0 60px;
+    width: 100%;
+    margin-left: var(--content-margin-left);
 
     color: blue;
   }
@@ -107,7 +151,7 @@
   .logo {
     display: flex;
     align-items: center;
-    margin-right: 130px;
+    margin-right: 120px;
   }
   .links {
     display: flex;
