@@ -23,6 +23,7 @@
   let showMobile = false
   let showMenu = true
   let contentMarginLeft = 0
+  let logoMarginRight = 120
 
   $: {
     gutter = 22
@@ -34,12 +35,14 @@
     showMobile = false
     showMenu = true
     contentMarginLeft = 0
+    logoMarginRight = 120
 
     if ($mediaSize === 'small') {
       height = 60
       showMobile = true
       showMenu = false
       contentMarginLeft = showMobile && !hasMenu ? 60 : 0
+      logoMarginRight = 10
     }
 
     $headerHeight = height
@@ -67,6 +70,7 @@
   style:--gutter-local={gutter + 'px'}
   style:--height-local={height + 'px'}
   style:--content-margin-left={contentMarginLeft + 'px'}
+  style:--logo-margin-right={logoMarginRight + 'px'}
 >
   {#if showMobile && hasMenu}
     <div class="icon" on:click={(e) => onToggle()}>
@@ -151,7 +155,7 @@
   .logo {
     display: flex;
     align-items: center;
-    margin-right: 120px;
+    margin-right: var(--logo-margin-right);
   }
   .links {
     display: flex;
