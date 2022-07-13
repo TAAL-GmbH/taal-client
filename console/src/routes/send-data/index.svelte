@@ -39,7 +39,6 @@
   let timeout = 0
 
   let devMode = getStoreValue('devmode') === 'true'
-  let apiKey
   let taalClientURL = ''
   let mimeType = stdMimeType
   let tag = ''
@@ -52,6 +51,18 @@
   $: updateStore('mode', mode, loading)
   $: updateStore('secret', secret, loading)
   $: updateStore('devmode', devMode, loading)
+
+  // api keys
+  let keys = []
+  let apiKeyItems = []
+  let apiKey
+
+  $: {
+    apiKeyItems = keys.map((key) => ({
+      label: key.api_key,
+      value: key.api_key,
+    }))
+  }
 
   $: compactFileUpload = devMode || files.length > 0
 
@@ -68,16 +79,24 @@
   //   'Logged out.png_1643790959194': { state: 'progress', progress: 0.5 },
   // }
 
-  let inputDataDisabled = files?.length > 0
+  let inputDataDisabled = files.length > 0
+  let submitButtonIsDisabled = true
 
   $: {
     if (devMode) {
+      // dev mode
+      submitButtonIsDisabled =
+        !textData || !mimeType || !apiKey || disableButtonsCount > 0
+
       if (files.length > 1) {
         files = [files[0]]
       }
 
+      inputDataDisabled = false
+
       if (files.length > 0) {
         setFieldsFromFile(files[0])
+        inputDataDisabled = true
       }
 
       curlCommand = getCurlCommand(
@@ -90,8 +109,10 @@
         taalClientURL,
         files[0]
       )
-
-      inputDataDisabled = files?.length > 0
+    } else {
+      // standard mode
+      submitButtonIsDisabled =
+        files.length === 0 || !apiKey || disableButtonsCount > 0
     }
   }
 
@@ -156,26 +177,41 @@
     if (imageSrcData[fileKey]) {
       delete imageSrcData[fileKey]
     }
+    if (files.length === 0) {
+      textData = ''
+      fileData = null
+      filename = ''
+      mimeType = stdMimeType
+    }
   }
 
   $: {
     console.log('taalClientURL =', taalClientURL)
   }
 
-  // api keys
-  let keys = []
-  let apiKeyItems = []
+  let checkUploadsCompleteIntervalId = null
 
-  $: {
-    apiKeyItems = keys.map((key) => ({
-      label: key.api_key,
-      value: key.api_key,
-    }))
+  function checkUploadsComplete() {
+    if (checkUploadsCompleteIntervalId) {
+      clearInterval(checkUploadsCompleteIntervalId)
+    }
+    checkUploadsCompleteIntervalId = setInterval(() => {
+      if (disableButtonsCount === 0) {
+        clearInterval(checkUploadsCompleteIntervalId)
+        checkUploadsCompleteIntervalId = null
+        reset()
+      }
+    }, 2000)
   }
 
   function onSubmit() {
-    for (const file of files) {
-      uploadFile(file)
+    if (files.length > 0) {
+      for (const file of files) {
+        uploadFile(file)
+      }
+      checkUploadsComplete()
+    } else {
+      writeData()
     }
   }
 
@@ -186,8 +222,9 @@
     const fileKey = getFileKey(file)
     xhr.open('POST', url, true)
 
+    disableButtonsCount++
+
     xhr.upload.addEventListener('progress', function (e) {
-      disableButtonsCount++
       console.log('progress = ', e.loaded / e.total)
       // TODO: right now the backend does not give proper progress updates
       //       basically (e.loaded / e.total) evaluates to 1 right at the start already
@@ -255,8 +292,10 @@
     e.detail.inputRef.focus()
   }
 
-  function writeData() {
-    api.writeData(
+  async function writeData() {
+    disableButtonsCount++
+
+    await api.writeData(
       {
         body: fileData ? fileData : data,
         headers: {
@@ -276,8 +315,7 @@
           removeAfter: 1000,
         })
 
-        // TODO - check if it is fine to write this after potential throw
-        localStorage.setItem('apiKey', apiKey)
+        setStoreValue('apiKey', apiKey)
       },
       (error) => {
         addNotification({
@@ -290,6 +328,7 @@
     )
 
     reset()
+    disableButtonsCount--
   }
 
   function reset() {
@@ -448,13 +487,13 @@
       <Button
         variant="ghost"
         size="large"
-        disabled={disableButtonsCount > 0}
+        disabled={submitButtonIsDisabled}
         on:click={reset}>Reset</Button
       >
       <Button
         size="large"
         iconAfter="arrow-narrow-right"
-        disabled={disableButtonsCount > 0}
+        disabled={submitButtonIsDisabled}
         on:click={onSubmit}
       >
         Submit transaction
