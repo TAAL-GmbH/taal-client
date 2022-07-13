@@ -282,7 +282,7 @@
 
     // headers
     xhr.setRequestHeader('Authorization', 'Bearer ' + apiKey)
-    xhr.setRequestHeader('Content-Type', mimeType)
+    xhr.setRequestHeader('Content-Type', file.type)
     xhr.setRequestHeader('X-Tag', tag)
     xhr.setRequestHeader('X-Filename', file.name)
     xhr.setRequestHeader('X-Mode', mode)
