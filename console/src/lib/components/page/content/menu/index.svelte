@@ -1,7 +1,7 @@
 <script>
-  import { pageContentOffsetX } from '../../../../stores'
+  import { pageContentOffsetX, mediaSize } from '../../../../stores'
 
-  export let gutterW = 60
+  $: gutterW = $mediaSize !== 'large' ? 22 : 180
 </script>
 
 <div
