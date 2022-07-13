@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"regexp"
@@ -48,6 +49,19 @@ func (s Server) putSetting(c echo.Context) error {
 	}
 
 	settings.Set(set.Key, set.Value)
+
+	switch set.Key {
+	case "taalTimeout":
+		timeout, err := settings.GetDuration("taalTimeout")
+		if err != nil {
+			log.Fatalf("taal_timeout of %q is invalid: %v", timeout, err)
+		}
+
+		s.taal.SetTimeout(timeout)
+	case "taalUrl":
+		taalURL := settings.Get("taalUrl")
+		s.taal.SetUrl(taalURL)
+	}
 
 	return c.String(http.StatusOK, "OK")
 }
