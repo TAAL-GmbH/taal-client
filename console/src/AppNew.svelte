@@ -11,16 +11,6 @@
   import Settings from './routes/settings/index.svelte'
   import SendData from './routes/send-data/index.svelte'
 
-  let isActive = false
-
-  function toggleMenu() {
-    isActive = !isActive
-  }
-
-  function closeMenu() {
-    isActive = false
-  }
-
   $menuLinks = [
     {
       path: '/key-manager',
