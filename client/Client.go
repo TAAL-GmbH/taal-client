@@ -42,6 +42,14 @@ func New(url string, timeout time.Duration) *Client {
 	}
 }
 
+func (c *Client) SetTimeout(timeout time.Duration) {
+	c.Timeout = timeout
+}
+
+func (c *Client) SetUrl(url string) {
+	c.Url = url
+}
+
 func (c *Client) Register(signature string, publicKey string, apiKey string) error {
 	requestPayload := RegisterRequest{
 		Signature: signature,
