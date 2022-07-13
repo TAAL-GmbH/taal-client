@@ -24,6 +24,8 @@
   let showMenu = true
   let contentMarginLeft = 0
   let logoMarginRight = 120
+  let logoTaalSize = { height: 38, width: 93 }
+  let logoClientSize = { height: 38, width: 116 }
 
   $: {
     gutter = 22
@@ -36,6 +38,8 @@
     showMenu = true
     contentMarginLeft = 0
     logoMarginRight = 120
+    logoTaalSize = { h: 38, w: 93 }
+    logoClientSize = { h: 38, w: 116 }
 
     if ($mediaSize === 'small') {
       height = 60
@@ -43,6 +47,8 @@
       showMenu = false
       contentMarginLeft = showMobile && !hasMenu ? 60 : 0
       logoMarginRight = 10
+      logoTaalSize = { h: 32, w: 78.3 }
+      logoClientSize = { h: 32, w: 97.7 }
     }
 
     $headerHeight = height
@@ -79,8 +85,8 @@
   {/if}
   <div class="content">
     <div class="logo">
-      <Logo name="taal-blue" height={38} width={93} />
-      <Logo name="client" height={38} width={116} />
+      <Logo name="taal-blue" height={logoTaalSize.h} width={logoTaalSize.w} />
+      <Logo name="client" height={logoClientSize.h} width={logoClientSize.w} />
     </div>
     {#if showLinks && hasMenu && showMenu}
       <div class="links">
