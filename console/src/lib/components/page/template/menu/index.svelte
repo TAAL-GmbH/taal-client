@@ -36,8 +36,6 @@
   function onToggleMenu(e) {
     showSidebarMenu = e.detail.open
   }
-
-  console.log('$headerHeight = ', $headerHeight)
 </script>
 
 <Header
