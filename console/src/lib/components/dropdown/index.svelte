@@ -103,8 +103,42 @@
   function onItemSelect(val) {
     value = val
     open = false
+    arrowFocusIndex = -1
     dispatch('change', { name, type, value })
     selectRef.focus()
+  }
+
+  let arrowFocusIndex = 0
+
+  function onKeyDown(e) {
+    if (!e) e = window.event
+    const keyCode = e.code || e.key
+    switch (keyCode) {
+      case 'Space':
+        onSelectParentClick()
+        const result = items.filter((item) => item.value === value)
+        if (result && result.length > 0) {
+          arrowFocusIndex = items.indexOf(result[0])
+        } else {
+          arrowFocusIndex = 0
+        }
+        return false
+      case 'ArrowDown':
+      case 'ArrowUp':
+        if (open) {
+          arrowFocusIndex =
+            keyCode === 'ArrowDown'
+              ? (arrowFocusIndex + 1) % items.length
+              : Math.abs(arrowFocusIndex - 1) % items.length
+          console.log(' arrowFocusIndex = ', arrowFocusIndex)
+        }
+        return false
+      case 'Enter':
+        if (open && arrowFocusIndex !== -1) {
+          document.querySelectorAll('.list-item')[arrowFocusIndex].click()
+        }
+        return false
+    }
   }
 </script>
 
@@ -142,6 +176,7 @@
         on:change={onSelectChange}
         on:focus={(e) => (focused = true)}
         on:blur={(e) => (focused = false)}
+        on:keydown|preventDefault|stopPropagation={onKeyDown}
       >
         {#each items as item (item.value)}
           <option value={item.value}>
@@ -156,10 +191,11 @@
     {#if open}
       <div class="list-container">
         <div in:slide out:fade class="list">
-          {#each items as item (item.value)}
+          {#each items as item, i (item.value)}
             <div
               class="list-item"
               class:selected={item.value === value}
+              class:arrowFocused={arrowFocusIndex === i}
               on:click={() => onItemSelect(item.value)}
             >
               {item.label}
@@ -239,8 +275,11 @@
   .list-item:last-of-type {
     border-radius: 0 0 4px 4px;
   }
-  .list-item:hover {
+  .list-item:hover,
+  .list-item:focus,
+  .list-item.arrowFocused {
     background: #f4f6ff;
+    outline: none;
   }
   .list-item.selected {
     background: #dbdbff;

@@ -483,7 +483,7 @@
 
   .mode-row {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(calc(50% - 16px), 1fr));
     column-gap: 16px;
     row-gap: 24px;
   }
@@ -491,6 +491,7 @@
   .buttons {
     display: flex;
     justify-content: flex-end;
+    flex-wrap: wrap;
     align-items: center;
     gap: 24px;
   }
