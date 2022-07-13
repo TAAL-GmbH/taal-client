@@ -13,9 +13,10 @@
   export let required = false
   export let name = ''
   export let value = ''
-  export let placeholder = ''
+  export let placeholder
   export let disabled = false
   export let error = ''
+  export let autocomplete
 
   // in confirm mode, changes are local until confirm is clicked,
   // or alternatively changes can be reset to previous non-local value
@@ -70,6 +71,19 @@
         padding = '4px 16px'
         fontSize = '14px'
         break
+    }
+  }
+
+  let inputOpts = {}
+
+  $: {
+    inputOpts = {}
+
+    if (autocomplete) {
+      inputOpts.autocomplete = autocomplete
+    }
+    if (placeholder) {
+      inputOpts.placeholder = placeholder
     }
   }
 
@@ -138,8 +152,8 @@
         {type}
         {name}
         value={confirm ? localValue : value}
-        {placeholder}
         {disabled}
+        {...inputOpts}
         on:input={onInputChange}
         on:focus={(e) => (focused = true)}
         on:blur={(e) => (focused = false)}

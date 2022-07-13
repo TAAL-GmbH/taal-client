@@ -120,6 +120,7 @@
       label="Listen address"
       placeholder="localhost:9500"
       value={settings.listenAddress}
+      autocomplete="off"
       confirm
       on:change={onChange}
       on:mount={onInputMount}
