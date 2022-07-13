@@ -6,7 +6,7 @@
   const dispatch = createEventDispatcher()
 
   //   export let type = 'text'
-  let type = 'text'
+  export let type = 'text'
 
   export let label = ''
   export let labelPlacement = 'top'
