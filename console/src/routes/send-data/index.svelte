@@ -81,10 +81,12 @@
 
   let inputDataDisabled = files.length > 0
   let submitButtonIsDisabled = true
+  let submitButtonText = 'Submit transaction'
 
   $: {
     if (devMode) {
       // dev mode
+      submitButtonText = 'Submit transaction'
       submitButtonIsDisabled =
         !textData || !mimeType || !apiKey || disableButtonsCount > 0
 
@@ -111,6 +113,10 @@
       )
     } else {
       // standard mode
+      submitButtonText =
+        files.length > 1
+          ? `Submit ${files.length} transactions`
+          : 'Submit transaction'
       submitButtonIsDisabled =
         files.length === 0 || !apiKey || disableButtonsCount > 0
     }
@@ -496,7 +502,7 @@
         disabled={submitButtonIsDisabled}
         on:click={onSubmit}
       >
-        Submit transaction
+        {submitButtonText}
       </Button>
     </div>
   </div>
