@@ -85,6 +85,14 @@
   function onSelectParentClick() {
     selectRef.focus()
     open = !open
+    if (open) {
+      const result = items.filter((item) => item.value === value)
+      if (result && result.length > 0) {
+        arrowFocusIndex = items.indexOf(result[0])
+      } else {
+        arrowFocusIndex = 0
+      }
+    }
   }
 
   function onSelectChange(e) {
@@ -115,25 +123,21 @@
     const keyCode = e.code || e.key
     switch (keyCode) {
       case 'Space':
+        e.preventDefault()
         onSelectParentClick()
-        const result = items.filter((item) => item.value === value)
-        if (result && result.length > 0) {
-          arrowFocusIndex = items.indexOf(result[0])
-        } else {
-          arrowFocusIndex = 0
-        }
         return false
       case 'ArrowDown':
       case 'ArrowUp':
+        e.preventDefault()
         if (open) {
           arrowFocusIndex =
             keyCode === 'ArrowDown'
               ? (arrowFocusIndex + 1) % items.length
               : Math.abs(arrowFocusIndex - 1) % items.length
-          console.log(' arrowFocusIndex = ', arrowFocusIndex)
         }
         return false
       case 'Enter':
+        e.preventDefault()
         if (open && arrowFocusIndex !== -1) {
           document.querySelectorAll('.list-item')[arrowFocusIndex].click()
         }
@@ -176,7 +180,7 @@
         on:change={onSelectChange}
         on:focus={(e) => (focused = true)}
         on:blur={(e) => (focused = false)}
-        on:keydown|preventDefault|stopPropagation={onKeyDown}
+        on:keydown={onKeyDown}
       >
         {#each items as item (item.value)}
           <option value={item.value}>
