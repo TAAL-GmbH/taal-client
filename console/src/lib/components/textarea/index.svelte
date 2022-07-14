@@ -156,7 +156,7 @@
       class:dragging={dragStartH === null}
       on:click={disabled ? null : onInputParentClick}
     >
-      <div class="control-container">
+      <div class="control-container" tabindex={-1}>
         <textarea
           bind:this={inputRef}
           {type}
