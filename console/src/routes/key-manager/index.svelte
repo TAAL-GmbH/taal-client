@@ -96,11 +96,6 @@
     registerKey(e.detail.apiKey)
   }
 
-  function onDeactivate(e) {
-    console.log('onDeactivate: key = ', e.detail.apiKey)
-    deleteKey(e.detail.apiKey)
-  }
-
   onMount(() => {
     getApiKeys()
   })
@@ -118,7 +113,7 @@
     {#if keys}
       <div class="grid">
         {#each keys as key (key.api_key)}
-          <KeyCard {key} on:deactivate={onDeactivate} />
+          <KeyCard {key} />
         {/each}
       </div>
     {/if}
