@@ -90,6 +90,7 @@
     //   checked
     // )
     switch (type) {
+      case 'search':
       case 'text':
         updateSetting(name, value || '')
         break
@@ -115,11 +116,14 @@
       <Heading value="Server settings" size={2} />
     </div>
     <Spacer h={24} />
+    <!-- type="search" is an undesired workaround for 1Password: https://1password.community/discussion/117501/as-a-web-developer-how-can-i-disable-1password-filling-for-a-specific-field -->
     <TextInput
+      type="search"
       name="listenAddress"
       label="Listen address"
       placeholder="localhost:9500"
       value={settings.listenAddress}
+      autocomplete="off"
       confirm
       on:change={onChange}
       on:mount={onInputMount}

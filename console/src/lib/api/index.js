@@ -120,7 +120,7 @@ export function getTransactions(hours, done, fail) {
   )
 }
 
-export function writeTransactions(options, done, fail) {
+export function writeTransaction(options, done, fail) {
   return post(`${BASE_URL}/api/v1/transactions`, options, done, fail)
 }
 

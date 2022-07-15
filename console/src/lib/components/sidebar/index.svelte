@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  import { onMount } from 'svelte'
+  import { fade, fly } from 'svelte/transition'
   import { headerHeight } from '../../stores'
   import Button from '../button/index.svelte'
 
@@ -8,20 +8,7 @@
 
   export let links = []
   export let dataKey = 'path'
-
-  let menuWidth = 385
-  let menuLeft = -menuWidth
-
-  onMount(() => {
-    const id = setTimeout(() => {
-      menuLeft = 0
-    }, 0)
-
-    return () => {
-      clearTimeout(id)
-      menuLeft = -menuWidth
-    }
-  })
+  export let menuWidth = 385
 
   function onLink(item) {
     dispatch('link', item)
@@ -32,10 +19,9 @@
   class="tui-sidebar"
   style:--top-local={$headerHeight + 'px'}
   style:--menu-width-local={menuWidth + 'px'}
-  style:--menu-left-local={menuLeft + 'px'}
 >
-  <div class="cover" />
-  <div class="menu">
+  <div class="cover" in:fade />
+  <div class="menu" in:fly={{ x: -menuWidth, duration: 200 }}>
     <div class="content">
       {#each links as link (link[dataKey])}
         <div class="item">
@@ -69,10 +55,9 @@
   .menu {
     position: absolute;
     width: var(--menu-width-local);
-    left: var(--menu-left-local);
     top: var(--top-local);
+    left: 0;
     bottom: 0;
-    transition: left 0.2s ease-in-out;
 
     background: white;
   }
