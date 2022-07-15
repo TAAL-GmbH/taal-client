@@ -58,6 +58,12 @@ curl --location --request POST 'http://localhost:9500/api/v1/write' \
 --data-binary @myimage.png
 ```
 
+### Modes
+Currently data can be submitted in 3 different modes
+1. Raw: The full data is submitted to the blockchain as raw data.
+2. Hash: A SHA256 hash is created of the input data. Only this hash is submitted.
+3. Encrypt: Data is encrypted by the given secret using AES encryption. The secret is stored in the local database. When downloading the data, the stored secret used for decryption. Transactions with encrypted data is denoted by a key symbol.
+
 ![Writing sequence](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/write.png)
 
 ## Reading data
@@ -69,23 +75,24 @@ curl --location --request GET 'http://localhost:9500/api/v1/read/<txid>' \
 --header 'Authorization: Bearer <APIKey>'
 ```
 
-
-## Linux notes
-
+## Before usage
 Before running the taal-client binary, make sure it is executable by running
 
 ```
 chmod 755 taal-client
 ```
 
+### MacOS
 
-## Mac users
-
-
-chmod 755
+For the Mac version the code is not signed with a certificate issued by Apple currently. Therefore when running for the first time the following message will be shown.
 
 ![Mac1](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/mac1.png)
 
+In order to still run the application on a please open `Security & Privacy` settings and click on `Open Anyway` as shown in the following picture.
+
 ![Mac2](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/mac2.png)
 
+After that when running the application the following message will be shown. This time it has an `Open` button. Press this button in order to run the application.
+
 ![Mac3](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/mac3.png)
+§
