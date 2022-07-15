@@ -1,17 +1,9 @@
 <script>
-  import { createEventDispatcher } from 'svelte'
-
-  import Button from '../../button/index.svelte'
   import Field from '../../field/index.svelte'
   import { dataSize, formatDate } from '../../../utils/format'
 
-  const dispatch = createEventDispatcher()
-
   export let key
 
-  function onAction() {
-    dispatch('deactivate', { apiKey: key.api_key })
-  }
 </script>
 
 <div class="tui-key-card">
@@ -23,9 +15,6 @@
     label="Date registered"
     value={formatDate(key.createdAt, false, false)}
   />
-  <Button variant="secondary" size="small" forceRed on:click={onAction}>
-    Deactivate
-  </Button>
 </div>
 
 <style>
