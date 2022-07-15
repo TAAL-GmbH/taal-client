@@ -7,6 +7,9 @@ All private keys used for signing customer's transactions are only held on the c
 Binaries for Linux, Mac and Windows can be found at https://taal-gmbh.github.io.
 
 
+## Console
+When starting taal-client a console application will be started on `http://localhost:9500`. It gives easy access to all the functions of TaaClient.
+
 ## Direct Usage
 
 ```text
@@ -15,10 +18,15 @@ Usage
 taal-client
   Starts listening for requests on :9500.  This value can be changed via the console (https://localhost:9500) or in the settings.conf file.
   
-  All requests will be sent to https://api.taal.com by default unless overridden  via the console (https://localhost:9500) or in the settings.conf file.
+  All requests will be sent to https://api.taal.com by default unless overridden via the console (https://localhost:9500) or in the settings.conf file.
 ```
 
-## Registration
+## Database
+
+TaalClient by default creates a local db with filename `taal_client.db` where api keys with public-private key pairs and transaction information are stored. Instead of a local DB it is possible to connect TaalClient to a postgres DB. For that tye database mode has to be changed in the `Settings` page from `local` to `remote`. The same change can be done by the setting `dbType` from `sqlite` to `postgres` in the file `settings.conf`. The hostname, port, user, db name, and password have to be configured accordingly either through the console under `Settings` or directly settings file.
+
+## Functions
+### Registration
 
 Before this client can be used, a valid Taal APIKey needs to be registered in order to bind it with a public key.
 
@@ -27,11 +35,12 @@ Before this client can be used, a valid Taal APIKey needs to be registered in or
 3. Make sure the TaalClient is running
 4. Register the APIKey in TaalClient via the Settings page which can be found at http://localhost:9500
 
+This key is stored in a local database with the public-private key pair. When creating transactions the key pair never leaves the machine
 
 ![Register sequence](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/register.png)
 
 
-## Writing data
+### Writing data
 
 After starting the TaalClient with ```taal-client``` you can then write data to the blockchain using the drag and drop interface (http://localhost:9500) or by POSTing directly to the TaalClient API.
 
@@ -58,7 +67,8 @@ curl --location --request POST 'http://localhost:9500/api/v1/write' \
 --data-binary @myimage.png
 ```
 
-### Modes
+#### Modes
+
 Currently data can be submitted in 3 different modes
 1. Raw: The full data is submitted to the blockchain as raw data.
 2. Hash: A SHA256 hash is created of the input data. Only this hash is submitted.
@@ -66,7 +76,7 @@ Currently data can be submitted in 3 different modes
 
 ![Writing sequence](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/write.png)
 
-## Reading data
+### Reading data
 
 After starting the TaalClient with ```taal-client``` you can then read data from the blockchain by GETing from the TaalClient.
 
@@ -75,7 +85,17 @@ curl --location --request GET 'http://localhost:9500/api/v1/read/<txid>' \
 --header 'Authorization: Bearer <APIKey>'
 ```
 
-## Before usage
+### Transaction history
+
+Information about transactions which have been made through TaalClient are stored in a local database. This information includes ID, data size and timestamp. The history of all these transactions can be viewed on the `History` page of the console or by sendinga request against the appliaction e.g. using a curl command
+
+```
+curl http://localhost:9500/api/v1/transactions/
+
+```
+
+
+## Before usage (MacOS / Linux version)
 Before running the taal-client binary, make sure it is executable by running
 
 ```
