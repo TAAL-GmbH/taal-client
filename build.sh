@@ -93,8 +93,12 @@ fi
 
 if [[ "$?" == "0" ]]; then
   echo $GIT_COMMIT > build/commit.dat
-  
+
+  cp index.html ./build/
+  cp -r media ./build/
+
   cd build
+
   tar cvfz ../$FILENAME.tar.gz ./*
   echo "${PROG_NAME}: Built $FILENAME"
 else
