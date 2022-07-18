@@ -4,7 +4,7 @@ This is an small service that runs on a Taal customer's machine and interacts wi
 
 All private keys used for signing customer's transactions are only held on the customer's machine.
 
-Binaries for Linux, Mac and Windows can be found at https://taal-gmbh.github.io.
+Binaries for Linux, Mac and Windows can be found at https://cdn.taal.com.
 
 
 ## Console
@@ -23,14 +23,14 @@ taal-client
 
 ## Database
 
-TaalClient by default creates a local db with filename `taal_client.db` where api keys with public-private key pairs and transaction information are stored. Instead of a local DB it is possible to connect TaalClient to a postgres DB. For that tye database mode has to be changed in the `Settings` page from `local` to `remote`. The same change can be done by the setting `dbType` from `sqlite` to `postgres` in the file `settings.conf`. The hostname, port, user, db name, and password have to be configured accordingly either through the console under `Settings` or directly settings file.
+By default, TaalClient creates a local database with the filename `taal_client.db` where api keys with public-private key pairs and transaction information are stored. Instead of a local DB it is possible to connect TaalClient to a postgres DB. This database mode has to be changed in the `Settings` page from `local` to `remote`. The same change can be done by the setting `dbType` from `sqlite` to `postgres` in the file `settings.conf`. The hostname, port, user, db name, and password have to be configured accordingly either through the console under `Settings` or directly settings file.
 
 ## Functions
 ### Registration
 
 Before this client can be used, a valid Taal APIKey needs to be registered in order to bind it with a public key.
 
-1. Register at https://console.taal.com/register
+1. Register at https://console.taal.com
 2. Obtain an APIKey
 3. Make sure the TaalClient is running
 4. Register the APIKey in TaalClient via the Settings page which can be found at http://localhost:9500
@@ -87,7 +87,7 @@ curl --location --request GET 'http://localhost:9500/api/v1/read/<txid>' \
 
 ### Transaction history
 
-Information about transactions which have been made through TaalClient are stored in a local database. This information includes ID, data size and timestamp. The history of all these transactions can be viewed on the `History` page of the console or by sendinga request against the appliaction e.g. using a curl command
+Information about transactions which have been made through TaalClient are stored in a local database. This information includes ID, data size and timestamp. The history of all these transactions can be viewed on the `History` page of the console or by sending a request against the application e.g. using a curl command
 
 ```
 curl http://localhost:9500/api/v1/transactions/
