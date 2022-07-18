@@ -70,10 +70,16 @@
 
   // filter
   let filteredData = data ? [...data] : []
-  let filtersState = { ...filters }
+  $: filtersState = { ...filters }
 
   $: {
     filteredData = filterData(data, filtersEnabled, serverFilters, filtersState)
+  }
+
+  // if either data changes or our filters change the number of data items, we need to reset
+  // page to 1, to avoid pointing to out-of-bounds pages
+  $: if (filteredData) {
+    pagination.page = 1
   }
 
   function updateFilters(key, filter) {
@@ -92,7 +98,7 @@
 
   // sort
   let sortedData = [...filteredData]
-  let sortState = { ...sort }
+  $: sortState = { ...sort }
 
   $: {
     sortedData = sortData(
@@ -122,7 +128,7 @@
 
   // paginate
   let pageData = [...sortedData]
-  let paginationState = { ...pagination }
+  $: paginationState = { ...pagination }
 
   $: {
     pageData = paginateData(
