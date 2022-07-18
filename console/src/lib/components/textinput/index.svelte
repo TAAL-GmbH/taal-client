@@ -13,10 +13,10 @@
   export let required = false
   export let name = ''
   export let value = ''
-  export let placeholder
+  export let placeholder = null
   export let disabled = false
   export let error = ''
-  export let autocomplete
+  export let autocomplete = null
 
   // in confirm mode, changes are local until confirm is clicked,
   // or alternatively changes can be reset to previous non-local value
