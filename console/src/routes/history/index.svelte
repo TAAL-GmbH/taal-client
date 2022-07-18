@@ -95,7 +95,9 @@
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error('Network response was not OK')
+          return response.text().then((text) => {
+            throw new Error(text)
+          })
         }
         contentType = response.headers.get('content-type')
         return response.blob()
@@ -121,14 +123,22 @@
           removeAfter: 2000,
         })
       })
-      .catch((err) =>
+      .catch((err) => {
+        var errMessage = ''
+        try {
+          const errJson = JSON.parse(err.message)
+          errMessage = errJson.error
+        } catch (error) {
+          errMessage = err
+        }
+
         addNotification({
-          text: `Error: ${err}`,
+          text: `Failed to download data ${errMessage}`,
           position: 'bottom-left',
           type: 'danger',
           removeAfter: 2000,
         })
-      )
+      })
   }
 
   onMount(() => getTransactions(rangeValue))

@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/libsv/go-bt"
+	"github.com/pkg/errors"
 )
 
 type Client struct {
@@ -242,10 +243,10 @@ func (c *Client) ReadTransaction(ctx context.Context, apiKey string, transaction
 	if resp.StatusCode != http.StatusOK {
 		bodyBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return nil, "", fmt.Errorf("failed to read response: %v", err)
+			return nil, "", errors.Wrap(err, "failed to read response")
 		}
 
-		return nil, "", fmt.Errorf("failed to read %s", string(bodyBytes))
+		return nil, "", errors.Errorf("failed to read %s", string(bodyBytes))
 	}
 
 	return resp.Body, resp.Header.Get("content-type"), nil
