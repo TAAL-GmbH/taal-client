@@ -80,6 +80,11 @@
       class:sortEnabled
       class:hasPager={paginationEnabled && pager}
     >
+      <colgroup>
+        {#each colDefs as colDef (colDef.id)}
+          <col span="1" {...colDef.props || {}} />
+        {/each}
+      </colgroup>
       <thead>
         <tr>
           {#if selectable}
@@ -315,27 +320,12 @@
     padding: 5px;
   }
 
-  /* .table td input {
-    vertical-align: middle;
-    margin-top: -2px;
-  } */
-
   .table td + td {
     padding-left: 15px;
   }
   .table.selectable td + td {
     padding-left: 10px;
   }
-
-  /* .table tr.selected {
-    background: lightgreen;
-  }
-  .table tr.locked {
-    background: oldlace;
-  }
-  .table tr.lockedSelf {
-    background: lightcyan;
-  } */
 
   .table-cell-row {
     display: flex;
