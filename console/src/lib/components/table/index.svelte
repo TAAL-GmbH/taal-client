@@ -1,6 +1,6 @@
 <script>
   import { createEventDispatcher } from 'svelte'
-  // import DivTable from './variant/div-table/index.svelte'
+  import DivTable from './variant/div-table/index.svelte'
   import StandardTable from './variant/standard-table/index.svelte'
   import { SortOrder } from './utils'
   import { filterData, sortData, paginateData } from './hooks'
@@ -147,7 +147,7 @@
   // render
   let tableVariants = {
     standard: StandardTable,
-    // div: DivTable,
+    div: DivTable,
   }
   let renderComp = null
 
