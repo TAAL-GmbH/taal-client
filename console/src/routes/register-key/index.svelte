@@ -1,6 +1,5 @@
 <script>
   import { useNavigate } from 'svelte-navigator'
-  import { getNotificationsContext } from 'svelte-notifications'
 
   import Button from '../../lib/components/button/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
@@ -12,10 +11,10 @@
   import Spinner from '../../lib/components/spinner/index.svelte'
 
   import { link } from '../../lib/utils/format'
+  import { success, failure } from '../../lib/utils/notifications'
   import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
 
-  const { addNotification } = getNotificationsContext()
   const navigate = useNavigate()
 
   let key = ''
@@ -25,29 +24,16 @@
   }
 
   async function registerKey(apiKey) {
-    let success = false
+    let ok = false
     await api.registerKey(
       apiKey,
       (data) => {
-        addNotification({
-          text: `API key registered successfully`,
-          position: 'bottom-left',
-          type: 'success',
-          removeAfter: 1000,
-        })
-
-        success = true
+        success('API key registered successfully', { duration: 1000 })
+        ok = true
       },
-      (error) => {
-        addNotification({
-          text: `Error: ${error}`,
-          position: 'bottom-left',
-          type: 'danger',
-          removeAfter: 5000,
-        })
-      }
+      (error) => failure(`Error: ${error}`, { duration: 5000 })
     )
-    if (success) {
+    if (ok) {
       navigate('/key-manager')
     }
   }

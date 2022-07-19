@@ -1,6 +1,5 @@
 <script>
   import { onMount } from 'svelte'
-  import { getNotificationsContext } from 'svelte-notifications'
 
   import Checkbox from '../../lib/components/checkbox/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
@@ -13,8 +12,7 @@
 
   import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
-
-  const { addNotification } = getNotificationsContext()
+  import { success, failure } from '../../lib/utils/notifications'
 
   let settings = {}
 
@@ -25,23 +23,10 @@
   function getSettings() {
     api.getSettings(
       (data) => {
-        addNotification({
-          text: `Settings retrieved successfully`,
-          position: 'bottom-left',
-          type: 'success',
-          removeAfter: 1000,
-        })
-
+        success('Settings retrieved successfully', { duration: 1000 })
         settings = data
       },
-      (error) => {
-        addNotification({
-          text: `Error: ${error}`,
-          position: 'bottom-left',
-          type: 'danger',
-          removeAfter: 5000,
-        })
-      }
+      (error) => failure(`Error: ${error}`, { duration: 5000 })
     )
   }
 
@@ -58,37 +43,14 @@
       },
       (data) => {
         settings[key] = value
-
-        addNotification({
-          text: `Setting updated successfully`,
-          position: 'bottom-left',
-          type: 'success',
-          removeAfter: 1000,
-        })
+        success('Setting updated successfully', { duration: 1000 })
       },
-      (error) => {
-        addNotification({
-          text: `Error: ${error}`,
-          position: 'bottom-left',
-          type: 'danger',
-          removeAfter: 2000,
-        })
-      }
+      (error) => failure(`Error: ${error}`, { duration: 2000 })
     )
   }
 
   function onChange(e) {
     const { name, group, type, value, checked } = e.detail
-    // console.log(
-    //   'name =',
-    //   name,
-    //   ' group =',
-    //   group,
-    //   ' type =',
-    //   type,
-    //   ' checked =',
-    //   checked
-    // )
     switch (type) {
       case 'search':
       case 'text':

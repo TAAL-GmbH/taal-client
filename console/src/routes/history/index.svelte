@@ -1,6 +1,5 @@
 <script>
   import { onMount } from 'svelte'
-  import { getNotificationsContext } from 'svelte-notifications'
   import mime from 'mime'
 
   import ButtonSelect from '../../lib/components/button-select/index.svelte'
@@ -15,11 +14,10 @@
     filterUnique,
     getColorFromDistinct,
   } from '../../lib/utils'
+  import { success, failure } from '../../lib/utils/notifications'
   import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
   import { colDefs, rangeItems } from './data'
-
-  const { addNotification } = getNotificationsContext()
 
   let transactions = []
   let rangeValue = '720'
@@ -73,14 +71,7 @@
       (data) => {
         transactions = data.transactions
       },
-      (error) => {
-        addNotification({
-          text: `Error: ${error}`,
-          position: 'bottom-left',
-          type: 'danger',
-          removeAfter: 2000,
-        })
-      }
+      (error) => failure(`Error: ${error}`, { duration: 2000 })
     )
   }
 
@@ -113,22 +104,9 @@
         }
 
         downloadFileBlob(filename, blob)
-
-        addNotification({
-          text: `Successfully downloaded: ${filename}`,
-          position: 'bottom-left',
-          type: 'success',
-          removeAfter: 2000,
-        })
+        success(`Successfully downloaded: ${filename}`, { duration: 2000 })
       })
-      .catch((err) =>
-        addNotification({
-          text: `Error: ${err}`,
-          position: 'bottom-left',
-          type: 'danger',
-          removeAfter: 2000,
-        })
-      )
+      .catch((err) => failure(`Error: ${err}`, { duration: 2000 }))
   }
 
   onMount(() => getTransactions(rangeValue))
