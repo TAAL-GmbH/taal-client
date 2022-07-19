@@ -308,7 +308,7 @@
     outline: none;
     border: none;
     width: calc(100% - var(--icon-size-local));
-    background-color: #ffffff;
+    background-color: inherit;
     appearance: none;
     pointer-events: none;
 
@@ -379,5 +379,8 @@
   .disabled:active {
     background-color: #efefef;
     border-color: #8f8d94;
+  }
+  .disabled select {
+    background-color: #efefef;
   }
 </style>
