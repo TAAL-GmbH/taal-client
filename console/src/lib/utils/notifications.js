@@ -2,7 +2,7 @@ import { toast } from '@zerodevx/svelte-toast'
 import Notification from '../components/notification/index.svelte'
 
 export const success = (m, opts = {}) => {
-  const { theme = {}, rest } = opts
+  const { theme = {}, ...rest } = opts
   toast.push({
     component: {
       src: Notification,
@@ -17,7 +17,7 @@ export const success = (m, opts = {}) => {
 }
 
 export const failure = (m, opts = {}) => {
-  const { theme = {}, rest } = opts
+  const { theme = {}, ...rest } = opts
   toast.push({
     component: {
       src: Notification,
