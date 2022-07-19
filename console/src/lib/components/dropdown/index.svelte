@@ -308,7 +308,7 @@
     outline: none;
     border: none;
     width: calc(100% - var(--icon-size-local));
-    background: none;
+    background-color: #ffffff;
     appearance: none;
     pointer-events: none;
 
