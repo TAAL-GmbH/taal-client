@@ -13,7 +13,7 @@ export const success = (m, opts = {}) =>
 export const failure = (m, opts = {}) =>
   toast.push(m, {
     theme: {
-      '--toastBackground': '##FF344C',
+      '--toastBackground': '#FF344C',
       '--toastColor': 'white',
       '--toastBarBackground': 'tomato',
     },
