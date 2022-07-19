@@ -3,6 +3,7 @@ import RenderSpan from './renderers/render-span/index.svelte'
 import RenderStatusText from './renderers/render-status-text/index.svelte'
 import {
   dataSize,
+  formatFilename,
   formatDate,
   formatNum,
   formatSatoshi,
@@ -27,6 +28,7 @@ export const ColType = {
   terraHash: 'terraHash',
   apiKey: 'apiKey',
   dataSize: 'dataSize',
+  filename: 'filename',
 }
 
 export const FilterType = {
@@ -89,6 +91,9 @@ const str = (value) => {
 const defaultColTypeRenderers = {
   [ColType.string]: (idField, item, colId) => ({
     value: str(item[colId]),
+  }),
+  [ColType.filename]: (idField, item, colId) => ({
+    value: formatFilename(item[colId]),
   }),
   [ColType.dataSize]: (idField, item, colId) => ({
     component: RenderSpan,

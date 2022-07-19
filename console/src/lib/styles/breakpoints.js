@@ -6,5 +6,5 @@ export const breakpoints = {
   xxl: '1920px',
 }
 
-export const medium = `(min-width: ${breakpoints.sm})`
+export const medium = `(min-width: ${breakpoints.md})`
 export const large = `(min-width: ${breakpoints.xl})`
