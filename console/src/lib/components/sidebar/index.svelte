@@ -13,6 +13,9 @@
   function onLink(item) {
     dispatch('link', item)
   }
+  function onClose() {
+    dispatch('close')
+  }
 </script>
 
 <div
@@ -20,7 +23,7 @@
   style:--top-local={$headerHeight + 'px'}
   style:--menu-width-local={menuWidth + 'px'}
 >
-  <div class="cover" in:fade />
+  <div class="cover" in:fade on:mousedown|preventDefault={onClose} />
   <div class="menu" in:fly={{ x: -menuWidth, duration: 200 }}>
     <div class="content">
       {#each links as link (link[dataKey])}

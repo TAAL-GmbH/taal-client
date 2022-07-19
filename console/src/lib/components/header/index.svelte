@@ -13,7 +13,7 @@
 
   $: hasMenu = links.length > 0
 
-  let open = false
+  export let open = false
   export let showLinks = true
   export let showActions = true
   export let dataKey = 'path'
