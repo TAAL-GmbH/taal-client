@@ -1,5 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte'
+
+  import { mediaSize } from '../../../../stores/index'
   import Button from '../../../button/index.svelte'
   import Checkbox from '../../../checkbox/index.svelte'
   import Icon from '../../../icon/index.svelte'
@@ -82,20 +84,39 @@
     iconsW +
     (selectable ? 32 : 0) +
     (colDefs.length > 0 ? (colDefs.length - 1) * gridGap : 0)
-  let gridItems = []
+  let grid = ''
 
   $: {
-    gridItems = selectable ? ['32px'] : []
-    colDefs.forEach((colDef) => {
-      gridItems.push(
-        colDef?.props?.width
-          ? `calc(${colDef.props.width} - (${fixedWidth}px / ${colDefs.length}))`
-          : `calc((100% - ${fixedWidth}px) / ${colDefs.length})`
-      )
-    })
-    if (iconsW > 0) {
-      gridItems.push(`${iconsW}px`)
+    let gridItems = selectable ? ['32px'] : []
+    if ($mediaSize === 'small') {
+      gridItems.push(`calc(100% - ${selectable ? '80px' : '48px'})`)
+      if (iconsW > 0) {
+        gridItems.push(`48px`)
+      }
+    } else {
+      colDefs.forEach((colDef) => {
+        gridItems.push(
+          colDef?.props?.width
+            ? `calc(${colDef.props.width} - (${fixedWidth}px / ${colDefs.length}))`
+            : `calc((100% - ${fixedWidth}px) / ${colDefs.length})`
+        )
+      })
+      if (iconsW > 0) {
+        gridItems.push(`${iconsW}px`)
+      }
     }
+    grid = gridItems.join(' ')
+  }
+
+  function getStyleProps(colDef) {
+    if (colDef?.props?.style) {
+      let str = ''
+      Object.keys(colDef?.props?.style).forEach((key) => {
+        str += `${key}: ${colDef.props.style[key]};`
+      })
+      return { style: str }
+    }
+    return {}
   }
 </script>
 
@@ -109,7 +130,7 @@
     : '#ffffff'}
   style:--row-col-local={bgColorTable ? bgColorTable : 'none'}
   style:--align-pager-local={alignPager}
-  style:--grid-local={gridItems.join(' ')}
+  style:--grid-local={grid}
   style:--grid-gap-local={gridGap + 'px'}
 >
   <div
@@ -119,46 +140,49 @@
   >
     <section
       class="table"
+      class:small={$mediaSize === 'small'}
       class:selectable
       class:sortEnabled
       class:hasPager={paginationEnabled && pager}
     >
-      <section class="thead">
-        <div class="tr">
-          {#if selectable}
-            <div class="th" />
-          {/if}
-          {#each colDefs as colDef (colDef.id)}
-            <div class="th" on:click={() => onHeaderClick(colDef.id)}>
-              <div class="table-cell-row">
-                {colDef.name}
-                {#if sortEnabled && sortState.sortColumn === colDef.id}
-                  <div class="header-icon">
-                    <Icon
-                      name={sortState.sortOrder === SortOrder.asc
-                        ? 'chevron-up'
-                        : 'chevron-down'}
-                      size={18}
-                    />
-                  </div>
-                {/if}
-                {#if filtersEnabled && filtersState[colDef.id]}
-                  <div class="header-icon">
-                    <Icon
-                      name="filters"
-                      size={18}
-                      on:click={() => onFilterClick(colDef.id)}
-                    />
-                  </div>
-                {/if}
+      {#if $mediaSize !== 'small'}
+        <section class="thead">
+          <div class="tr">
+            {#if selectable}
+              <div class="th" />
+            {/if}
+            {#each colDefs as colDef (colDef.id)}
+              <div class="th" on:click={() => onHeaderClick(colDef.id)}>
+                <div class="table-cell-row">
+                  {colDef.name}
+                  {#if sortEnabled && sortState.sortColumn === colDef.id}
+                    <div class="header-icon">
+                      <Icon
+                        name={sortState.sortOrder === SortOrder.asc
+                          ? 'chevron-up'
+                          : 'chevron-down'}
+                        size={18}
+                      />
+                    </div>
+                  {/if}
+                  {#if filtersEnabled && filtersState[colDef.id]}
+                    <div class="header-icon">
+                      <Icon
+                        name="filters"
+                        size={18}
+                        on:click={() => onFilterClick(colDef.id)}
+                      />
+                    </div>
+                  {/if}
+                </div>
               </div>
-            </div>
-          {/each}
-          {#if getRowIconActions}
-            <div class="th" />
-          {/if}
-        </div>
-      </section>
+            {/each}
+            {#if getRowIconActions}
+              <div class="th" />
+            {/if}
+          </div>
+        </section>
+      {/if}
       <section class="tbody">
         {#each data as item (item[idField])}
           <div class="tr">
@@ -172,38 +196,109 @@
                 />
               </div>
             {/if}
-            {#each colDefs as colDef (colDef.id)}
-              <div class="td">
-                {#if getDisplay(renderCells, renderTypes, colDef, idField, item).component}
-                  <svelte:component
-                    this={getDisplay(
-                      renderCells,
-                      renderTypes,
-                      colDef,
-                      idField,
-                      item
-                    ).component}
-                    {...{
-                      ...getDisplay(
+            {#if $mediaSize !== 'small'}
+              {#each colDefs as colDef (colDef.id)}
+                <div class="td">
+                  {#if getDisplay(renderCells, renderTypes, colDef, idField, item).component}
+                    <svelte:component
+                      this={getDisplay(
                         renderCells,
                         renderTypes,
                         colDef,
                         idField,
                         item
-                      ).props,
-                      ...(getRenderProps
-                        ? getRenderProps(name, colDef, idField, item)
-                        : {}),
-                    }}
-                  />
-                {:else}
-                  {getDisplay(renderCells, renderTypes, colDef, idField, item)
-                    .value}
-                {/if}
-              </div>
-            {/each}
-            {#if getRowIconActions}
+                      ).component}
+                      {...{
+                        ...getDisplay(
+                          renderCells,
+                          renderTypes,
+                          colDef,
+                          idField,
+                          item
+                        ).props,
+                        ...(getRenderProps
+                          ? getRenderProps(name, colDef, idField, item)
+                          : {}),
+                      }}
+                    />
+                  {:else}
+                    {getDisplay(renderCells, renderTypes, colDef, idField, item)
+                      .value}
+                  {/if}
+                </div>
+              {/each}
+            {:else}
               <div class="td">
+                <div class="inner-grid">
+                  {#each colDefs as colDef (colDef.id)}
+                    <div class="inner-grid-item" {...getStyleProps(colDef)}>
+                      <div
+                        class="inner-grid-item-label"
+                        on:click={() => onHeaderClick(colDef.id)}
+                      >
+                        <div class="table-cell-row">
+                          {colDef.name}
+                          {#if sortEnabled && sortState.sortColumn === colDef.id}
+                            <div class="header-icon">
+                              <Icon
+                                name={sortState.sortOrder === SortOrder.asc
+                                  ? 'chevron-up'
+                                  : 'chevron-down'}
+                                size={18}
+                              />
+                            </div>
+                          {/if}
+                          {#if filtersEnabled && filtersState[colDef.id]}
+                            <div class="header-icon">
+                              <Icon
+                                name="filters"
+                                size={18}
+                                on:click={() => onFilterClick(colDef.id)}
+                              />
+                            </div>
+                          {/if}
+                        </div>
+                      </div>
+                      <div class="inner-grid-item-value">
+                        {#if getDisplay(renderCells, renderTypes, colDef, idField, item).component}
+                          <svelte:component
+                            this={getDisplay(
+                              renderCells,
+                              renderTypes,
+                              colDef,
+                              idField,
+                              item
+                            ).component}
+                            {...{
+                              ...getDisplay(
+                                renderCells,
+                                renderTypes,
+                                colDef,
+                                idField,
+                                item
+                              ).props,
+                              ...(getRenderProps
+                                ? getRenderProps(name, colDef, idField, item)
+                                : {}),
+                            }}
+                          />
+                        {:else}
+                          {getDisplay(
+                            renderCells,
+                            renderTypes,
+                            colDef,
+                            idField,
+                            item
+                          ).value}
+                        {/if}
+                      </div>
+                    </div>
+                  {/each}
+                </div>
+              </div>
+            {/if}
+            {#if getRowIconActions}
+              <div class="td" class:column={$mediaSize === 'small'}>
                 {#if !disabled}
                   <div class="table-cell-row">
                     {#each getRowIconActions(name, item, idField) || [] as actionItem (actionItem.icon)}
@@ -258,6 +353,9 @@
     display: flex;
     flex-direction: column;
     align-items: stretch;
+
+    font-family: var(--font-family);
+    box-sizing: var(--box-sizing);
   }
 
   .table-container {
@@ -293,10 +391,12 @@
     grid-template-columns: var(--grid-local);
     gap: var(--grid-gap-local);
   }
-  .table .tr:first-child .th:first-child {
+  .table .tr:first-child .th:first-child,
+  .table.small .tr:first-child .td:first-child {
     border-top-left-radius: 4px;
   }
-  .table .tr:first-child .th:last-child {
+  .table .tr:first-child .th:last-child,
+  .table.small .tr:first-child .td:last-child {
     border-top-right-radius: 4px;
   }
   .table .tr:last-child .td:first-child {
@@ -352,8 +452,6 @@
     line-height: 24px;
     letter-spacing: -0.01em;
 
-    min-width: 0px !important;
-
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -379,12 +477,74 @@
     padding-left: 10px;
   }
 
+  .table.small .tbody .td {
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    padding: 0;
+  }
+  .table.small .tbody .tr {
+    border-top: 1px solid #efefef;
+    border-bottom: 1px solid #fcfcff;
+    background-color: var(--row-col-local);
+    height: inherit;
+  }
+  .table.small .tbody .tr:first-of-type {
+    border-top: 1px solid transparent;
+  }
+  .inner-grid {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    row-gap: 8px;
+    column-gap: 15px;
+    /* display: flex;
+    flex-wrap: wrap;
+    gap: 8px; */
+    width: 100%;
+    height: calc(100% - 32px);
+    padding: 16px 24px;
+  }
+  .inner-grid-item {
+    display: flex;
+    flex-direction: column;
+    min-width: calc(50% - 4px);
+  }
+  .inner-grid-item-label {
+    text-align: left;
+    white-space: nowrap;
+
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 16px;
+    letter-spacing: 0.02em;
+
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+
+    text-transform: uppercase;
+    color: #232d7c;
+
+    cursor: auto;
+  }
+  .table.sortEnabled .inner-grid-item-label {
+    cursor: pointer;
+  }
+
   .table-cell-row {
     display: flex;
     align-items: center;
     flex-wrap: nowrap;
     gap: 4px;
   }
+  .td.column {
+    padding: 8px 16px 8px 0 !important;
+  }
+  .td.column .table-cell-row {
+    flex-direction: column;
+    justify-content: flex-start;
+    height: 100%;
+  }
+
   .header-icon {
     width: 18px;
     height: 18px;
