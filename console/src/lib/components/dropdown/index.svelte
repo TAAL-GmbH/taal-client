@@ -145,6 +145,18 @@
         return false
     }
   }
+
+  function onFocusAction(eventName) {
+    switch (eventName) {
+      case 'blur':
+        focused = false
+        break
+      case 'focus':
+        focused = true
+        break
+    }
+    dispatch(eventName)
+  }
 </script>
 
 <div
@@ -179,8 +191,8 @@
         {name}
         {value}
         on:change={onSelectChange}
-        on:focus={(e) => (focused = true)}
-        on:blur={(e) => (focused = false)}
+        on:focus={() => onFocusAction('focus')}
+        on:blur={() => onFocusAction('blur')}
         on:keydown={onKeyDown}
       >
         {#each items as item (item.value)}

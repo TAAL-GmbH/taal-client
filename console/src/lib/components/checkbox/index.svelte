@@ -75,6 +75,18 @@
     checked = newValue
     dispatch('change', { name, type, checked: newValue })
   }
+
+  function onFocusAction(eventName) {
+    switch (eventName) {
+      case 'blur':
+        focused = false
+        break
+      case 'focus':
+        focused = true
+        break
+    }
+    dispatch(eventName)
+  }
 </script>
 
 <div
@@ -102,8 +114,8 @@
       {type}
       {name}
       {checked}
-      on:focus={(e) => (focused = true)}
-      on:blur={(e) => (focused = false)}
+      on:focus={() => onFocusAction('focus')}
+      on:blur={() => onFocusAction('blur')}
     />
     <div style="width: 20px; height: 20px;">
       <Icon name="check" size={20} />
