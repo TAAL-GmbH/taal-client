@@ -1,10 +1,7 @@
 <script>
-  import { getNotificationsContext } from 'svelte-notifications'
   import Icon from '../icon/index.svelte'
   import Progress from '../progress/index.svelte'
   import { copyTextToClipboard } from '../../utils/clipboard'
-
-  const { addNotification } = getNotificationsContext()
 
   export let label = ''
   export let value = ''
@@ -19,16 +16,8 @@
     textWidth = copy ? 'calc(100% - 24px)' : '100%'
   }
 
-  async function onCopy(value) {
-    console.log('onCopy: value = ', value)
-    const { ok, error } = await copyTextToClipboard(value)
-
-    addNotification({
-      text: ok ? `Successfully copied.` : `Failed to copy.`,
-      position: 'bottom-left',
-      type: ok ? 'success' : 'danger',
-      removeAfter: 2000,
-    })
+  function onCopy(value) {
+    copyTextToClipboard(value)
   }
 </script>
 

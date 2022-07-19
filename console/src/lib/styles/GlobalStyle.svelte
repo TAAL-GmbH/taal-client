@@ -15,17 +15,6 @@
 
 <slot />
 
-<!--
-
---theme-primary
---theme-secondary
---theme-surface
---theme-background
---theme-on-primary
---theme-on-secondary
---theme-on-surface
-
--->
 <style>
   :global(:root) {
     --box-sizing: border-box;
@@ -51,16 +40,10 @@
     color: #0094ff;
   }
 
-  /* :global(:root) {
-    --color-primary: #14854f;
-    --color-lightGrey: #d2d6dd;
-    --color-grey: #747681;
-    --color-darkGrey: #3f4144;
-    --color-error: #d43939;
-    --color-success: #28bd14;
-    --grid-maxWidth: 120rem;
-    --grid-gutter: 2rem;
-    --font-size: 1.6rem;
-    --font-family: 'Helvetica Neue', sans-serif; */
-  /* } */
+  :root {
+    --toastContainerTop: auto;
+    --toastContainerRight: auto;
+    --toastContainerBottom: 30px;
+    --toastContainerLeft: 30px;
+  }
 </style>

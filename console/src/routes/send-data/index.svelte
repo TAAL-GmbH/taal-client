@@ -1,6 +1,5 @@
 <script>
   import { onMount } from 'svelte'
-  import { getNotificationsContext } from 'svelte-notifications'
 
   import Button from '../../lib/components/button/index.svelte'
   import Dropdown from '../../lib/components/dropdown/index.svelte'
@@ -18,6 +17,7 @@
   import * as api from '../../lib/api'
 
   import { getFileKey } from '../../lib/utils/files'
+  import { success, failure } from '../../lib/utils/notifications'
   import {
     copyCurl,
     getApiKeys,
@@ -29,8 +29,6 @@
     setStoreValue,
     updateStore,
   } from './utils'
-
-  const { addNotification } = getNotificationsContext()
 
   const stdMimeType = 'text/plain'
   let dataTransmissionInProgress = false
@@ -139,21 +137,18 @@
         supportedImageSrcDataFileTypes.includes(file.type)
       ) {
         const reader = new FileReader()
-        reader.readAsDataURL(file)
+
         reader.onloadend = () => (imageSrcData[key] = reader.result)
+        reader.onerror = () =>
+          failure(`Error: ${reader.error}`, { duration: 2000 })
+        reader.readAsDataURL(file)
       }
       // save file data into map
       if (!fileDataMap[key]) {
         const reader = new FileReader()
         reader.onload = () => (fileDataMap[key] = reader.result)
-        reader.onerror = () => {
-          addNotification({
-            text: `Error: ${reader.error}`,
-            position: 'bottom-left',
-            type: 'danger',
-            removeAfter: 2000,
-          })
-        }
+        reader.onerror = () =>
+          failure(`Error: ${reader.error}`, { duration: 2000 })
         reader.readAsArrayBuffer(file)
       }
     })
@@ -203,7 +198,6 @@
           writeDataItem(fileDataMap[key], file.type, file.name)
         })
       ).finally(() => {
-        console.log('file transmission finished')
         files.forEach((file) => {
           const key = getFileKey(file)
           fileProgressData[key] = { state: 'done', progress: 1 }
@@ -212,7 +206,6 @@
       })
     } else {
       Promise.all([writeDataItem(textData, mimeType, '')]).finally(() => {
-        console.log('data transmission finished')
         onTransmissionEnd()
       })
     }
@@ -240,22 +233,9 @@
           'X-Key': secret,
         },
       },
-      (data) => {
-        addNotification({
-          text: `Transaction submitted successfully`,
-          position: 'bottom-left',
-          type: 'success',
-          removeAfter: 1000,
-        })
-      },
-      (error) => {
-        addNotification({
-          text: `Error: ${error}`,
-          position: 'bottom-left',
-          type: 'danger',
-          removeAfter: 2000,
-        })
-      }
+      (data) =>
+        success('Transaction submitted successfully', { duration: 1000 }),
+      (error) => failure(`Error: ${error}`, { duration: 2000 })
     )
   }
 
@@ -273,11 +253,11 @@
     mode = getStoreValue('mode', 'raw')
     secret = getStoreValue('secret', '')
 
-    const settings = await getSettings(addNotification)
+    const settings = await getSettings()
     taalClientURL = getCorrectURL(settings.listenAddress)
     timeout = settings.taalTimeout
 
-    const keysResult = await getApiKeys(addNotification)
+    const keysResult = await getApiKeys()
     // TODO handle the situation when no api keys are registered yet
     //      suggestion is to show a message with a redirect button to register key page
 
@@ -402,7 +382,7 @@
           variant="ghost"
           icon="document-duplicate"
           size="small"
-          on:click={() => copyCurl(curlCommand, addNotification)}
+          on:click={() => copyCurl(curlCommand)}
         >
           Copy
         </Button>

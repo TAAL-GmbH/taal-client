@@ -39,10 +39,24 @@ export const getTransactionHashUrl = (value, defaultValue = '') => {
   return valueSet(value) ? `https://whatsonchain.com/tx/${value}` : defaultValue
 }
 
+export const formatFilename = (value, limit = 20, defaultValue = '') => {
+  let ext = ''
+  if (value?.length > 0 && value.includes('.')) {
+    ext = value.split('.').pop()
+  }
+  return valueSet(value)
+    ? value.length > limit
+      ? ext
+        ? value.substring(0, limit - 3 - ext.length) + '...' + ext
+        : value.substring(0, limit - 3) + '...'
+      : value
+    : defaultValue
+}
+
 export const formatTransactionHash = (value, defaultValue = '') => {
   return valueSet(value)
-    ? `${value.substring(0, 8)}...${value.substring(
-        value.length - 8,
+    ? `${value.substring(0, 5)}...${value.substring(
+        value.length - 5,
         value.length
       )}`
     : defaultValue

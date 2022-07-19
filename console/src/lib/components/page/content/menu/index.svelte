@@ -1,5 +1,5 @@
 <script>
-  import { pageContentOffsetX, mediaSize } from '../../../../stores'
+  import { mediaSize, pageContentOffsetX } from '../../../../stores'
 
   $: gutterW = $mediaSize !== 'large' ? 22 : 180
   $: marginTop = $mediaSize === 'small' ? 32 : 48
@@ -11,6 +11,7 @@
   style:--padding-local="0 {gutterW}px"
   style:--margin-top-local={marginTop + 'px'}
   style:--margin-left-local={$pageContentOffsetX + 'px'}
+  style:--min-height-local="calc(100% - {marginTop + 96 + 50}px)"
 >
   <slot />
 </div>
@@ -22,7 +23,7 @@
     flex-direction: column;
     align-items: center;
 
-    min-height: calc(100% - 194px);
+    min-height: var(--min-height-local);
 
     width: var(--width-local);
     max-width: var(--width-local);
