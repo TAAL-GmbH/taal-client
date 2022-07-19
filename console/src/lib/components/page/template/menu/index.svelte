@@ -41,6 +41,7 @@
 <Header
   showLinks={true}
   showActions={true}
+  open={showSidebarMenu}
   {links}
   {actions}
   on:link={onMenuItem}
@@ -57,7 +58,11 @@
 </div>
 
 {#if showSidebarMenu && $mediaSize === 'small'}
-  <Sidebar {links} on:link={onMenuItem} />
+  <Sidebar
+    {links}
+    on:link={onMenuItem}
+    on:close={() => (showSidebarMenu = false)}
+  />
 {/if}
 
 <style>

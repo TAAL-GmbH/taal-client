@@ -1,6 +1,5 @@
 <script>
   import { onMount } from 'svelte'
-  import { getNotificationsContext } from 'svelte-notifications'
 
   import Button from '../../lib/components/button/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
@@ -12,8 +11,7 @@
 
   import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
-
-  const { addNotification } = getNotificationsContext()
+  import { success, failure } from '../../lib/utils/notifications'
 
   let keys
 
@@ -27,17 +25,9 @@
 
   function getApiKeys() {
     api.getApiKeysUsage(
-      (data) => {
-        keys = data.key_usages
-      },
-      (error) => {
-        addNotification({
-          text: `Failed to load api keys: ${error}`,
-          position: 'bottom-left',
-          type: 'danger',
-          removeAfter: 2000,
-        })
-      }
+      (data) => (keys = data.key_usages),
+      (error) =>
+        failure(`Failed to load api keys: ${error}`, { duration: 2000 })
     )
   }
 
@@ -46,24 +36,10 @@
       apiKey,
       (data) => {
         hidePopup()
-
-        addNotification({
-          text: `API key registered successfully`,
-          position: 'bottom-left',
-          type: 'success',
-          removeAfter: 1000,
-        })
-
+        success('API key registered successfully', { duration: 1000 })
         getApiKeys()
       },
-      (error) => {
-        addNotification({
-          text: `Error: ${error}`,
-          position: 'bottom-left',
-          type: 'danger',
-          removeAfter: 5000,
-        })
-      }
+      (error) => failure(`Error: ${error}`, { duration: 5000 })
     )
   }
 
@@ -71,28 +47,14 @@
     api.deleteKey(
       apiKey,
       (data) => {
-        addNotification({
-          text: `API key deleted successfully`,
-          position: 'bottom-left',
-          type: 'success',
-          removeAfter: 1000,
-        })
-
+        success('API key deleted successfully', { duration: 1000 })
         getApiKeys()
       },
-      (error) => {
-        addNotification({
-          text: `Error: ${error}`,
-          position: 'bottom-left',
-          type: 'danger',
-          removeAfter: 5000,
-        })
-      }
+      (error) => failure(`Error: ${error}`, { duration: 5000 })
     )
   }
 
   function onRegister(e) {
-    console.log('onRegister: apiKey = ', e.detail.apiKey)
     registerKey(e.detail.apiKey)
   }
 

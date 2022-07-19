@@ -4,7 +4,7 @@ export const colDefs = [
     name: 'Created at (UTC)',
     type: 'dateStr',
     props: {
-      width: '18%',
+      width: '20%',
     },
   },
   {
@@ -12,7 +12,7 @@ export const colDefs = [
     name: 'ID',
     type: 'transactionhash',
     props: {
-      width: '17%',
+      width: '14%',
     },
   },
   {
@@ -20,7 +20,7 @@ export const colDefs = [
     name: 'API key used',
     type: 'apiKey',
     props: {
-      width: '35%',
+      width: '38%',
       style: {
         'grid-column-start': 1,
         'grid-column-end': -1,
@@ -38,9 +38,9 @@ export const colDefs = [
   {
     id: 'filename',
     name: 'Filename',
-    type: 'string',
+    type: 'filename',
     props: {
-      width: '20%',
+      width: '18%',
     },
   },
 ]

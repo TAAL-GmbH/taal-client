@@ -213,7 +213,7 @@
     outline: none;
     border: none;
     width: 100%;
-    background-color: #ffffff;
+    background-color: inherit;
 
     font-weight: 400;
     font-size: var(--fontSize-local);

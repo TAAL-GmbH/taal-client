@@ -33,9 +33,6 @@
 
     if (firstLoad && result?.keys && result?.keys.length > 0) {
       firstLoad = false
-      console.log(
-        'on first load, we already have keys and redirect to send data page'
-      )
       navigate('/send-data')
     }
   })
