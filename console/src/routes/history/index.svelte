@@ -149,6 +149,7 @@
     <Spacer h={24} />
     <Table
       name="history"
+      variant="div"
       {colDefs}
       data={transactions}
       pagination={{
