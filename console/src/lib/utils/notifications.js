@@ -1,11 +1,11 @@
 import { toast } from '@zerodevx/svelte-toast'
-import Notofication from '../components/notification/index.svelte'
+import Notification from '../components/notification/index.svelte'
 
 export const success = (m, opts = {}) => {
   const { theme = {}, rest } = opts
   toast.push({
     component: {
-      src: Notofication,
+      src: Notification,
       props: { status: 'success', title: m },
     },
     theme: {
@@ -20,7 +20,7 @@ export const failure = (m, opts = {}) => {
   const { theme = {}, rest } = opts
   toast.push({
     component: {
-      src: Notofication,
+      src: Notification,
       props: { status: 'failure', title: m },
     },
     theme: {
