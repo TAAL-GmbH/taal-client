@@ -2,12 +2,12 @@
   let year = new Date().getFullYear()
 </script>
 
-<div class="tui-footer">© {year} TAAL TECHNOLOGIES SEZC</div>
+<div class="tui-footer"><span>© {year} TAAL TECHNOLOGIES SEZC</span></div>
 
 <style>
   .tui-footer {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
 
     width: 100%;
@@ -22,5 +22,9 @@
     letter-spacing: 0.005em;
 
     color: #8f8d94;
+  }
+
+  span {
+    margin-top: 4px;
   }
 </style>
