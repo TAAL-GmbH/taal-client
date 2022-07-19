@@ -45,5 +45,16 @@
     --toastContainerRight: auto;
     --toastContainerBottom: 30px;
     --toastContainerLeft: 30px;
+    --toastBorder: none;
+    --toastBorderRadius: 4px;
+    --toastMsgPadding: 0;
+    --toastWidth: 340px;
+  }
+  :global(._toastBtn) {
+    z-index: 100;
+    color: #282933;
+    margin-top: 11px;
+    margin-left: -104px;
+    align-self: flex-start;
   }
 </style>

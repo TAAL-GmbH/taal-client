@@ -1,21 +1,32 @@
 import { toast } from '@zerodevx/svelte-toast'
+import Notofication from '../components/notification/index.svelte'
 
-export const success = (m, opts = {}) =>
-  toast.push(m, {
-    theme: {
-      '--toastBackground': '#6EC492',
-      '--toastColor': 'white',
-      '--toastBarBackground': 'green',
+export const success = (m, opts = {}) => {
+  const { theme = {}, rest } = opts
+  toast.push({
+    component: {
+      src: Notofication,
+      props: { status: 'success', title: m },
     },
-    ...opts,
+    theme: {
+      '--toastBarBackground': '#6EC492',
+      ...theme,
+    },
+    ...rest,
   })
+}
 
-export const failure = (m, opts = {}) =>
-  toast.push(m, {
-    theme: {
-      '--toastBackground': '#FF344C',
-      '--toastColor': 'white',
-      '--toastBarBackground': 'tomato',
+export const failure = (m, opts = {}) => {
+  const { theme = {}, rest } = opts
+  toast.push({
+    component: {
+      src: Notofication,
+      props: { status: 'failure', title: m },
     },
-    ...opts,
+    theme: {
+      '--toastBarBackground': '#FF344C',
+      ...theme,
+    },
+    ...rest,
   })
+}
