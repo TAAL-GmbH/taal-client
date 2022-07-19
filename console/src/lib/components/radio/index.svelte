@@ -14,7 +14,7 @@
   export let group = ''
   export let checked = false
   export let disabled = false
-  export let error = false
+  export let valid = true
   export let allowToggle = false
 
   let direction = 'row'
@@ -94,7 +94,13 @@
   on:click={disabled || cursor !== 'pointer' ? null : onInputParentClick}
 >
   <label for={name}>{getInputLabel(label, required)}</label>
-  <div class="input" class:disabled class:error class:focused class:checked>
+  <div
+    class="input"
+    class:disabled
+    class:error={!valid}
+    class:focused
+    class:checked
+  >
     <input
       bind:this={inputRef}
       {type}

@@ -14,6 +14,7 @@
   // export let multiple = false
   export let items = []
   export let disabled = false
+  export let valid = true
   export let error = ''
   export let maxVisibleListItems = 6
 
@@ -118,7 +119,7 @@
     <div
       class="button-select"
       class:disabled
-      class:error={error !== ''}
+      class:error={!valid || error !== ''}
       class:focused={focusRect && focused}
     >
       {#each items as item (item.value)}

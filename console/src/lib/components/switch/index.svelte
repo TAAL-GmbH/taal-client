@@ -13,7 +13,7 @@
   export let name = ''
   export let checked = false
   export let disabled = false
-  export let error = false
+  export let valid = true
 
   let direction = 'row'
   let justify = 'flex-start'
@@ -89,7 +89,13 @@
   on:click={disabled ? null : onInputParentClick}
 >
   <label for={name}>{getInputLabel(label, required)}</label>
-  <div class="input" class:disabled class:error class:focused class:checked>
+  <div
+    class="input"
+    class:disabled
+    class:error={!valid}
+    class:focused
+    class:checked
+  >
     <input
       bind:this={inputRef}
       {type}

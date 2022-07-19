@@ -15,6 +15,7 @@
   export let value = ''
   export let placeholder = null
   export let disabled = false
+  export let valid = true
   export let error = ''
   export let autocomplete = null
 
@@ -98,9 +99,8 @@
   function onInputChange(e) {
     if (confirm) {
       localValue = e.srcElement.value
-    } else {
-      dispatch('change', { name, type, value: e.srcElement.value })
     }
+    dispatch('change', { name, type, value: e.srcElement.value })
   }
 
   onMount(() => {
@@ -109,7 +109,7 @@
 
   function doConfirm() {
     value = localValue
-    dispatch('change', { name, type, value })
+    dispatch('confirm', { name, type, value })
   }
 
   function doReset() {
@@ -143,7 +143,7 @@
     <div
       class="input"
       class:disabled
-      class:error={error !== ''}
+      class:error={!valid || error !== ''}
       class:focused
       on:click={onInputParentClick}
     >

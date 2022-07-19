@@ -18,6 +18,7 @@
   export let placeholder = ''
   export let disabled = false
   export let readonly = false
+  export let valid = true
   export let error = ''
 
   export let resize = true
@@ -150,7 +151,7 @@
     <div
       class="input"
       class:disabled
-      class:error={error !== ''}
+      class:error={!valid || error !== ''}
       class:focused
       class:resize
       class:dragging={dragStartH === null}

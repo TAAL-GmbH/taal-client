@@ -16,6 +16,7 @@
   export let required = false
   export let name = ''
   export let disabled = false
+  export let valid = true
   export let error = ''
   export let accept = '*'
   export let multiple = false
@@ -121,7 +122,7 @@
     <div
       class="input"
       class:disabled
-      class:error={error !== ''}
+      class:error={!valid || error !== ''}
       class:focused
       class:dragOver
       on:drop|preventDefault={onDrop}
