@@ -219,7 +219,7 @@
     width: 100%;
     resize: none;
     overflow: hidden;
-    background: none;
+    background-color: #ffffff;
 
     font-weight: 400;
     font-size: var(--fontSize-local);
