@@ -39,6 +39,7 @@ type Transaction struct {
 	CreatedAt string `db:"created_at" json:"created_at"`
 	Filename  string `db:"filename" json:"filename"`
 	Secret    string `db:"secret" json:"secret"`
+	IsHash    bool   `db:"is_hash" json:"isHash"`
 }
 
 type TransactionInfo struct {

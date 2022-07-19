@@ -333,6 +333,7 @@ func TestInsertTransaction(t *testing.T) {
 			DataBytes: 100,
 			Filename:  "somepdf.pdf",
 			Secret:    "secret",
+			IsHash:    true,
 		}
 		err := repo.InsertTransaction(ctx, tx)
 		is.NoErr(err)

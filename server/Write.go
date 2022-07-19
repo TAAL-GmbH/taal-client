@@ -57,10 +57,14 @@ func (s Server) write(c echo.Context) error {
 	}
 
 	var payload []byte
-	switch c.Request().Header.Get("x-mode") {
+
+	mode := c.Request().Header.Get("x-mode")
+
+	switch mode {
 	case "hash":
 		hash := sha256.Sum256(reqBody)
 		payload = []byte(hex.EncodeToString(hash[:]))
+		mimeType = "text/plain"
 	case "encrypt":
 		key := c.Request().Header.Get("x-key")
 		if key == "" {
@@ -115,8 +119,11 @@ func (s Server) write(c echo.Context) error {
 		Filename:  c.Request().Header.Get(HeaderFilename),
 	}
 
-	if c.Request().Header.Get("x-mode") == "encrypt" {
+	switch mode {
+	case "encrypt":
 		tx.Secret = c.Request().Header.Get("X-Key")
+	case "hash":
+		tx.IsHash = true
 	}
 
 	err = s.repository.InsertTransaction(ctx, tx)
