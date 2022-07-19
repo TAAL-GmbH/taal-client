@@ -95,8 +95,8 @@ func (r Repository) GetAllKeys(ctx context.Context) ([]server.Key, error) {
 
 func (r Repository) InsertTransaction(ctx context.Context, tx server.Transaction) error {
 	createdAt := r.now().UTC().Format(ISO8601)
-	query := `INSERT INTO transactions (created_at, id, api_key, data_bytes, filename, secret) VALUES ($1, $2, $3, $4, $5, $6);`
-	_, err := r.db.ExecContext(ctx, query, createdAt, tx.ID, tx.ApiKey, tx.DataBytes, tx.Filename, tx.Secret)
+	query := `INSERT INTO transactions (created_at, id, api_key, data_bytes, filename, secret, is_hash) VALUES ($1, $2, $3, $4, $5, $6, $7);`
+	_, err := r.db.ExecContext(ctx, query, createdAt, tx.ID, tx.ApiKey, tx.DataBytes, tx.Filename, tx.Secret, bool2integer(tx.IsHash))
 
 	return err
 }
@@ -202,4 +202,11 @@ func (r Repository) DeactivateKey(ctx context.Context, apikey string) error {
 	}
 
 	return nil
+}
+
+func bool2integer(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
 }
