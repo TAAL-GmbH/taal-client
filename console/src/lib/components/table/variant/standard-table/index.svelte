@@ -345,6 +345,7 @@
   .action .ico {
     width: 18px;
     height: 18px;
+    margin: 9px;
   }
   .action .btn {
     width: 36px;
