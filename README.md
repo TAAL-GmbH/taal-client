@@ -118,4 +118,3 @@ In order to still run the application on a please open `Security & Privacy` sett
 After that when running the application the following message will be shown. This time it has an `Open` button. Press this button in order to run the application.
 
 ![Mac3](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/mac3.png)
-§
