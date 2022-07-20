@@ -9,7 +9,7 @@ export const success = (m, opts = {}) => {
       props: { status: 'success', title: m },
     },
     theme: {
-      '--toastBarBackground': '#6EC492',
+      // '--toastBarBackground': '#6EC492',
       ...theme,
     },
     ...rest,
@@ -24,7 +24,7 @@ export const failure = (m, opts = {}) => {
       props: { status: 'failure', title: m },
     },
     theme: {
-      '--toastBarBackground': '#FF344C',
+      // '--toastBarBackground': '#FF344C',
       ...theme,
     },
     ...rest,
