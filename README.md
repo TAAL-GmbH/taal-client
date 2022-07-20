@@ -28,7 +28,7 @@ Before this client can be used, a valid Taal APIKey needs to be registered in or
 1. Register at https://console.taal.com
 2. Obtain a TaalClient plan which best suits your needs
 3. Make sure the TaalClient is running
-4. Register the APIKey in TaalClient via the Settings page which can be found at http://localhost:9500/settings
+4. Register the APIKey issued with the plan in TaalClient via the Key-Manager page which can be found at http://localhost:9500/key-manager
 
 This key is stored in the database with the public-private key pair. When creating transactions the key pair never leaves the machine
 
