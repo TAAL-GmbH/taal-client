@@ -49,7 +49,7 @@ func (s Server) putSetting(c echo.Context) error {
 	case "taalTimeout":
 		timeout, err := time.ParseDuration(set.Value)
 		if err != nil {
-			return s.sendError(c, http.StatusInternalServerError, errPutSettingsGetDuration, errors.Wrapf(err, "taal_timeout of %q is invalid", timeout))
+			return s.sendError(c, http.StatusInternalServerError, errPutSettingsGetDuration, errors.Wrapf(err, "taal_timeout of %s is invalid", set.Value))
 		}
 
 		s.taal.SetTimeout(timeout)
