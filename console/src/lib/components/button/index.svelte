@@ -1,6 +1,9 @@
 <script>
   import Icon from '../icon/index.svelte'
 
+  let clazz
+  export { clazz as class }
+
   // variant
   export let variant = 'primary'
 
@@ -77,7 +80,7 @@
 </script>
 
 <div
-  class="tui-button"
+  class={`tui-button${clazz ? ' ' + clazz : ''}`}
   class:primary
   class:secondary
   class:ghost
@@ -180,6 +183,9 @@
   }
   .ghost.disabled.toggle {
     background-color: transparent;
+  }
+  .ghost.hover {
+    background-color: #f4f6ff;
   }
   .ghost.selected {
     background-color: #dbdbff;
