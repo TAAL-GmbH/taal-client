@@ -59,7 +59,6 @@ function callApi(url, options = {}, done, fail) {
   return fetch(url, options)
     .then(async (res) => {
       const { data } = await checkInitialResponse(res)
-      console.log('...data =', data)
       return data
     })
     .then((data) => {
