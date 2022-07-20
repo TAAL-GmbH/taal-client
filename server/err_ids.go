@@ -32,4 +32,8 @@ const (
 	errGetTransactionInfoHoursBackMustBePositive = 33
 	errGetTransactionInfoGetGranularity          = 34
 	errGetTransactionInfoFillDates               = 35
+	errPutSettingsUpdateSettings                 = 36
+	errPutSettingsGetDuration                    = 37
+	errPutSettingsBind                           = 38
+	errPutSettingsGetJson                        = 39
 )
