@@ -95,39 +95,47 @@
 
   function onItemSelect(val) {
     value = val
+    arrowFocusIndex = -1
     dispatch('change', { name, type, value })
   }
 
-  let arrowFocusIndex = 0
+  let arrowFocusIndex = -1
 
   function onKeyDown(e) {
     if (!e) e = window.event
     const keyCode = e.code || e.key
     switch (keyCode) {
-      case 'Space':
-        e.preventDefault()
-        onSelectParentClick()
-        return false
       case 'ArrowRight':
       case 'ArrowLeft':
         e.preventDefault()
-        if (open) {
-          arrowFocusIndex =
-            keyCode === 'ArrowRight'
-              ? (arrowFocusIndex + 1) % items.length
-              : arrowFocusIndex === 0
-              ? items.length - 1
-              : (arrowFocusIndex - 1) % items.length
+        if (arrowFocusIndex === -1) {
+          initArrowFocusIndex()
         }
+        arrowFocusIndex =
+          keyCode === 'ArrowRight'
+            ? (arrowFocusIndex + 1) % items.length
+            : arrowFocusIndex === 0
+            ? items.length - 1
+            : (arrowFocusIndex - 1) % items.length
         return false
       case 'Enter':
         e.preventDefault()
-        if (open && arrowFocusIndex !== -1) {
+        if (arrowFocusIndex !== -1) {
           document
             .querySelectorAll('.button-select > *')
             [arrowFocusIndex].click()
+          arrowFocusIndex = -1
         }
         return false
+    }
+  }
+
+  function initArrowFocusIndex() {
+    const result = items.filter((item) => item.value === value)
+    if (result && result.length > 0) {
+      arrowFocusIndex = items.indexOf(result[0])
+    } else {
+      arrowFocusIndex = 0
     }
   }
 
@@ -138,12 +146,7 @@
         break
       case 'focus':
         focused = true
-        const result = items.filter((item) => item.value === value)
-        if (result && result.length > 0) {
-          arrowFocusIndex = items.indexOf(result[0])
-        } else {
-          arrowFocusIndex = 0
-        }
+        arrowFocusIndex = -1
         break
     }
     dispatch(eventName)
