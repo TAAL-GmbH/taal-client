@@ -134,7 +134,9 @@
           arrowFocusIndex =
             keyCode === 'ArrowDown'
               ? (arrowFocusIndex + 1) % items.length
-              : Math.abs(arrowFocusIndex - 1) % items.length
+              : arrowFocusIndex === 0
+              ? items.length - 1
+              : (arrowFocusIndex - 1) % items.length
         }
         return false
       case 'Enter':

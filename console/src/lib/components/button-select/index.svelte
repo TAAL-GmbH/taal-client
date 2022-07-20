@@ -98,6 +98,39 @@
     dispatch('change', { name, type, value })
   }
 
+  let arrowFocusIndex = 0
+
+  function onKeyDown(e) {
+    if (!e) e = window.event
+    const keyCode = e.code || e.key
+    switch (keyCode) {
+      case 'Space':
+        e.preventDefault()
+        onSelectParentClick()
+        return false
+      case 'ArrowRight':
+      case 'ArrowLeft':
+        e.preventDefault()
+        if (open) {
+          arrowFocusIndex =
+            keyCode === 'ArrowRight'
+              ? (arrowFocusIndex + 1) % items.length
+              : arrowFocusIndex === 0
+              ? items.length - 1
+              : (arrowFocusIndex - 1) % items.length
+        }
+        return false
+      case 'Enter':
+        e.preventDefault()
+        if (open && arrowFocusIndex !== -1) {
+          document
+            .querySelectorAll('.button-select > *')
+            [arrowFocusIndex].click()
+        }
+        return false
+    }
+  }
+
   function onFocusAction(eventName) {
     switch (eventName) {
       case 'blur':
@@ -105,6 +138,12 @@
         break
       case 'focus':
         focused = true
+        const result = items.filter((item) => item.value === value)
+        if (result && result.length > 0) {
+          arrowFocusIndex = items.indexOf(result[0])
+        } else {
+          arrowFocusIndex = 0
+        }
         break
     }
     dispatch(eventName)
@@ -113,7 +152,6 @@
 
 <div
   class="tui-button-select"
-  tabindex={0}
   style:--height-local={height + 'px'}
   style:--padding-local={padding}
   style:--gap-local={gap}
@@ -121,8 +159,7 @@
   style:--label-align-local={labelAlign}
   style:--direction-local={direction}
   style:--list-height-local={listHeight + 'px'}
-  on:focus={() => onFocusAction('focus')}
-  on:blur={() => onFocusAction('blur')}
+  tabindex={-1}
 >
   <div class="placement">
     {#if label}
@@ -130,11 +167,15 @@
     {/if}
     <div
       class="button-select"
+      tabindex={0}
       class:disabled
       class:error={!valid || error !== ''}
       class:focused={focusRect && focused}
+      on:focus={() => onFocusAction('focus')}
+      on:blur={() => onFocusAction('blur')}
+      on:keydown={onKeyDown}
     >
-      {#each items as item (item.value)}
+      {#each items as item, i (item.value)}
         <Button
           variant="ghost"
           selected={toggle ? item.value === value : false}
@@ -143,6 +184,7 @@
           {disabled}
           {size}
           toggle={true}
+          class={focused && arrowFocusIndex === i ? 'hover' : ''}
           on:click={() => onItemSelect(item.value)}
         >
           {item.label}
@@ -194,12 +236,19 @@
     border-width: 1px;
     border-color: #ffffff;
     border-radius: 4px;
+
+    outline: none;
   }
   .button-select.disabled {
     cursor: auto;
   }
 
   .button-select.focused {
+    border-width: 1px;
+    border-color: #4a3aff;
+    padding: var(--padding-local);
+  }
+  .button-select.focused:focus-visible {
     border-width: 2px;
     border-color: #4a3aff;
     padding: max(calc(var(--padding-local) - 1px), 0px);
