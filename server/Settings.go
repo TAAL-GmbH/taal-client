@@ -2,16 +2,17 @@ package server
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"regexp"
 	"strings"
-	"taal-client/settings"
+	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
+
+	"taal-client/settings"
 )
 
 var (
@@ -27,7 +28,7 @@ const (
 func (s Server) getSettings(c echo.Context) error {
 	b, err := settings.GetJSON()
 	if err != nil {
-		return s.sendError(c, http.StatusInternalServerError, 22, err)
+		return s.sendError(c, http.StatusInternalServerError, errPutSettingsGetJson, err)
 	}
 
 	return c.Blob(http.StatusOK, echo.MIMEApplicationJSON, b)
@@ -41,27 +42,27 @@ type setting struct {
 func (s Server) putSetting(c echo.Context) error {
 	set := new(setting)
 	if err := c.Bind(set); err != nil {
-		return s.sendError(c, http.StatusInternalServerError, 21, err)
+		return s.sendError(c, http.StatusInternalServerError, errPutSettingsBind, err)
 	}
-
-	if err := updateSettings(set.Key, set.Value, settingsFile, settingsTempFile, settingsOldFile); err != nil {
-		return s.sendError(c, http.StatusInternalServerError, 22, err)
-	}
-
-	settings.Set(set.Key, set.Value)
 
 	switch set.Key {
 	case "taalTimeout":
-		timeout, err := settings.GetDuration("taalTimeout")
+		timeout, err := time.ParseDuration(set.Value)
 		if err != nil {
-			log.Fatalf("taal_timeout of %q is invalid: %v", timeout, err)
+			return s.sendError(c, http.StatusInternalServerError, errPutSettingsGetDuration, errors.Wrapf(err, "taal_timeout of %q is invalid", timeout))
 		}
 
 		s.taal.SetTimeout(timeout)
 	case "taalUrl":
-		taalURL := settings.Get("taalUrl")
+		taalURL := set.Value
 		s.taal.SetUrl(taalURL)
 	}
+
+	if err := updateSettings(set.Key, set.Value, settingsFile, settingsTempFile, settingsOldFile); err != nil {
+		return s.sendError(c, http.StatusInternalServerError, errPutSettingsUpdateSettings, err)
+	}
+
+	settings.Set(set.Key, set.Value)
 
 	return c.String(http.StatusOK, "OK")
 }
@@ -69,25 +70,25 @@ func (s Server) putSetting(c echo.Context) error {
 func updateSettings(key, value string, settingsFile string, settingsTempFile string, settingsOldFile string) error {
 	w, err := os.Create(settingsTempFile)
 	if err != nil {
-		return fmt.Errorf("Could not create settings.conf.tmp: %v", err)
+		return errors.Wrapf(err, "could not create settings.conf.tmp")
 	}
 
 	r, err := os.Open(settingsFile)
 	if err != nil {
 		if !errors.Is(err, os.ErrNotExist) {
-			return fmt.Errorf("Could not open settings.conf: %v", err)
+			return errors.Wrapf(err, "could not open settings.conf")
 		}
 
 		if _, err := w.WriteString(fmt.Sprintf("%s=%s\n", key, value)); err != nil {
-			return fmt.Errorf("Could not write setting: %v", err)
+			return errors.Wrapf(err, "could not write setting")
 		}
 
 		if err := w.Close(); err != nil {
-			return fmt.Errorf("Could not close temp file: %v", err)
+			return errors.Wrapf(err, "could not close temp file")
 		}
 
 		if err := os.Rename(settingsTempFile, settingsFile); err != nil {
-			return fmt.Errorf("Could not rename temp file: %v", err)
+			return errors.Wrapf(err, "could not rename temp file")
 		}
 
 		return nil
@@ -105,7 +106,7 @@ func updateSettings(key, value string, settingsFile string, settingsTempFile str
 
 		if written {
 			if _, err := w.WriteString(fmt.Sprintf("%s\n", line)); err != nil {
-				return fmt.Errorf("Could not write to temp file: %v", err)
+				return errors.Wrapf(err, "could not write to temp file")
 			}
 
 			continue
@@ -115,7 +116,7 @@ func updateSettings(key, value string, settingsFile string, settingsTempFile str
 
 		if len(parts) != 1 {
 			if _, err := w.WriteString(fmt.Sprintf("%s\n", line)); err != nil {
-				return fmt.Errorf("Could not write to temp file: %v", err)
+				return errors.Wrapf(err, "could not write to temp file")
 			}
 
 			continue
@@ -135,33 +136,33 @@ func updateSettings(key, value string, settingsFile string, settingsTempFile str
 			sb.WriteByte('\n')
 
 			if _, err := w.WriteString(sb.String()); err != nil {
-				return fmt.Errorf("Could not write to temp file: %v", err)
+				return errors.Wrapf(err, "could not write to temp file")
 			}
 
 			written = true
 		} else {
 			if _, err := w.WriteString(fmt.Sprintf("%s\n", line)); err != nil {
-				return fmt.Errorf("Could not write to temp file: %v", err)
+				return errors.Wrapf(err, "could not write to temp file")
 			}
 		}
 	}
 
 	if !written {
 		if _, err := w.WriteString(fmt.Sprintf("%s=%s\n", key, value)); err != nil {
-			return fmt.Errorf("Could not write to temp file: %v", err)
+			return errors.Wrapf(err, "could not write to temp file")
 		}
 	}
 
 	if err := w.Close(); err != nil {
-		return fmt.Errorf("Could not close temp file: %v", err)
+		return errors.Wrapf(err, "could not close temp file")
 	}
 
 	if err := os.Rename(settingsFile, settingsOldFile); err != nil {
-		return fmt.Errorf("Could not rename original file: %v", err)
+		return errors.Wrapf(err, "could not rename original file")
 	}
 
 	if err := os.Rename(settingsTempFile, settingsFile); err != nil {
-		return fmt.Errorf("Could not rename temp file: %v", err)
+		return errors.Wrapf(err, "could not rename temp file")
 	}
 
 	return nil

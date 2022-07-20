@@ -95,11 +95,6 @@ func New(address string, taal *client.Client, repo Repository) Server {
 
 	group := e.Group("/api/v1")
 
-	// Deprecated: Endpoint paths don't adhere to REST design principles because they are verbs
-	group.POST("/write", s.write)
-	group.GET("/read/:txid", s.read)
-	group.POST("/register/:apikey", s.register)
-
 	group.POST("/apikeys/:apikey", s.register)
 	group.GET("/apikeys", s.getApiKeys)
 	group.GET("/apikeys/usage", s.getApiKeysUsage)
