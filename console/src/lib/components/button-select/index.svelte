@@ -248,7 +248,7 @@
 
   .button-select.focused {
     border-width: 1px;
-    border-color: #4a3aff;
+    border-color: #ffffff;
     padding: var(--padding-local);
   }
   .button-select.focused:focus-visible {
