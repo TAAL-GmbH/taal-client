@@ -14,7 +14,7 @@
   export let group = ''
   export let checked = false
   export let disabled = false
-  export let error = false
+  export let valid = true
   export let allowToggle = false
 
   let direction = 'row'
@@ -79,6 +79,18 @@
     checked = newValue
     dispatch('change', { name, group, type, checked: newValue })
   }
+
+  function onFocusAction(eventName) {
+    switch (eventName) {
+      case 'blur':
+        focused = false
+        break
+      case 'focus':
+        focused = true
+        break
+    }
+    dispatch(eventName)
+  }
 </script>
 
 <div
@@ -94,14 +106,20 @@
   on:click={disabled || cursor !== 'pointer' ? null : onInputParentClick}
 >
   <label for={name}>{getInputLabel(label, required)}</label>
-  <div class="input" class:disabled class:error class:focused class:checked>
+  <div
+    class="input"
+    class:disabled
+    class:error={!valid}
+    class:focused
+    class:checked
+  >
     <input
       bind:this={inputRef}
       {type}
       {name}
       {checked}
-      on:focus={(e) => (focused = true)}
-      on:blur={(e) => (focused = false)}
+      on:focus={() => onFocusAction('focus')}
+      on:blur={() => onFocusAction('blur')}
     />
     <div class="icon" style="width: 12px; height: 12px; border-radius: 6px" />
   </div>

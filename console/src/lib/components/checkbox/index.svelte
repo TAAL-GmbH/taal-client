@@ -14,7 +14,7 @@
   export let name = ''
   export let checked = false
   export let disabled = false
-  export let error = false
+  export let valid = true
 
   let direction = 'row'
   let justify = 'flex-start'
@@ -75,6 +75,18 @@
     checked = newValue
     dispatch('change', { name, type, checked: newValue })
   }
+
+  function onFocusAction(eventName) {
+    switch (eventName) {
+      case 'blur':
+        focused = false
+        break
+      case 'focus':
+        focused = true
+        break
+    }
+    dispatch(eventName)
+  }
 </script>
 
 <div
@@ -90,14 +102,20 @@
   on:click={disabled ? null : onInputParentClick}
 >
   <label for={name}>{getInputLabel(label, required)}</label>
-  <div class="input" class:disabled class:error class:focused class:checked>
+  <div
+    class="input"
+    class:disabled
+    class:error={!valid}
+    class:focused
+    class:checked
+  >
     <input
       bind:this={inputRef}
       {type}
       {name}
       {checked}
-      on:focus={(e) => (focused = true)}
-      on:blur={(e) => (focused = false)}
+      on:focus={() => onFocusAction('focus')}
+      on:blur={() => onFocusAction('blur')}
     />
     <div style="width: 20px; height: 20px;">
       <Icon name="check" size={20} />
