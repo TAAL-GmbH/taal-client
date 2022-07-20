@@ -49,6 +49,8 @@
     --toastBorderRadius: 4px;
     --toastMsgPadding: 0;
     --toastWidth: 340px;
+    --toastBarHeight: 2px;
+    --toastBarBackground: #cdcbd0;
   }
   :global(._toastBtn) {
     z-index: 100;
