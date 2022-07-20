@@ -54,13 +54,22 @@
     switch (type) {
       case 'search':
       case 'text':
-        updateSetting(name, value || '')
+        // updateSetting(name, value || '')
         break
       case 'checkbox':
         updateSetting(name, (checked || false).toString())
         break
       case 'radio':
         updateSetting(group, checked ? name : '')
+        break
+    }
+  }
+  function onConfirm(e) {
+    const { name, type, value } = e.detail
+    switch (type) {
+      case 'search':
+      case 'text':
+        updateSetting(name, value || '')
         break
     }
   }
@@ -88,6 +97,7 @@
       autocomplete="off"
       confirm
       on:change={onChange}
+      on:confirm={onConfirm}
       on:mount={onInputMount}
     />
     <Spacer h={8} />
@@ -104,6 +114,7 @@
       value={settings.taalUrl}
       confirm
       on:change={onChange}
+      on:confirm={onConfirm}
     />
     <Spacer h={8} />
     <Text
@@ -119,6 +130,7 @@
       value={settings.taalTimeout}
       confirm
       on:change={onChange}
+      on:confirm={onConfirm}
     />
     <Spacer h={8} />
     <Text
@@ -184,6 +196,7 @@
         value={settings.dbFilename}
         confirm
         on:change={onChange}
+        on:confirm={onConfirm}
       />
     {:else}
       <Spacer h={24} />
@@ -194,6 +207,7 @@
         value={settings.dbHost || ''}
         confirm
         on:change={onChange}
+        on:confirm={onConfirm}
       />
       <Spacer h={24} />
       <TextInput
@@ -203,6 +217,7 @@
         value={settings.dbPort || ''}
         confirm
         on:change={onChange}
+        on:confirm={onConfirm}
       />
       <Spacer h={24} />
       <TextInput
@@ -212,6 +227,7 @@
         value={settings.dbName || ''}
         confirm
         on:change={onChange}
+        on:confirm={onConfirm}
       />
       <Spacer h={24} />
       <TextInput
@@ -220,6 +236,7 @@
         value={settings.dbUsername || ''}
         confirm
         on:change={onChange}
+        on:confirm={onConfirm}
       />
       <Spacer h={24} />
       <TextInput
@@ -228,6 +245,7 @@
         value={settings.dbPassword || ''}
         confirm
         on:change={onChange}
+        on:confirm={onConfirm}
       />
     {/if}
   </div>

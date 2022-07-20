@@ -64,14 +64,10 @@
     iconsW = 0
     let maxIconsW = 0
     data.forEach((item) => {
-      let w = 0
       const icons = getRowIconActions
         ? getRowIconActions(name, item, idField) || []
         : []
-      icons.forEach((ico) => {
-        w += ico.render === 'icon' ? 18 : 36
-      })
-      w += icons.length > 0 ? (icons.length - 1) * 4 : 0
+      const w = icons.length > 0 ? icons.length * 40 - 4 : 0
       if (w > maxIconsW) {
         maxIconsW = w
       }
@@ -557,6 +553,7 @@
   .action .ico {
     width: 18px;
     height: 18px;
+    margin: 9px;
   }
   .action .btn {
     width: 36px;

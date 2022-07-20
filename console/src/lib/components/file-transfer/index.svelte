@@ -18,6 +18,7 @@
   export let files = []
   export let required = false
   export let disabled = false
+  export let valid = true
   export let error = ''
   export let imageSrcData = {}
   export let fileProgressData = {}
@@ -93,7 +94,7 @@
     <div
       class="content"
       class:disabled
-      class:error={error !== ''}
+      class:error={!valid || error !== ''}
       class:focused
     >
       {#each files as file (file[idField])}

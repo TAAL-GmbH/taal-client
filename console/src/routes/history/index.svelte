@@ -36,12 +36,19 @@
   }
 
   const getRowIconActions = (tableName, item, idField = 'id') => {
-    const icons = [
-      {
+    const icons = []
+    if (item?.isHash) {
+      icons.push({
+        icon: 'hashtag',
+        render: 'icon',
+        disabled: true,
+      })
+    } else {
+      icons.push({
         icon: 'download',
         type: 'download',
-      },
-    ]
+      })
+    }
     if (item?.secret) {
       icons.push({
         icon: 'key',

@@ -14,6 +14,7 @@
   // export let multiple = false
   export let items = []
   export let disabled = false
+  export let valid = true
   export let error = ''
   export let maxVisibleListItems = 6
 
@@ -96,6 +97,18 @@
     value = val
     dispatch('change', { name, type, value })
   }
+
+  function onFocusAction(eventName) {
+    switch (eventName) {
+      case 'blur':
+        focused = false
+        break
+      case 'focus':
+        focused = true
+        break
+    }
+    dispatch(eventName)
+  }
 </script>
 
 <div
@@ -108,8 +121,8 @@
   style:--label-align-local={labelAlign}
   style:--direction-local={direction}
   style:--list-height-local={listHeight + 'px'}
-  on:focus={(e) => (focused = true)}
-  on:blur={(e) => (focused = false)}
+  on:focus={() => onFocusAction('focus')}
+  on:blur={() => onFocusAction('blur')}
 >
   <div class="placement">
     {#if label}
@@ -118,7 +131,7 @@
     <div
       class="button-select"
       class:disabled
-      class:error={error !== ''}
+      class:error={!valid || error !== ''}
       class:focused={focusRect && focused}
     >
       {#each items as item (item.value)}

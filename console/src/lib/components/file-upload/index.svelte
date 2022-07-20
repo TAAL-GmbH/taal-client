@@ -16,6 +16,7 @@
   export let required = false
   export let name = ''
   export let disabled = false
+  export let valid = true
   export let error = ''
   export let accept = '*'
   export let multiple = false
@@ -100,6 +101,18 @@
   function onDragLeave(e) {
     dragOver = false
   }
+
+  function onFocusAction(eventName) {
+    switch (eventName) {
+      case 'blur':
+        focused = false
+        break
+      case 'focus':
+        focused = true
+        break
+    }
+    dispatch(eventName)
+  }
 </script>
 
 <div
@@ -121,7 +134,7 @@
     <div
       class="input"
       class:disabled
-      class:error={error !== ''}
+      class:error={!valid || error !== ''}
       class:focused
       class:dragOver
       on:drop|preventDefault={onDrop}
@@ -137,8 +150,8 @@
         {multiple}
         {disabled}
         on:input={onInputChange}
-        on:focus={(e) => (focused = true)}
-        on:blur={(e) => (focused = false)}
+        on:focus={() => onFocusAction('focus')}
+        on:blur={() => onFocusAction('blur')}
       />
       <div class="prompt">
         <div class="icon">

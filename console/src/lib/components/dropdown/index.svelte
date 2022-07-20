@@ -16,6 +16,7 @@
   export let multiple = false
   export let items = []
   export let disabled = false
+  export let valid = true
   export let error = ''
   export let maxVisibleListItems = 6
 
@@ -144,6 +145,18 @@
         return false
     }
   }
+
+  function onFocusAction(eventName) {
+    switch (eventName) {
+      case 'blur':
+        focused = false
+        break
+      case 'focus':
+        focused = true
+        break
+    }
+    dispatch(eventName)
+  }
 </script>
 
 <div
@@ -166,7 +179,7 @@
     <div
       class="select"
       class:disabled
-      class:error={error !== ''}
+      class:error={!valid || error !== ''}
       class:focused
       on:click={disabled ? null : onSelectParentClick}
     >
@@ -178,8 +191,8 @@
         {name}
         {value}
         on:change={onSelectChange}
-        on:focus={(e) => (focused = true)}
-        on:blur={(e) => (focused = false)}
+        on:focus={() => onFocusAction('focus')}
+        on:blur={() => onFocusAction('blur')}
         on:keydown={onKeyDown}
       >
         {#each items as item (item.value)}
