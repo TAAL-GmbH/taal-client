@@ -1,7 +1,7 @@
 <script>
   import Icon from '../icon/index.svelte'
 
-  let clazz
+  let clazz = null
   export { clazz as class }
 
   // variant
