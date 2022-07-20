@@ -264,7 +264,10 @@
     keys = keysResult.keys || []
 
     apiKey = getStoreValue('apiKey')
-    if (!apiKey && keys.length > 0) {
+    const storedKeyExists =
+      keys.filter((key) => key.api_key === apiKey).length > 0
+
+    if ((!apiKey || !storedKeyExists) && keys.length > 0) {
       apiKey = keys[0].api_key
     }
 
