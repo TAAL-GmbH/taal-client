@@ -28,17 +28,10 @@
   function onRegisterClick() {
     dispatch('register', { apiKey })
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps.testId = testId
-    }
-  }
 </script>
 
-<Modal {...optProps}>
-  <Popup maxW={480} title="Register API key" on:close={onClose}>
+<Modal>
+  <Popup maxW={480} title="Register API key" on:close={onClose} {testId}>
     <svelte:fragment slot="body">
       <Spacer h={20} />
       <TextInput
