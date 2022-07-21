@@ -108,7 +108,7 @@
   }
 
   function setFieldsFromFile(file) {
-    mimeType = file.type
+    mimeType = file.type || 'application/octet-stream'
 
     if (file.type.startsWith('text/')) {
       const fr = new FileReader()
