@@ -71,13 +71,21 @@
   let supportedImageSrcDataFileTypes = ['image/png', 'image/jpeg']
   let fileProgressData = {}
   let fileDataMap = {}
+  let fileSizeUploadLimitExceeded = false
 
   $: compactFileUpload = devMode || files.length > 0
   $: inputDataDisabled = files.length > 0
 
   $: submitButtonIsDisabled = devMode
-    ? !textData || !mimeType || !apiKey || dataTransmissionInProgress
-    : files.length === 0 || !apiKey || dataTransmissionInProgress
+    ? !textData ||
+      !mimeType ||
+      !apiKey ||
+      dataTransmissionInProgress ||
+      fileSizeUploadLimitExceeded
+    : files.length === 0 ||
+      !apiKey ||
+      dataTransmissionInProgress ||
+      fileSizeUploadLimitExceeded
 
   $: submitButtonText =
     files.length > 1
@@ -133,8 +141,10 @@
   }
 
   $: {
+    let totalSize = 0
     files.forEach((file) => {
       const key = getFileKey(file)
+      totalSize += file.size
       // do img data
       if (
         !imageSrcData[key] &&
@@ -156,6 +166,8 @@
         reader.readAsArrayBuffer(file)
       }
     })
+    // check upload limit
+    fileSizeUploadLimitExceeded = totalSize > 10485760 // 10 MB
   }
 
   function onCancelTransfer(e) {
@@ -393,6 +405,9 @@
         {files}
         {imageSrcData}
         {fileProgressData}
+        error={fileSizeUploadLimitExceeded
+          ? 'File(s) exceed maximum upload limit'
+          : ''}
         on:cancel={onCancelTransfer}
         on:remove={onRemoveTransferFile}
       />
