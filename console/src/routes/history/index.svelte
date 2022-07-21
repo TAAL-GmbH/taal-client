@@ -7,7 +7,6 @@
   import PageWithMenu from '../../lib/components/page/template/menu/index.svelte'
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import Table from '../../lib/components/table/index.svelte'
-  import Spinner from '../../lib/components/spinner/index.svelte'
 
   import {
     downloadFileBlob,
@@ -15,7 +14,6 @@
     getColorFromDistinct,
   } from '../../lib/utils'
   import { success, failure } from '../../lib/utils/notifications'
-  import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
   import { colDefs, rangeItems } from './data'
 
@@ -147,10 +145,6 @@
     />
   </div>
 </PageWithMenu>
-
-{#if $spinCount > 0}
-  <Spinner />
-{/if}
 
 <style>
   .island {

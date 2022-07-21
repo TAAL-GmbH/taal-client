@@ -8,9 +8,7 @@
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import Text from '../../lib/components/text/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
-  import Spinner from '../../lib/components/spinner/index.svelte'
 
-  import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
   import { success, failure } from '../../lib/utils/notifications'
 
@@ -273,10 +271,6 @@
     {/if}
   </div>
 </PageWithMenu>
-
-{#if $spinCount > 0}
-  <Spinner />
-{/if}
 
 <style>
   .island {

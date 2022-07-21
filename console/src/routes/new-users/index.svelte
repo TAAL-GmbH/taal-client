@@ -11,9 +11,7 @@
   import PageBasic from '../../lib/components/page/template/basic/index.svelte'
   import Row from '../../lib/components/layout/row/index.svelte'
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
-  import Spinner from '../../lib/components/spinner/index.svelte'
 
-  import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
 
   const navigate = useNavigate()
@@ -52,10 +50,6 @@
     </Row>
   </div>
 </PageBasic>
-
-{#if $spinCount > 0}
-  <Spinner />
-{/if}
 
 <style>
   .island {

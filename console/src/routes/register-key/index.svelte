@@ -8,11 +8,9 @@
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import Text from '../../lib/components/text/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
-  import Spinner from '../../lib/components/spinner/index.svelte'
 
   import { link } from '../../lib/utils/format'
   import { success, failure } from '../../lib/utils/notifications'
-  import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
 
   const navigate = useNavigate()
@@ -73,10 +71,6 @@
     </div>
   </div>
 </PageBasic>
-
-{#if $spinCount > 0}
-  <Spinner />
-{/if}
 
 <style>
   .island {
