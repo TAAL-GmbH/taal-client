@@ -14,6 +14,8 @@
   const location = useLocation()
   const navigate = useNavigate()
 
+  export let testId = null
+
   let links = []
   let actions = []
   let showSidebarMenu = false
@@ -36,6 +38,13 @@
   function onToggleMenu(e) {
     showSidebarMenu = e.detail.open
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <Header
@@ -47,14 +56,19 @@
   on:link={onMenuItem}
   on:action={onMenuItem}
   on:toggle-menu={onToggleMenu}
+  testId="header"
 />
 
-<div class="content-container" style:--top-local={$headerHeight + 'px'}>
+<div
+  class="content-container"
+  style:--top-local={$headerHeight + 'px'}
+  {...optProps}
+>
   <ContentMenu>
     <slot />
   </ContentMenu>
 
-  <Footer />
+  <Footer testId="footer" />
 </div>
 
 {#if showSidebarMenu && $mediaSize === 'small'}
@@ -62,6 +76,7 @@
     {links}
     on:link={onMenuItem}
     on:close={() => (showSidebarMenu = false)}
+    testId="sidebar"
   />
 {/if}
 

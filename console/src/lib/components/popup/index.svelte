@@ -5,17 +5,27 @@
 
   const dispatch = createEventDispatcher()
 
+  export let testId = null
+
   export let title = ''
   export let maxW = -1
 
   function onClose() {
     dispatch('close')
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <div
   class="tui-popup"
   style:--max-width-local={maxW !== -1 ? maxW + 'px' : 'auto'}
+  {...optProps}
 >
   <div class="header">
     <div class="title"><Heading value={title} size={5} /></div>

@@ -11,7 +11,6 @@
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
   import TextArea from '../../lib/components/textarea/index.svelte'
-  import Spinner from '../../lib/components/spinner/index.svelte'
 
   import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
@@ -30,9 +29,14 @@
     updateStore,
   } from './utils'
 
+  // injected by svelte-navigator
+  export let location = null
+  export let navigate = null
+
   const stdMimeType = 'text/plain'
   let dataTransmissionInProgress = false
-  let loading = true
+  let mounting = true
+  $spinCount++
   let timeout = 0
 
   let devMode = getStoreValue('devmode') === 'true'
@@ -44,10 +48,10 @@
   let textData = ''
   let curlCommand = ''
 
-  $: updateStore('tag', tag, loading)
-  $: updateStore('mode', mode, loading)
-  $: updateStore('secret', secret, loading)
-  $: updateStore('devmode', devMode, loading)
+  $: updateStore('tag', tag, mounting)
+  $: updateStore('mode', mode, mounting)
+  $: updateStore('secret', secret, mounting)
+  $: updateStore('devmode', devMode, mounting)
 
   // api keys
   let keys = []
@@ -271,7 +275,8 @@
       apiKey = keys[0].api_key
     }
 
-    loading = false
+    mounting = false
+    $spinCount--
   })
 </script>
 
@@ -412,10 +417,6 @@
     </div>
   </div>
 </PageWithMenu>
-
-{#if $spinCount > 0 || loading}
-  <Spinner />
-{/if}
 
 <style>
   .island {

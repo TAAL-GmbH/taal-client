@@ -1,6 +1,4 @@
 <script>
-  import { useNavigate } from 'svelte-navigator'
-
   import Button from '../../lib/components/button/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
   import PageBasic from '../../lib/components/page/template/basic/index.svelte'
@@ -8,14 +6,14 @@
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import Text from '../../lib/components/text/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
-  import Spinner from '../../lib/components/spinner/index.svelte'
 
   import { link } from '../../lib/utils/format'
   import { success, failure } from '../../lib/utils/notifications'
-  import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
 
-  const navigate = useNavigate()
+  // injected by svelte-navigator
+  export let location = null
+  export let navigate = null
 
   let key = ''
 
@@ -73,10 +71,6 @@
     </div>
   </div>
 </PageBasic>
-
-{#if $spinCount > 0}
-  <Spinner />
-{/if}
 
 <style>
   .island {

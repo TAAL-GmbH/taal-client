@@ -7,6 +7,8 @@
 
   const dispatch = createEventDispatcher()
 
+  export let testId = null
+
   //   export let type = 'text'
   let type = 'text'
 
@@ -145,6 +147,13 @@
     }
     dispatch(eventName)
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <div
@@ -155,6 +164,7 @@
   style:--fontSize-local={fontSize}
   style:--direction-local={direction}
   style:--native-height-local={nativeHeight + 'px'}
+  {...optProps}
 >
   <div class="placement">
     {#if label}

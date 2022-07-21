@@ -5,6 +5,8 @@
 
   const dispatch = createEventDispatcher()
 
+  export let testId = null
+
   let type = 'page'
 
   export let name = ''
@@ -55,9 +57,16 @@
     }
     dispatch('change', { name, type, value })
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
-<div class="tui-pager">
+<div class="tui-pager" {...optProps}>
   <Button
     variant="ghost"
     icon="chevron-left"

@@ -11,6 +11,8 @@
   import History from './routes/history/index.svelte'
   import Settings from './routes/settings/index.svelte'
   import SendData from './routes/send-data/index.svelte'
+  import Spinner from './lib/components/spinner/index.svelte'
+  import { spinCount } from './lib/stores'
 
   $menuLinks = [
     {
@@ -95,5 +97,9 @@
     {/each}
   </GlobalStyle>
 </Router>
+
+{#if $spinCount > 0}
+  <Spinner />
+{/if}
 
 <SvelteToast options={toastOptions} />
