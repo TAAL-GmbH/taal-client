@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"taal-client/settings"
@@ -20,6 +21,11 @@ type Client struct {
 	client  *http.Client
 	Url     string
 	Timeout time.Duration
+}
+type errorResponse struct {
+	Status int32  `json:"status"`
+	Code   int32  `json:"code"`
+	Err    string `json:"error"`
 }
 
 type RegisterRequest struct {
@@ -130,7 +136,20 @@ func (c *Client) GetTransactionsTemplate(apiKey string, size int, feesRequired b
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, nil, fmt.Errorf("unexpected response code: %v", resp.StatusCode)
+
+		var errResp errorResponse
+
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, nil, errors.Wrap(err, "failed to get transaction template. failed to read response")
+		}
+
+		err = json.Unmarshal(bodyBytes, &errResp)
+		if err != nil {
+			return nil, nil, errors.Wrapf(errors.New(string(bodyBytes)), "failed to get transaction template. response code: %d", resp.StatusCode)
+		}
+
+		return nil, nil, errors.Wrapf(errors.New(errResp.Err), "failed to get transaction template. response code: %d", resp.StatusCode)
 	}
 
 	var payload Payload
@@ -196,25 +215,18 @@ func (c *Client) SubmitTransactions(apiKey string, feeTx *bt.Tx, dataTx *bt.Tx) 
 	}()
 
 	if resp.StatusCode != http.StatusCreated {
-		type errorResponse struct {
-			Status int32  `json:"status"`
-			Code   int32  `json:"code"`
-			Err    string `json:"error"`
-		}
-
 		bodyBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return fmt.Errorf("failed to read response: %v", err)
+			return errors.Wrap(err, "failed to submit transaction. failed to read response")
 		}
 
-		var errorResponsePayload errorResponse
-
-		if err := json.Unmarshal(bodyBytes, &errorResponsePayload); err != nil {
-			errorResponsePayload.Code = int32(resp.StatusCode)
-			errorResponsePayload.Err = string(bodyBytes)
+		var errResp errorResponse
+		err = json.Unmarshal(bodyBytes, &errResp)
+		if err != nil {
+			return errors.Wrapf(errors.New(string(bodyBytes)), "failed to submit transaction. response code: %d", resp.StatusCode)
 		}
 
-		return fmt.Errorf("failed to submit [%d]: %v", errorResponsePayload.Code, errorResponsePayload.Err)
+		return errors.Wrapf(errors.New(errResp.Err), "failed to submit transaction. response code: %d", resp.StatusCode)
 	}
 
 	return nil
