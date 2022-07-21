@@ -6,6 +6,8 @@
 
   const dispatch = createEventDispatcher()
 
+  export let testId = null
+
   export let links = []
   export let dataKey = 'path'
   export let menuWidth = 385
@@ -16,12 +18,20 @@
   function onClose() {
     dispatch('close')
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <div
   class="tui-sidebar"
   style:--top-local={$headerHeight + 'px'}
   style:--menu-width-local={menuWidth + 'px'}
+  {...optProps}
 >
   <div class="cover" in:fade on:mousedown|preventDefault={onClose} />
   <div class="menu" in:fly={{ x: -menuWidth, duration: 200 }}>

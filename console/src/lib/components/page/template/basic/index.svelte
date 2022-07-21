@@ -3,16 +3,29 @@
   import Header from '../../../header/index.svelte'
   import Footer from '../../../footer/index.svelte'
   import ContentBasic from '../../content/basic/index.svelte'
+
+  export let testId = null
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
-<Header showLinks={false} showActions={false} />
+<Header showLinks={false} showActions={false} testId="header" />
 
-<div class="content-container" style:--top-local={$headerHeight + 'px'}>
+<div
+  class="content-container"
+  style:--top-local={$headerHeight + 'px'}
+  {...optProps}
+>
   <ContentBasic>
     <slot />
   </ContentBasic>
 
-  <Footer />
+  <Footer testId="footer" />
 </div>
 
 <style>

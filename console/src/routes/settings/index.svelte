@@ -8,11 +8,13 @@
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import Text from '../../lib/components/text/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
-  import Spinner from '../../lib/components/spinner/index.svelte'
 
-  import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
   import { success, failure } from '../../lib/utils/notifications'
+
+  // injected by svelte-navigator
+  export let location = null
+  export let navigate = null
 
   let settings = {}
 
@@ -52,7 +54,6 @@
   function onChange(e) {
     const { name, group, type, value, checked } = e.detail
     switch (type) {
-      case 'search':
       case 'text':
         // updateSetting(name, value || '')
         break
@@ -67,9 +68,10 @@
   function onConfirm(e) {
     const { name, type, value } = e.detail
     switch (type) {
-      case 'search':
       case 'text':
-        updateSetting(name, value || '')
+        // we avoid listenAddress textinput name to prevent 1password icon from showing up
+        const useName = name === 'listenAddr' ? 'listenAddress' : name
+        updateSetting(useName, value || '')
         break
     }
   }
@@ -81,16 +83,19 @@
 
 <PageWithMenu>
   <div class="island">
-    <Heading value="Settings" />
+    <Heading testId={'settings-label'} value="Settings" />
     <Spacer h={24} />
     <div class="sub-row">
-      <Heading value="Server settings" size={2} />
+      <Heading
+        testId={'server-settings-label'}
+        value="Server settings"
+        size={2}
+      />
     </div>
     <Spacer h={24} />
-    <!-- type="search" is an undesired workaround for 1Password: https://1password.community/discussion/117501/as-a-web-developer-how-can-i-disable-1password-filling-for-a-specific-field -->
     <TextInput
-      type="search"
-      name="listenAddress"
+      testId={'listen-address-text-input'}
+      name="listenAddr"
       label="Listen address"
       placeholder="localhost:9500"
       value={settings.listenAddress}
@@ -102,12 +107,14 @@
     />
     <Spacer h={8} />
     <Text
+      testId={'listen-address-hint-text'}
       size={5}
       color="#8F8D94"
       value={'TaalClient will listen on the specified address. The default is "localhost:9500" To bind to all interfaces on your machine, omit the host part and only specify the port, for example ":9500"'}
     />
     <Spacer h={24} />
     <TextInput
+      testId={'taal-url-input-text'}
       name="taalUrl"
       label="TAAL URL"
       placeholder="https://api.taal.com"
@@ -118,12 +125,14 @@
     />
     <Spacer h={8} />
     <Text
+      testId={'taal-url-hint-text'}
       size={5}
       color="#8F8D94"
       value={'TaalClient communicates with Taal API servers which are hosted at https://api.taal.com.'}
     />
     <Spacer h={24} />
     <TextInput
+      testId={'taal-timeout-input-text'}
       name="taalTimeout"
       label="TAAL timeout"
       placeholder="10s"
@@ -134,20 +143,23 @@
     />
     <Spacer h={8} />
     <Text
+      testId={'taal-timeout-hint-text'}
       size={5}
       color="#8F8D94"
       value={'The default timeout is 10 seconds. This settings can be provided in milliseconds (ms), seconds (s) or minutes (m).'}
     />
     <Spacer h={24} />
-    <Text size={4} value={'Debug'} />
+    <Text testId={'debug-text'} size={4} value={'Debug'} />
     <Spacer h={8} />
     <Text
+      testId={'debug-hint-text'}
       size={5}
       color="#8F8D94"
       value={'Debug modes will add extra output to the console output of this service. Server debug will output all access to server endpoints. Transactions debug will output funding and data transaction raw hex.'}
     />
     <Spacer h={16} />
     <Checkbox
+      testId={'server-checkbox'}
       name="debugServer"
       label="Server"
       checked={settings.debugServer === 'true'}
@@ -156,6 +168,7 @@
     />
     <Spacer h={16} />
     <Checkbox
+      testId={'transactions-checkbox'}
       name="debugTransactions"
       label="Transactions"
       checked={settings.debugTransactions === 'true'}
@@ -164,13 +177,18 @@
     />
     <Spacer h={32} />
     <div class="sub-row">
-      <Heading value="Transaction data" size={2} />
+      <Heading
+        testId={'transaction-data-label'}
+        value="Transaction data"
+        size={2}
+      />
     </div>
     <Spacer h={24} />
-    <Text size={4} value={'Database mode'} />
+    <Text testId={'database-mode-label'} size={4} value={'Database mode'} />
     <Spacer h={16} />
     <div class="radio-row">
       <Radio
+        testId={'local-radio-btn'}
         name="sqlite"
         group="dbType"
         label="Local"
@@ -179,6 +197,7 @@
         on:change={onChange}
       />
       <Radio
+        testId={'remote-radio-btn'}
         name="postgres"
         group="dbType"
         label="Remote"
@@ -190,6 +209,7 @@
     {#if settings.dbType === 'sqlite'}
       <Spacer h={24} />
       <TextInput
+        testId={'filename-text-input'}
         name="dbFilename"
         label="File name"
         placeholder="./taal_client.db"
@@ -201,6 +221,7 @@
     {:else}
       <Spacer h={24} />
       <TextInput
+        testId={'host-text-input'}
         name="dbHost"
         label="Host"
         placeholder="localhost"
@@ -211,6 +232,7 @@
       />
       <Spacer h={24} />
       <TextInput
+        testId={'port-text-input'}
         name="dbPort"
         label="Port"
         placeholder="5432"
@@ -221,6 +243,7 @@
       />
       <Spacer h={24} />
       <TextInput
+        testId={'database-name-text-input'}
         name="dbName"
         label="Database name"
         placeholder="taal_client"
@@ -231,6 +254,7 @@
       />
       <Spacer h={24} />
       <TextInput
+        testId={'role-text-input'}
         name="dbUsername"
         label="Role"
         value={settings.dbUsername || ''}
@@ -240,6 +264,7 @@
       />
       <Spacer h={24} />
       <TextInput
+        testId={'password-text-input'}
         name="dbPassword"
         label="Password"
         value={settings.dbPassword || ''}
@@ -250,10 +275,6 @@
     {/if}
   </div>
 </PageWithMenu>
-
-{#if $spinCount > 0}
-  <Spinner />
-{/if}
 
 <style>
   .island {

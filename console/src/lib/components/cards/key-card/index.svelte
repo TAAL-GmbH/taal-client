@@ -2,11 +2,19 @@
   import Field from '../../field/index.svelte'
   import { dataSize, formatDate } from '../../../utils/format'
 
+  export let testId = null
+
   export let key
 
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
-<div class="tui-key-card">
+<div class="tui-key-card" {...optProps}>
   <Field label="Api key" value={key.api_key} copy={true} />
   <Field label="Data sent: {dataSize(key.dataBytes)}" layout="row" />
 

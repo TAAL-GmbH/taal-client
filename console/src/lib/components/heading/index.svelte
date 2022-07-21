@@ -1,6 +1,8 @@
 <script>
   import { mediaSize } from '../../stores/index'
 
+  export let testId = null
+
   export let size = 1
   export let color = '#232D7C'
   export let value = ''
@@ -27,6 +29,13 @@
         break
     }
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <div
@@ -36,6 +45,7 @@
   style:--font-weight-local={fontWeight}
   style:--letting-spacing-local={letterSpacing}
   style:--line-height-local={lineHeight + 'px'}
+  {...optProps}
 >
   {#if html}
     {@html value}
@@ -46,7 +56,8 @@
 
 <style>
   .tui-heading {
-    font-family: 'Work Sans';
+    font-family: var(--font-family);
+
     font-size: var(--font-size-local);
     font-weight: var(--font-weight-local);
     letter-spacing: var(--letting-spacing-local);

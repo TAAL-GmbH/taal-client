@@ -8,6 +8,8 @@
 
   const dispatch = createEventDispatcher()
 
+  export let testId = null
+
   export let links = []
   export let actions = []
 
@@ -66,6 +68,13 @@
     open = !open
     dispatch('toggle-menu', { open })
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <div
@@ -75,6 +84,7 @@
   style:--height-local={height + 'px'}
   style:--content-margin-left={contentMarginLeft + 'px'}
   style:--logo-margin-right={logoMarginRight + 'px'}
+  {...optProps}
 >
   {#if showMobile && hasMenu}
     <div class="icon" on:click={(e) => onToggle()}>
@@ -88,8 +98,9 @@
     </div>
     {#if showLinks && hasMenu && showMenu}
       <div class="links">
-        {#each links as link (link[dataKey])}
+        {#each links as link, i (link[dataKey])}
           <Button
+            testId={'link-' + i}
             variant="link"
             size="small"
             selected={link.selected}
@@ -101,8 +112,9 @@
     <div class="spacer" />
     {#if showActions}
       <div class="actions">
-        {#each actions as action (action[dataKey])}
+        {#each actions as action, i (action[dataKey])}
           <Button
+            testId={'action-' + i}
             variant={action.selected ? 'primary' : 'secondary'}
             size="small"
             on:click={(e) => onAction(action)}>{action.label}</Button

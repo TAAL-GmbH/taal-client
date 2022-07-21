@@ -7,11 +7,13 @@
   import PageWithMenu from '../../lib/components/page/template/menu/index.svelte'
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import RegisterKeyPopup from '../../lib/components/popups/register-key-popup/index.svelte'
-  import Spinner from '../../lib/components/spinner/index.svelte'
 
-  import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
   import { success, failure } from '../../lib/utils/notifications'
+
+  // injected by svelte-navigator
+  export let location = null
+  export let navigate = null
 
   let keys
 
@@ -84,10 +86,6 @@
 
 {#if popupVisible}
   <RegisterKeyPopup on:close={hidePopup} on:register={onRegister} />
-{/if}
-
-{#if $spinCount > 0}
-  <Spinner />
 {/if}
 
 <style>

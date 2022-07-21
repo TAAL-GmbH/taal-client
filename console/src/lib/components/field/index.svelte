@@ -3,6 +3,8 @@
   import Progress from '../progress/index.svelte'
   import { copyTextToClipboard } from '../../utils/clipboard'
 
+  export let testId = null
+
   export let label = ''
   export let value = ''
   export let format = null
@@ -19,6 +21,13 @@
   function onCopy(value) {
     copyTextToClipboard(value)
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <div
@@ -26,6 +35,7 @@
   class:row={layout === 'row'}
   style:--text-width={textWidth}
   style:--wrap-label={wrapLabel ? 'normal' : 'nowrap'}
+  {...optProps}
 >
   <div class="label">{label}</div>
   <div class="value">

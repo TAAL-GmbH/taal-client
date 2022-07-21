@@ -10,6 +10,8 @@
 
   const dispatch = createEventDispatcher()
 
+  export let testId = null
+
   export let label = ''
   export let labelPlacement = 'top'
   export let labelAlignment = 'start' // 'start' | 'center' | 'end'
@@ -77,6 +79,13 @@
   function onRemove(file) {
     dispatch('remove', { name, value: file })
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <div
@@ -86,6 +95,7 @@
   style:--justify-local={justify}
   style:--label-align-local={labelAlign}
   style:--gap-local={gap}
+  {...optProps}
 >
   <div class="placement">
     {#if label}
