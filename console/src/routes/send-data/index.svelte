@@ -264,10 +264,15 @@
     timeout = settings.taalTimeout
 
     const keysResult = await getApiKeys()
-    // TODO handle the situation when no api keys are registered yet
-    //      suggestion is to show a message with a redirect button to register key page
-
     keys = keysResult.keys || []
+
+    if (keys.length === 0) {
+      failure(
+        `No keys found, please register an api key. Redirecting to register-key page`,
+        { duration: 5000 }
+      )
+      navigate('/register-key')
+    }
 
     apiKey = getStoreValue('apiKey')
     const storedKeyExists =
