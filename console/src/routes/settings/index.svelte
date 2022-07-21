@@ -12,6 +12,10 @@
   import * as api from '../../lib/api'
   import { success, failure } from '../../lib/utils/notifications'
 
+  // injected by svelte-navigator
+  export let location = null
+  export let navigate = null
+
   let settings = {}
 
   onMount(() => {

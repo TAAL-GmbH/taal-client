@@ -4,7 +4,6 @@
 
 <script>
   import { onMount } from 'svelte'
-  import { useNavigate } from 'svelte-navigator'
 
   import Button from '../../lib/components/button/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
@@ -14,7 +13,9 @@
 
   import * as api from '../../lib/api'
 
-  const navigate = useNavigate()
+  // injected by svelte-navigator
+  export let location = null
+  export let navigate = null
 
   function onKey() {
     navigate('/register-key')

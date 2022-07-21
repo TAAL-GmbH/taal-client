@@ -29,6 +29,10 @@
     updateStore,
   } from './utils'
 
+  // injected by svelte-navigator
+  export let location = null
+  export let navigate = null
+
   const stdMimeType = 'text/plain'
   let dataTransmissionInProgress = false
   let mounting = true
