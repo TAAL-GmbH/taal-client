@@ -2,8 +2,6 @@
   import { pageContentOffsetX } from '../../stores'
   import Modal from '../modal/index.svelte'
 
-  export let testId = null
-
   export let size = 75
   export let speed = 550
   export let color = '#232d7c'
@@ -19,16 +17,9 @@
     dash = (2 * Math.PI * radius * (100 - gap)) / 100
     marginLeft = usePageContentOffset ? $pageContentOffsetX : 0
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps.testId = testId
-    }
-  }
 </script>
 
-<Modal flyContent={false} coverCol="rgba(255, 255, 255, 0.7)" {...optProps}>
+<Modal flyContent={false} coverCol="rgba(255, 255, 255, 0.7)">
   <svg
     height={size}
     width={size}
