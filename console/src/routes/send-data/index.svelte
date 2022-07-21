@@ -36,8 +36,8 @@
   const stdMimeType = 'text/plain'
   let dataTransmissionInProgress = false
   let mounting = true
+  // show spinner until mounted
   $spinCount++
-  let timeout = 0
 
   let devMode = getStoreValue('devmode') === 'true'
   let taalClientURL = ''
@@ -261,7 +261,6 @@
 
     const settings = await getSettings()
     taalClientURL = getCorrectURL(settings.listenAddress)
-    timeout = settings.taalTimeout
 
     const keysResult = await getApiKeys()
     keys = keysResult.keys || []
@@ -314,7 +313,10 @@
       value={apiKey}
       items={apiKeyItems}
       disabled={!apiKeyItems || apiKeyItems.length <= 1}
-      on:change={(e) => (apiKey = e.detail.value)}
+      on:change={(e) => {
+        apiKey = e.detail.value
+        setStoreValue('apiKey', apiKey)
+      }}
       on:mount={onInputMount}
     />
     {#if devMode}
