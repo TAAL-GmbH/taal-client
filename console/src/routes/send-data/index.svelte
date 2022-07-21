@@ -215,8 +215,10 @@
     }
   }
 
+  let timeoutId = null
+
   function onTransmissionEnd() {
-    setTimeout(() => {
+    timeoutId = setTimeout(() => {
       dataTransmissionInProgress = false
       reset()
       setStoreValue('tag', tag)
@@ -277,6 +279,12 @@
 
     mounting = false
     $spinCount--
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
   })
 </script>
 
