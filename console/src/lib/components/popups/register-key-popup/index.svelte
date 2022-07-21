@@ -10,6 +10,8 @@
 
   const dispatch = createEventDispatcher()
 
+  export let testId = null
+
   let apiKey = ''
 
   function onInputChange(e) {
@@ -26,9 +28,16 @@
   function onRegisterClick() {
     dispatch('register', { apiKey })
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps.testId = testId
+    }
+  }
 </script>
 
-<Modal>
+<Modal {...optProps}>
   <Popup maxW={480} title="Register API key" on:close={onClose}>
     <svelte:fragment slot="body">
       <Spacer h={20} />

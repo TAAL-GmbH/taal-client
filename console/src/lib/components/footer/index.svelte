@@ -1,8 +1,19 @@
 <script>
+  export let testId = null
+
   let year = new Date().getFullYear()
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
-<div class="tui-footer"><span>© {year} TAAL TECHNOLOGIES SEZC</span></div>
+<div class="tui-footer" {...optProps}>
+  <span>© {year} TAAL TECHNOLOGIES SEZC</span>
+</div>
 
 <style>
   .tui-footer {

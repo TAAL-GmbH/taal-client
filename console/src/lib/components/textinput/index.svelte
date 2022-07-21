@@ -2,11 +2,14 @@
   import { createEventDispatcher, onMount } from 'svelte'
   import Icon from '../icon/index.svelte'
   import { getInputLabel } from '../../utils/strings'
+  import Index from '../icon/index.svelte'
 
   const dispatch = createEventDispatcher()
 
+  export let testId = null
+
   //   export let type = 'text'
-  export let type = 'text'
+  let type = 'text'
 
   export let label = ''
   export let labelPlacement = 'top'
@@ -139,6 +142,13 @@
     }
     dispatch(eventName)
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <div
@@ -147,6 +157,7 @@
   style:--padding-local={padding}
   style:--fontSize-local={fontSize}
   style:--direction-local={direction}
+  {...optProps}
 >
   <div class="placement">
     {#if label}

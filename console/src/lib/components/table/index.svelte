@@ -7,6 +7,8 @@
 
   const dispatch = createEventDispatcher()
 
+  export let testId = null
+
   //   export let selectable = false
   //   export let i18n = {}
   //   export let selectedRowIds = []
@@ -204,9 +206,16 @@
     const { type, value } = e.detail
     dispatch('action', { name, type, value })
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
-<div class="tui-table">
+<div class="tui-table" {...optProps}>
   {#if renderComp}
     <svelte:component
       this={renderComp}

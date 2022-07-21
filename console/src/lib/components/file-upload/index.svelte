@@ -8,6 +8,8 @@
 
   const dispatch = createEventDispatcher()
 
+  export let testId = null
+
   let type = 'file'
 
   export let label = ''
@@ -113,6 +115,13 @@
     }
     dispatch(eventName)
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <div
@@ -126,6 +135,7 @@
   style:--label-align-local={labelAlign}
   style:--gap-local={gap}
   on:click={disabled ? null : onInputParentClick}
+  {...optProps}
 >
   <div class="placement">
     {#if label}

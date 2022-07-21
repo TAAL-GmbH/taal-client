@@ -1,6 +1,8 @@
 <script>
   import logos from './svg'
 
+  export let testId = null
+
   export let name = 'taal-blue'
   export let width = -1
   export let height = -1
@@ -9,6 +11,13 @@
 
   $: {
     hasNoSize = width === -1 && height === -1
+  }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
   }
 </script>
 
@@ -19,6 +28,7 @@
   style:--width-local={width + 'px'}
   style:--height-local={hasNoSize ? '64px' : height + 'px'}
   on:click
+  {...optProps}
 >
   {#if logos[name]}
     {@html logos[name]}

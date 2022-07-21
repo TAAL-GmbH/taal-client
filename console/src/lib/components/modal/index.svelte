@@ -1,6 +1,8 @@
 <script>
   import { fade, fly } from 'svelte/transition'
 
+  export let testId = null
+
   export let coverCol = 'rgba(40, 41, 51, 0.7)'
   export let maxContentW = '900px'
   export let fadeCoverDuration = 200
@@ -8,6 +10,13 @@
 
   let w
   let h
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <div
@@ -25,6 +34,7 @@
   style:--width-local="{w}px"
   style:--height-local="{h}px"
   style:--max-content-width={maxContentW}
+  {...optProps}
 >
   <slot />
 </div>

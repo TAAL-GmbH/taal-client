@@ -7,6 +7,8 @@
     easing: cubicOut,
   })
 
+  export let testId = null
+
   // ratio-based progress
   export let ratio = -1
   export let dangerRatio = -1
@@ -100,6 +102,13 @@
       progress.set(0)
     }
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <div
@@ -109,6 +118,7 @@
   style:--height-local={height + 'px'}
   style:--border-radius-local={borderRadius + 'px'}
   style:--value-border-radius-local="{borderRadius}px 0 0 {borderRadius}px"
+  {...optProps}
 >
   {#if showValue}
     <div class="value" />
