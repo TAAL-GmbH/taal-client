@@ -44,7 +44,12 @@
       "menu-label": "Key manager",
       "key-manager-label": "Key manager",
       "registered-keys-label": "Registered API keys",
-      "add-new-label": "Add new"
+      "add-new-label": "Add new",
+      "notifications": {
+        "api-keys-load-failure": "Failed to load api keys: {{ error }}",
+        "key-register-success": "API key registered successfully",
+        "key-delete-success": "API key deleted successfully"
+      }
     },
     "history": {
       "menu-label": "History",

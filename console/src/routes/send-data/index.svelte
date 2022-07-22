@@ -161,7 +161,9 @@
 
         reader.onloadend = () => (imageSrcData[key] = reader.result)
         reader.onerror = () =>
-          failure(`Error: ${reader.error}`, { duration: 2000 })
+          failure(t('notifications.failure', { error: reader.error }), {
+            duration: 2000,
+          })
         reader.readAsDataURL(file)
       }
       // save file data into map
@@ -169,7 +171,9 @@
         const reader = new FileReader()
         reader.onload = () => (fileDataMap[key] = reader.result)
         reader.onerror = () =>
-          failure(`Error: ${reader.error}`, { duration: 2000 })
+          failure(t('notifications.failure', { error: reader.error }), {
+            duration: 2000,
+          })
         reader.readAsArrayBuffer(file)
       }
     })
