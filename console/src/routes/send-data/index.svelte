@@ -36,8 +36,8 @@
   const stdMimeType = 'text/plain'
   let dataTransmissionInProgress = false
   let mounting = true
+  // show spinner until mounted
   $spinCount++
-  let timeout = 0
 
   let devMode = getStoreValue('devmode') === 'true'
   let taalClientURL = ''
@@ -71,13 +71,21 @@
   let supportedImageSrcDataFileTypes = ['image/png', 'image/jpeg']
   let fileProgressData = {}
   let fileDataMap = {}
+  let fileSizeUploadLimitExceeded = false
 
   $: compactFileUpload = devMode || files.length > 0
   $: inputDataDisabled = files.length > 0
 
   $: submitButtonIsDisabled = devMode
-    ? !textData || !mimeType || !apiKey || dataTransmissionInProgress
-    : files.length === 0 || !apiKey || dataTransmissionInProgress
+    ? !textData ||
+      !mimeType ||
+      !apiKey ||
+      dataTransmissionInProgress ||
+      fileSizeUploadLimitExceeded
+    : files.length === 0 ||
+      !apiKey ||
+      dataTransmissionInProgress ||
+      fileSizeUploadLimitExceeded
 
   $: submitButtonText =
     files.length > 1
@@ -108,7 +116,7 @@
   }
 
   function setFieldsFromFile(file) {
-    mimeType = file.type
+    mimeType = file.type || 'application/octet-stream'
 
     if (file.type.startsWith('text/')) {
       const fr = new FileReader()
@@ -133,8 +141,10 @@
   }
 
   $: {
+    let totalSize = 0
     files.forEach((file) => {
       const key = getFileKey(file)
+      totalSize += file.size
       // do img data
       if (
         !imageSrcData[key] &&
@@ -156,6 +166,8 @@
         reader.readAsArrayBuffer(file)
       }
     })
+    // check upload limit
+    fileSizeUploadLimitExceeded = totalSize > 10485760 // 10 MB
   }
 
   function onCancelTransfer(e) {
@@ -215,8 +227,10 @@
     }
   }
 
+  let timeoutId = null
+
   function onTransmissionEnd() {
-    setTimeout(() => {
+    timeoutId = setTimeout(() => {
       dataTransmissionInProgress = false
       reset()
       setStoreValue('tag', tag)
@@ -259,13 +273,17 @@
 
     const settings = await getSettings()
     taalClientURL = getCorrectURL(settings.listenAddress)
-    timeout = settings.taalTimeout
 
     const keysResult = await getApiKeys()
-    // TODO handle the situation when no api keys are registered yet
-    //      suggestion is to show a message with a redirect button to register key page
-
     keys = keysResult.keys || []
+
+    if (keys.length === 0) {
+      failure(
+        `No keys found, please register an api key. Redirecting to register-key page`,
+        { duration: 5000 }
+      )
+      navigate('/register-key')
+    }
 
     apiKey = getStoreValue('apiKey')
     const storedKeyExists =
@@ -277,6 +295,12 @@
 
     mounting = false
     $spinCount--
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
   })
 </script>
 
@@ -301,7 +325,10 @@
       value={apiKey}
       items={apiKeyItems}
       disabled={!apiKeyItems || apiKeyItems.length <= 1}
-      on:change={(e) => (apiKey = e.detail.value)}
+      on:change={(e) => {
+        apiKey = e.detail.value
+        setStoreValue('apiKey', apiKey)
+      }}
       on:mount={onInputMount}
     />
     {#if devMode}
@@ -378,6 +405,9 @@
         {files}
         {imageSrcData}
         {fileProgressData}
+        error={fileSizeUploadLimitExceeded
+          ? 'File(s) exceed maximum upload limit'
+          : ''}
         on:cancel={onCancelTransfer}
         on:remove={onRemoveTransferFile}
       />

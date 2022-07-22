@@ -159,6 +159,7 @@
         {accept}
         {multiple}
         {disabled}
+        on:click={() => (inputRef.value = null)}
         on:input={onInputChange}
         on:focus={() => onFocusAction('focus')}
         on:blur={() => onFocusAction('blur')}
