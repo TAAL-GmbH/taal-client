@@ -159,6 +159,24 @@
       value={t(`${pageKey}.taal-timeout-hint`)}
     />
     <Spacer h={24} />
+    <TextInput
+      testId={'filesize-limit-input-text'}
+      name="fileSizeLimitBytes"
+      label={t(`${pageKey}.filesize-limit-label`)}
+      placeholder={t(`${pageKey}.filesize-limit-placeholder`)}
+      value={settings.fileSizeLimitBytes}
+      confirm
+      on:change={onChange}
+      on:confirm={onConfirm}
+    />
+    <Spacer h={8} />
+    <Text
+      testId={'filesize-limit-hint-text'}
+      size={5}
+      color="#8F8D94"
+      value={t(`${pageKey}.filesize-limit-hint`)}
+    />
+    <Spacer h={24} />
     <Text testId={'debug-text'} size={4} value={t(`${pageKey}.debug-label`)} />
     <Spacer h={8} />
     <Text
