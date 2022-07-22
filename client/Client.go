@@ -145,7 +145,7 @@ func (c *Client) GetTransactionsTemplate(apiKey string, size int, feesRequired b
 		}
 
 		err = json.Unmarshal(bodyBytes, &errResp)
-		if err != nil {
+		if err != nil || errResp == (errorResponse{}) {
 			return nil, nil, errors.Wrapf(errors.New(string(bodyBytes)), "failed to get transaction template. response code: %d", resp.StatusCode)
 		}
 
