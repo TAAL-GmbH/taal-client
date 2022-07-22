@@ -5,6 +5,8 @@
 
   const dispatch = createEventDispatcher()
 
+  export let testId = null
+
   export let label = ''
   export let labelPlacement = 'top'
   export let labelAlignment = 'start' // 'start' | 'center' | 'end'
@@ -151,6 +153,13 @@
     }
     dispatch(eventName)
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <div
@@ -163,6 +172,7 @@
   style:--direction-local={direction}
   style:--list-height-local={listHeight + 'px'}
   tabindex={-1}
+  {...optProps}
 >
   <div class="placement">
     {#if label}

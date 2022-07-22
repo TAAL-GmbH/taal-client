@@ -10,6 +10,8 @@
 
   const dispatch = createEventDispatcher()
 
+  export let testId = null
+
   let apiKey = ''
 
   function onInputChange(e) {
@@ -29,7 +31,7 @@
 </script>
 
 <Modal>
-  <Popup maxW={480} title="Register API key" on:close={onClose}>
+  <Popup maxW={480} title="Register API key" on:close={onClose} {testId}>
     <svelte:fragment slot="body">
       <Spacer h={20} />
       <TextInput

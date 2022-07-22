@@ -1,4 +1,6 @@
 <script>
+  export let testId = null
+
   export let size = 1
   export let color = '#232D7C'
   export let value = ''
@@ -33,6 +35,13 @@
         break
     }
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <div
@@ -42,6 +51,7 @@
   style:--font-weight-local={fontWeight}
   style:--letting-spacing-local={letterSpacing}
   style:--line-height-local={lineHeight}
+  {...optProps}
 >
   {#if html}
     {@html value}

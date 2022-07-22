@@ -1,6 +1,8 @@
 <script>
   import Icon from '../icon/index.svelte'
 
+  export let testId = null
+
   export let status = 'success'
   export let title = ''
   export let message = ''
@@ -20,9 +22,20 @@
         break
     }
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
-<div class="tui-notification" style:--status-col-local={statusCol}>
+<div
+  class="tui-notification"
+  style:--status-col-local={statusCol}
+  {...optProps}
+>
   <div class="tab"><Icon name={icon} size={24} /></div>
   <div class="body">
     {#if title}

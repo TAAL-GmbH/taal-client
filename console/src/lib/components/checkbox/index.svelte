@@ -5,6 +5,8 @@
 
   const dispatch = createEventDispatcher()
 
+  export let testId = null
+
   let type = 'checkbox'
 
   export let label = ''
@@ -87,6 +89,13 @@
     }
     dispatch(eventName)
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <div
@@ -100,6 +109,7 @@
   style:--cursor-local={cursor}
   style:--gap-local={gap}
   on:click={disabled ? null : onInputParentClick}
+  {...optProps}
 >
   <label for={name}>{getInputLabel(label, required)}</label>
   <div

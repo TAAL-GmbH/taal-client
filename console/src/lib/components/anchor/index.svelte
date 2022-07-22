@@ -1,4 +1,6 @@
 <script>
+  export let testId = null
+
   export let href = null
   export let text = null
   export let external = true
@@ -17,9 +19,16 @@
       prefix = 'https://'
     }
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
-<a href={prefix + href} {...propObj}>{text || href}</a>
+<a href={prefix + href} {...propObj} {...optProps}>{text || href}</a>
 
 <style>
   a {

@@ -1,8 +1,11 @@
 <script>
+  import Index from '../icon/index.svelte'
   import Icon from '../icon/index.svelte'
 
   let clazz = null
   export { clazz as class }
+
+  export let testId = null
 
   // variant
   export let variant = 'primary'
@@ -77,6 +80,13 @@
       fontSize = '16px'
     }
   }
+
+  let optProps = {}
+  $: {
+    if (testId) {
+      optProps['data-test-id'] = testId
+    }
+  }
 </script>
 
 <div
@@ -96,6 +106,7 @@
   style:--direction-local={direction}
   style:--width-local={width === -1 ? 'auto' : `${width}px`}
   on:click
+  {...optProps}
 >
   {#if hasIcon}
     <div class="icon" style="width: {iconSize}px; height: {iconSize}px;">

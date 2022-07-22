@@ -4,19 +4,18 @@
 
 <script>
   import { onMount } from 'svelte'
-  import { useNavigate } from 'svelte-navigator'
 
   import Button from '../../lib/components/button/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
   import PageBasic from '../../lib/components/page/template/basic/index.svelte'
   import Row from '../../lib/components/layout/row/index.svelte'
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
-  import Spinner from '../../lib/components/spinner/index.svelte'
 
-  import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
 
-  const navigate = useNavigate()
+  // injected by svelte-navigator
+  export let location = null
+  export let navigate = null
 
   function onKey() {
     navigate('/register-key')
@@ -52,10 +51,6 @@
     </Row>
   </div>
 </PageBasic>
-
-{#if $spinCount > 0}
-  <Spinner />
-{/if}
 
 <style>
   .island {
