@@ -5,10 +5,6 @@
   import Icon from '../icon/index.svelte'
   import Text from '../text/index.svelte'
   import { getInputLabel } from '../../utils/strings'
-  import i18n from '../../i18n'
-
-  $: t = $i18n.t
-  const tKey = 'comp.file-upload'
 
   const dispatch = createEventDispatcher()
 
@@ -26,6 +22,9 @@
   export let error = ''
   export let accept = '*'
   export let multiple = false
+  export let titleText = ''
+  export let hintText = ''
+  export let selectText = ''
 
   export let compact = false
 
@@ -174,11 +173,11 @@
         </div>
         <div class="text">
           <Text
-            value={t(`${tKey}.title`)}
+            value={titleText || 'Drag and drop or select a file'}
             size={4}
             color={disabled ? '#8F8D94' : '#232D7C'}
           />
-          <Text value={t(`${tKey}.hint`)} size={5} color="#8F8D94" />
+          <Text value={hintText} size={5} color="#8F8D94" />
         </div>
       </div>
       <div class="action">
@@ -190,7 +189,7 @@
           forceDisabledBorderDark
           on:click={onSelect}
         >
-          {t(`${tKey}.select-file-label`)}
+          {selectText ? selectText : 'Select file'}
         </Button>
       </div>
     </div>

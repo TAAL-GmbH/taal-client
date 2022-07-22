@@ -15,11 +15,6 @@
     },
     "footer": {
       "copyright": "© {{ year }} TAAL TECHNOLOGIES SEZC"
-    },
-    "file-upload": {
-      "title": "Drag and drop or select a file",
-      "hint": "File size no more than 10MB",
-      "select-file-label": "Select file"
     }
   },
   "page": {
@@ -123,9 +118,14 @@
       "mode-label": "Mode",
       "secret-label": "Secret",
       "text-data-label": "Text data",
-      "file-label": "File",
+      "file-upload": {
+        "label": "File",
+        "title": "Drag and drop or select a file",
+        "hint": "File size no more than {{ size }}",
+        "select": "Select file"
+      },
       "file-transfer-label": "Files added",
-      "max-filesize-limit-error": "File(s) exceed maximum upload limit",
+      "max-filesize-limit-error": "Some file(s) exceed the maximum per-file upload limit of: {{ size }}",
       "curl-command-label": "cURL command",
       "curl-copy-label": "Copy",
       "reset-label": "Reset",
