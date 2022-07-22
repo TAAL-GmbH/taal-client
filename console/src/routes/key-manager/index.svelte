@@ -10,6 +10,10 @@
 
   import * as api from '../../lib/api'
   import { success, failure } from '../../lib/utils/notifications'
+  import i18n from '../../lib/i18n'
+
+  const { t } = $i18n
+  const pageKey = 'page.key-manager'
 
   // injected by svelte-navigator
   export let location = null
@@ -67,11 +71,13 @@
 
 <PageWithMenu>
   <div class="island">
-    <Heading value="Key manager" />
+    <Heading value={t(`${pageKey}.key-manager-label`)} />
     <Spacer h={24} />
     <div class="sub-row">
-      <Heading value="Registered API keys" size={2} />
-      <Button icon="plus" on:click={showPopup}>Add new</Button>
+      <Heading value={t(`${pageKey}.registered-keys-label`)} size={2} />
+      <Button icon="plus" on:click={showPopup}
+        >{t(`${pageKey}.add-new-label`)}</Button
+      >
     </div>
     <Spacer h={24} />
     {#if keys}

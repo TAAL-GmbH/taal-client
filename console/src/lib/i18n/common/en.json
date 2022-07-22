@@ -1,0 +1,147 @@
+{
+  "comp": {
+    "key-card": {
+      "api-key-label": "Api key",
+      "data-sent-label": "Data sent: {{ size }}",
+      "address-label": "Address",
+      "date-registered-label": "Date registered"
+    },
+    "register-key-popup": {
+      "title": "Register API key",
+      "api-key-label": "API key",
+      "api-key-hint": "API keys can be obtained from {{ url }}",
+      "cancel-label": "Cancel",
+      "register-label": "Register"
+    },
+    "footer": {
+      "copyright": "© {{ year }} TAAL TECHNOLOGIES SEZC"
+    },
+    "file-upload": {
+      "title": "Drag and drop or select a file",
+      "hint": "File size no more than 10MB",
+      "select-file-label": "Select file"
+    }
+  },
+  "page": {
+    "new-users": {
+      "menu-label": "New Users",
+      "new-users-label": "Do you have an API key?",
+      "answer-no-label": "I don't have an API key",
+      "answer-yes-label": "I have an API key"
+    },
+    "register-key": {
+      "menu-label": "Register Key",
+      "register-key-label": "Register API key",
+      "api-key-label": "API key",
+      "api-key-hint": "API keys can be obtained from {{ url }}",
+      "reset-label": "Reset",
+      "register-label": "Register",
+      "notifications": {
+        "key-register-success": "API key registered successfully"
+      }
+    },
+    "key-manager": {
+      "menu-label": "Key manager",
+      "key-manager-label": "Key manager",
+      "registered-keys-label": "Registered API keys",
+      "add-new-label": "Add new"
+    },
+    "history": {
+      "menu-label": "History",
+      "history-label": "History",
+      "col-defs-label": {
+        "created_at": "Created at (UTC)",
+        "id": "ID",
+        "api_key": "API key used",
+        "data_bytes": "Data size",
+        "filename": "Filename"
+      },
+      "range-label": {
+        "24h": "24H",
+        "1w": "1W",
+        "1m": "1M",
+        "all": "All"
+      },
+      "errors": {
+        "network-response": "Network response was not OK"
+      },
+      "notifications": {
+        "download-success": "Successfully downloaded: {{ filename }}"
+      }
+    },
+    "settings": {
+      "menu-label": "Settings",
+      "settings-label": "Settings",
+      "server-settings-label": "Server settings",
+      "listen-address-label": "Listen address",
+      "listen-address-placeholder": "localhost:9500",
+      "listen-address-hint": "TaalClient will listen on the specified address. The default is \"localhost:9500\" To bind to all interfaces on your machine, omit the host part and only specify the port, for example \":9500\"",
+      "taal-url-label": "TAAL URL",
+      "taal-url-placeholder": "https://api.taal.com",
+      "taal-url-hint": "TaalClient communicates with Taal API servers which are hosted at https://api.taal.com.",
+      "taal-timeout-label": "TAAL timeout",
+      "taal-timeout-placeholder": "10s",
+      "taal-timeout-hint": "The default timeout is 10 seconds. This settings can be provided in milliseconds (ms), seconds (s) or minutes (m).",
+      "debug-label": "Debug",
+      "debug-hint": "Debug modes will add extra output to the console output of this service. Server debug will output all access to server endpoints. Transactions debug will output funding and data transaction raw hex.",
+      "server-checkbox-label": "Server",
+      "transactions-checkbox-label": "Transactions",
+      "transaction-data-label": "Transaction data",
+      "database-mode-label": "Database mode",
+      "local-radio-label": "Local",
+      "remote-radio-label": "Remote",
+      "filename-label": "File name",
+      "filename-placeholder": "./taal_client.db",
+      "host-label": "Host",
+      "host-placeholder": "localhost",
+      "port-label": "Port",
+      "port-placeholder": "5432",
+      "db-name-label": "Database name",
+      "db-name-placeholder": "taal_client",
+      "role-label": "Role",
+      "password-label": "Password",
+      "notifications": {
+        "get-settings-success": "Settings retrieved successfully",
+        "update-settings-success": "Setting updated successfully"
+      }
+    },
+    "send-data": {
+      "menu-label": "Send data",
+      "send-data-label": "Send data",
+      "parameters-label": "Parameters",
+      "developer-mode-label": "Developer mode",
+      "api-key-label": "API key",
+      "taal-client-url-label": "TAAL Client URL",
+      "mime-type-label": "MIME type",
+      "tag-label": "Tag",
+      "transaction-data-label": "Transaction data",
+      "mode-label": "Mode",
+      "secret-label": "Secret",
+      "text-data-label": "Text data",
+      "file-label": "File",
+      "file-transfer-label": "Files added",
+      "max-filesize-limit-error": "File(s) exceed maximum upload limit",
+      "curl-command-label": "cURL command",
+      "curl-copy-label": "Copy",
+      "reset-label": "Reset",
+      "submit-label": "Submit transaction",
+      "submit-many-label": "Submit {{ count }} transactions",
+      "mode-item-label": {
+        "raw": "Raw",
+        "hash": "Hash",
+        "encrypt": "Encrypt"
+      },
+      "notifications": {
+        "no-keys-failure": "No keys found, please register an api key. Redirecting to register-key page",
+        "api-keys-load-failure": "Failed to load api keys: {{ error }}",
+        "settings-load-failure": "Failed to load settings: {{ error }}",
+        "transaction-submit-success": "Transaction submitted successfully"
+      }
+    }
+  },
+  "notifications": {
+    "failure": "Error: {{ error }}",
+    "copy-success": "Successfully copied.",
+    "copy-failure": "Failed to copy."
+  }
+}

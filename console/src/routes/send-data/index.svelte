@@ -23,11 +23,18 @@
     getCorrectURL,
     getCurlCommand,
     getSettings,
-    modeItems,
+    getModeItems,
     getStoreValue,
     setStoreValue,
     updateStore,
   } from './utils'
+  import i18n from '../../lib/i18n'
+
+  const { t } = $i18n
+  const pageKey = 'page.send-data'
+
+  let modeItems = []
+  $: modeItems = getModeItems(t) || []
 
   // injected by svelte-navigator
   export let location = null
@@ -89,8 +96,8 @@
 
   $: submitButtonText =
     files.length > 1
-      ? `Submit ${files.length} transactions`
-      : 'Submit transaction'
+      ? t(`${pageKey}.submit-many-label`, { count: files.length })
+      : t(`${pageKey}.submit-label`)
 
   $: {
     if (devMode) {
@@ -252,7 +259,9 @@
         },
       },
       (data) =>
-        success('Transaction submitted successfully', { duration: 1000 }),
+        success(t(`${pageKey}.notifications.transaction-submit-success`), {
+          duration: 1000,
+        }),
       (error) => failure(`Error: ${error}`, { duration: 2000 })
     )
   }
@@ -271,17 +280,14 @@
     mode = getStoreValue('mode', 'raw')
     secret = getStoreValue('secret', '')
 
-    const settings = await getSettings()
+    const settings = await getSettings(t)
     taalClientURL = getCorrectURL(settings.listenAddress)
 
-    const keysResult = await getApiKeys()
+    const keysResult = await getApiKeys(t)
     keys = keysResult.keys || []
 
     if (keys.length === 0) {
-      failure(
-        `No keys found, please register an api key. Redirecting to register-key page`,
-        { duration: 5000 }
-      )
+      failure(t(`${pageKey}.notifications.no-keys-failure`), { duration: 5000 })
       navigate('/register-key')
     }
 
@@ -306,13 +312,13 @@
 
 <PageWithMenu>
   <div class="island">
-    <Heading value="Send data" />
+    <Heading value={t(`${pageKey}.send-data-label`)} />
     <Spacer h={24} />
     <div class="sub-row">
-      <Heading value="Parameters" size={2} />
+      <Heading value={t(`${pageKey}.parameters-label`)} size={2} />
       <Switch
         name="devMode"
-        label="Developer mode"
+        label={t(`${pageKey}.developer-mode-label`)}
         checked={devMode}
         on:change={(e) => (devMode = e.detail.checked)}
       />
@@ -320,7 +326,7 @@
     <Spacer h={24} />
     <Dropdown
       name="apiKey"
-      label="API key"
+      label={t(`${pageKey}.api-key-label`)}
       required
       value={apiKey}
       items={apiKeyItems}
@@ -335,14 +341,14 @@
       <Spacer h={24} />
       <TextInput
         name="taalClientUrl"
-        label="TAAL Client URL"
+        label={t(`${pageKey}.taal-client-url-label`)}
         value={taalClientURL}
         on:change={(e) => (taalClientURL = e.detail.value)}
       />
       <Spacer h={24} />
       <TextInput
         name="mimeType"
-        label="MIME type"
+        label={t(`${pageKey}.mime-type-label`)}
         value={mimeType}
         disabled={inputDataDisabled}
         on:change={(e) => (mimeType = e.detail.value)}
@@ -351,19 +357,19 @@
     <Spacer h={24} />
     <TextInput
       name="tag"
-      label="Tag"
+      label={t(`${pageKey}.tag-label`)}
       value={tag}
       on:change={(e) => (tag = e.detail.value)}
     />
     <Spacer h={32} />
     <div class="sub-row">
-      <Heading value="Transaction data" size={2} />
+      <Heading value={t(`${pageKey}.transaction-data-label`)} size={2} />
     </div>
     <Spacer h={24} />
     <div class="mode-row">
       <Dropdown
         name="mode"
-        label="Mode"
+        label={t(`${pageKey}.mode-label`)}
         required
         value={mode}
         items={modeItems}
@@ -372,7 +378,7 @@
       {#if mode === 'encrypt'}
         <TextInput
           name="secret"
-          label="Secret"
+          label={t(`${pageKey}.secret-label`)}
           value={secret}
           on:change={(e) => (secret = e.detail.value)}
         />
@@ -382,7 +388,7 @@
       <Spacer h={24} />
       <TextArea
         name="textData"
-        label="Text data"
+        label={t(`${pageKey}.text-data-label`)}
         required
         value={textData}
         disabled={inputDataDisabled}
@@ -392,7 +398,7 @@
     <Spacer h={24} />
     <FileUpload
       name="fileUpload"
-      label="File"
+      label={t(`${pageKey}.file-label`)}
       required
       compact={compactFileUpload}
       on:change={onFileSelect}
@@ -401,12 +407,12 @@
       <Spacer h={24} />
       <FileTransfer
         name="fileTransfer"
-        label="Files added"
+        label={t(`${pageKey}.file-transfer-label`)}
         {files}
         {imageSrcData}
         {fileProgressData}
         error={fileSizeUploadLimitExceeded
-          ? 'File(s) exceed maximum upload limit'
+          ? t(`${pageKey}.max-filesize-limit-error`)
           : ''}
         on:cancel={onCancelTransfer}
         on:remove={onRemoveTransferFile}
@@ -415,14 +421,14 @@
     {#if devMode}
       <Spacer h={32} />
       <div class="sub-row">
-        <Heading value="cURL command" size={2} />
+        <Heading value={t(`${pageKey}.curl-command-label`)} size={2} />
         <Button
           variant="ghost"
           icon="document-duplicate"
           size="small"
           on:click={() => copyCurl(curlCommand)}
         >
-          Copy
+          {t(`${pageKey}.curl-copy-label`)}
         </Button>
       </div>
       <Spacer h={24} />
@@ -434,8 +440,10 @@
         variant="ghost"
         size="large"
         disabled={submitButtonIsDisabled}
-        on:click={reset}>Reset</Button
+        on:click={reset}
       >
+        {t(`${pageKey}.reset-label`)}
+      </Button>
       <Button
         size="large"
         iconAfter="arrow-narrow-right"

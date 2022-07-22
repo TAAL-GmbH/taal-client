@@ -11,6 +11,10 @@
 
   import * as api from '../../lib/api'
   import { success, failure } from '../../lib/utils/notifications'
+  import i18n from '../../lib/i18n'
+
+  const { t } = $i18n
+  const pageKey = 'page.settings'
 
   // injected by svelte-navigator
   export let location = null
@@ -25,10 +29,13 @@
   function getSettings() {
     api.getSettings(
       (data) => {
-        success('Settings retrieved successfully', { duration: 1000 })
+        success(t(`${pageKey}.notifications.get-settings-success`), {
+          duration: 1000,
+        })
         settings = data
       },
-      (error) => failure(`Error: ${error}`, { duration: 5000 })
+      (error) =>
+        failure(t('notifications.failure', { error }), { duration: 5000 })
     )
   }
 
@@ -45,9 +52,12 @@
       },
       (data) => {
         settings[key] = value
-        success('Setting updated successfully', { duration: 1000 })
+        success(t(`${pageKey}.notifications.update-settings-success`), {
+          duration: 1000,
+        })
       },
-      (error) => failure(`Error: ${error}`, { duration: 2000 })
+      (error) =>
+        failure(t('notifications.failure', { error }), { duration: 2000 })
     )
   }
 
@@ -83,12 +93,12 @@
 
 <PageWithMenu>
   <div class="island">
-    <Heading testId={'settings-label'} value="Settings" />
+    <Heading testId={'settings-label'} value={t(`${pageKey}.settings-label`)} />
     <Spacer h={24} />
     <div class="sub-row">
       <Heading
         testId={'server-settings-label'}
-        value="Server settings"
+        value={t(`${pageKey}.server-settings-label`)}
         size={2}
       />
     </div>
@@ -96,8 +106,8 @@
     <TextInput
       testId={'listen-address-text-input'}
       name="listenAddr"
-      label="Listen address"
-      placeholder="localhost:9500"
+      label={t(`${pageKey}.listen-address-label`)}
+      placeholder={t(`${pageKey}.listen-address-placeholder`)}
       value={settings.listenAddress}
       autocomplete="off"
       confirm
@@ -110,14 +120,14 @@
       testId={'listen-address-hint-text'}
       size={5}
       color="#8F8D94"
-      value={'TaalClient will listen on the specified address. The default is "localhost:9500" To bind to all interfaces on your machine, omit the host part and only specify the port, for example ":9500"'}
+      value={t(`${pageKey}.listen-address-hint`)}
     />
     <Spacer h={24} />
     <TextInput
       testId={'taal-url-input-text'}
       name="taalUrl"
-      label="TAAL URL"
-      placeholder="https://api.taal.com"
+      label={t(`${pageKey}.taal-url-label`)}
+      placeholder={t(`${pageKey}.taal-url-placeholder`)}
       value={settings.taalUrl}
       confirm
       on:change={onChange}
@@ -128,14 +138,14 @@
       testId={'taal-url-hint-text'}
       size={5}
       color="#8F8D94"
-      value={'TaalClient communicates with Taal API servers which are hosted at https://api.taal.com.'}
+      value={t(`${pageKey}.taal-url-hint`)}
     />
     <Spacer h={24} />
     <TextInput
       testId={'taal-timeout-input-text'}
       name="taalTimeout"
-      label="TAAL timeout"
-      placeholder="10s"
+      label={t(`${pageKey}.taal-timeout-label`)}
+      placeholder={t(`${pageKey}.taal-timeout-placeholder`)}
       value={settings.taalTimeout}
       confirm
       on:change={onChange}
@@ -146,22 +156,22 @@
       testId={'taal-timeout-hint-text'}
       size={5}
       color="#8F8D94"
-      value={'The default timeout is 10 seconds. This settings can be provided in milliseconds (ms), seconds (s) or minutes (m).'}
+      value={t(`${pageKey}.taal-timeout-hint`)}
     />
     <Spacer h={24} />
-    <Text testId={'debug-text'} size={4} value={'Debug'} />
+    <Text testId={'debug-text'} size={4} value={t(`${pageKey}.debug-label`)} />
     <Spacer h={8} />
     <Text
       testId={'debug-hint-text'}
       size={5}
       color="#8F8D94"
-      value={'Debug modes will add extra output to the console output of this service. Server debug will output all access to server endpoints. Transactions debug will output funding and data transaction raw hex.'}
+      value={t(`${pageKey}.debug-hint`)}
     />
     <Spacer h={16} />
     <Checkbox
       testId={'server-checkbox'}
       name="debugServer"
-      label="Server"
+      label={t(`${pageKey}.server-checkbox-label`)}
       checked={settings.debugServer === 'true'}
       labelPlacement="right"
       on:change={onChange}
@@ -170,7 +180,7 @@
     <Checkbox
       testId={'transactions-checkbox'}
       name="debugTransactions"
-      label="Transactions"
+      label={t(`${pageKey}.transactions-checkbox-label`)}
       checked={settings.debugTransactions === 'true'}
       labelPlacement="right"
       on:change={onChange}
@@ -179,19 +189,23 @@
     <div class="sub-row">
       <Heading
         testId={'transaction-data-label'}
-        value="Transaction data"
+        value={t(`${pageKey}.transaction-data-label`)}
         size={2}
       />
     </div>
     <Spacer h={24} />
-    <Text testId={'database-mode-label'} size={4} value={'Database mode'} />
+    <Text
+      testId={'database-mode-label'}
+      size={4}
+      value={t(`${pageKey}.database-mode-label`)}
+    />
     <Spacer h={16} />
     <div class="radio-row">
       <Radio
         testId={'local-radio-btn'}
         name="sqlite"
         group="dbType"
-        label="Local"
+        label={t(`${pageKey}.local-radio-label`)}
         checked={settings.dbType === 'sqlite'}
         labelPlacement="right"
         on:change={onChange}
@@ -200,7 +214,7 @@
         testId={'remote-radio-btn'}
         name="postgres"
         group="dbType"
-        label="Remote"
+        label={t(`${pageKey}.remote-radio-label`)}
         checked={settings.dbType === 'postgres'}
         labelPlacement="right"
         on:change={onChange}
@@ -211,8 +225,8 @@
       <TextInput
         testId={'filename-text-input'}
         name="dbFilename"
-        label="File name"
-        placeholder="./taal_client.db"
+        label={t(`${pageKey}.filename-label`)}
+        placeholder={t(`${pageKey}.filename-placeholder`)}
         value={settings.dbFilename}
         confirm
         on:change={onChange}
@@ -223,8 +237,8 @@
       <TextInput
         testId={'host-text-input'}
         name="dbHost"
-        label="Host"
-        placeholder="localhost"
+        label={t(`${pageKey}.host-label`)}
+        placeholder={t(`${pageKey}.host-placeholder`)}
         value={settings.dbHost || ''}
         confirm
         on:change={onChange}
@@ -234,8 +248,8 @@
       <TextInput
         testId={'port-text-input'}
         name="dbPort"
-        label="Port"
-        placeholder="5432"
+        label={t(`${pageKey}.port-label`)}
+        placeholder={t(`${pageKey}.port-placeholder`)}
         value={settings.dbPort || ''}
         confirm
         on:change={onChange}
@@ -245,8 +259,8 @@
       <TextInput
         testId={'database-name-text-input'}
         name="dbName"
-        label="Database name"
-        placeholder="taal_client"
+        label={t(`${pageKey}.db-name-label`)}
+        placeholder={t(`${pageKey}.db-name-placeholder`)}
         value={settings.dbName || ''}
         confirm
         on:change={onChange}
@@ -256,7 +270,7 @@
       <TextInput
         testId={'role-text-input'}
         name="dbUsername"
-        label="Role"
+        label={t(`${pageKey}.role-label`)}
         value={settings.dbUsername || ''}
         confirm
         on:change={onChange}
@@ -266,7 +280,7 @@
       <TextInput
         testId={'password-text-input'}
         name="dbPassword"
-        label="Password"
+        label={t(`${pageKey}.password-label`)}
         value={settings.dbPassword || ''}
         confirm
         on:change={onChange}

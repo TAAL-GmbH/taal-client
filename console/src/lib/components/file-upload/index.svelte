@@ -5,6 +5,10 @@
   import Icon from '../icon/index.svelte'
   import Text from '../text/index.svelte'
   import { getInputLabel } from '../../utils/strings'
+  import i18n from '../../i18n'
+
+  const { t } = $i18n
+  const tKey = 'comp.file-upload'
 
   const dispatch = createEventDispatcher()
 
@@ -170,11 +174,11 @@
         </div>
         <div class="text">
           <Text
-            value="Drag and drop or select a file"
+            value={t(`${tKey}.title`)}
             size={4}
             color={disabled ? '#8F8D94' : '#232D7C'}
           />
-          <Text value="File size no more than 10MB" size={5} color="#8F8D94" />
+          <Text value={t(`${tKey}.hint`)} size={5} color="#8F8D94" />
         </div>
       </div>
       <div class="action">
@@ -186,7 +190,7 @@
           forceDisabledBorderDark
           on:click={onSelect}
         >
-          Select file
+          {t(`${tKey}.select-file-label`)}
         </Button>
       </div>
     </div>

@@ -1,4 +1,9 @@
 <script>
+  import i18n from '../../i18n'
+
+  const { t } = $i18n
+  const tKey = 'comp.footer'
+
   export let testId = null
 
   let year = new Date().getFullYear()
@@ -12,7 +17,7 @@
 </script>
 
 <div class="tui-footer" {...optProps}>
-  <span>© {year} TAAL TECHNOLOGIES SEZC</span>
+  <span>{t(`${tKey}.copyright`, { year })}</span>
 </div>
 
 <style>
