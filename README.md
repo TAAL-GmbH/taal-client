@@ -80,7 +80,7 @@ The following diagram shows the different steps that happen when writing data
 
 ### Reading data
 
-You can read data from the blockchain by clicking the Download button in the `History` page of the console or by by GETing from the Taal Client API.
+You can read data from the blockchain by clicking the Download button in the `History` page of the console or by GETing from the Taal Client API.
 
 ```c
 curl --location --request GET 'http://localhost:9500/api/v1/transactions/<txid>' \
@@ -89,7 +89,7 @@ curl --location --request GET 'http://localhost:9500/api/v1/transactions/<txid>'
 
 ### Transaction history
 
-Information about transactions which have been made through Taal Client are stored in a local database. This information includes ID, data size and timestamp. The history of all these transactions can be viewed on the `History` page of the console by GETing from the Taal Client API.
+Information about transactions which have been made through Taal Client are stored in a local database. This information includes ID, data size and timestamp. The history of all these transactions can be viewed on the `History` page of the console or by GETing from the Taal Client API.
 
 ```c
 curl --location --request GET 'http://localhost:9500/api/v1/transactions/?hours_back=24'
