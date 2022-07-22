@@ -10,6 +10,10 @@
 
   import * as api from '../../lib/api'
   import { success, failure } from '../../lib/utils/notifications'
+  import i18n from '../../lib/i18n'
+
+  const { t } = $i18n
+  const pageKey = 'page.key-manager'
 
   // injected by svelte-navigator
   export let location = null
@@ -29,7 +33,10 @@
     api.getApiKeysUsage(
       (data) => (keys = data.key_usages),
       (error) =>
-        failure(`Failed to load api keys: ${error}`, { duration: 2000 })
+        failure(
+          t(`${pageKey}.notifications.api-keys-load-failure`, { error }),
+          { duration: 2000 }
+        )
     )
   }
 
@@ -38,7 +45,9 @@
       apiKey,
       (data) => {
         hidePopup()
-        success('API key registered successfully', { duration: 1000 })
+        success(t(`${pageKey}.notifications.key-register-success`), {
+          duration: 1000,
+        })
         getApiKeys()
       },
       (error) => failure(`Error: ${error}`, { duration: 5000 })
@@ -49,7 +58,9 @@
     api.deleteKey(
       apiKey,
       (data) => {
-        success('API key deleted successfully', { duration: 1000 })
+        success(t(`${pageKey}.notifications.key-delete-success`), {
+          duration: 1000,
+        })
         getApiKeys()
       },
       (error) => failure(`Error: ${error}`, { duration: 5000 })
@@ -67,11 +78,13 @@
 
 <PageWithMenu>
   <div class="island">
-    <Heading value="Key manager" />
+    <Heading value={t(`${pageKey}.key-manager-label`)} />
     <Spacer h={24} />
     <div class="sub-row">
-      <Heading value="Registered API keys" size={2} />
-      <Button icon="plus" on:click={showPopup}>Add new</Button>
+      <Heading value={t(`${pageKey}.registered-keys-label`)} size={2} />
+      <Button icon="plus" on:click={showPopup}
+        >{t(`${pageKey}.add-new-label`)}</Button
+      >
     </div>
     <Spacer h={24} />
     {#if keys}

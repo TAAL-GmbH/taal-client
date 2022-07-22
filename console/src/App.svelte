@@ -1,6 +1,7 @@
 <script>
   import { Router, Route } from 'svelte-navigator'
   import { SvelteToast } from '@zerodevx/svelte-toast'
+
   import { menuLinks, menuActions, mediaSize } from './lib/stores'
   import { query } from './lib/actions'
   import { medium, large } from './lib/styles/breakpoints'
@@ -13,28 +14,31 @@
   import SendData from './routes/send-data/index.svelte'
   import Spinner from './lib/components/spinner/index.svelte'
   import { spinCount } from './lib/stores'
+  import i18n from './lib/i18n'
+
+  const { t } = $i18n
 
   $menuLinks = [
     {
       path: '/key-manager',
-      label: 'Key manager',
+      label: t('page.key-manager.menu-label'),
       component: KeyManager,
     },
     {
       path: '/history',
-      label: 'History',
+      label: t('page.history.menu-label'),
       component: History,
     },
     {
       path: '/settings',
-      label: 'Settings',
+      label: t('page.settings.menu-label'),
       component: Settings,
     },
   ]
   $menuActions = [
     {
       path: '/send-data',
-      label: 'Send data',
+      label: t('page.send-data.menu-label'),
       component: SendData,
     },
   ]
@@ -70,13 +74,13 @@
     <Route
       path="/"
       component={NewUsers}
-      meta={{ name: 'New Users' }}
+      meta={{ name: t('page.new-users.menu-label') }}
       primary={false}
     />
     <Route
       path="/register-key"
       component={RegisterKey}
-      meta={{ name: 'Register Key' }}
+      meta={{ name: t('page.register-key.menu-label') }}
       primary={false}
     />
     {#each $menuLinks as menuLink (menuLink.path)}
