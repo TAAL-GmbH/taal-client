@@ -135,7 +135,7 @@
       testId={'taal-timeout-input-text'}
       name="taalTimeout"
       label="TAAL timeout"
-      placeholder="10s"
+      placeholder="3m"
       value={settings.taalTimeout}
       confirm
       on:change={onChange}
@@ -146,7 +146,7 @@
       testId={'taal-timeout-hint-text'}
       size={5}
       color="#8F8D94"
-      value={'The default timeout is 10 seconds. This settings can be provided in milliseconds (ms), seconds (s) or minutes (m).'}
+      value={'The default timeout is 3 minutes. This settings can be provided in milliseconds (ms), seconds (s) or minutes (m).'}
     />
     <Spacer h={24} />
     <Text testId={'debug-text'} size={4} value={'Debug'} />
