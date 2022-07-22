@@ -18,6 +18,7 @@
   import { getFileKey } from '../../lib/utils/files'
   import { success, failure } from '../../lib/utils/notifications'
   import {
+    copyCurl,
     getApiKeys,
     getCorrectURL,
     getCurlCommand,
