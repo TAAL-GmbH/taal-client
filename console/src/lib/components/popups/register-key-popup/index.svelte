@@ -9,7 +9,7 @@
   import { link } from '../../../../lib/utils/format'
   import i18n from '../../../i18n'
 
-  const { t } = $i18n
+  $: t = $i18n.t
   const tKey = 'comp.register-key-popup'
 
   const dispatch = createEventDispatcher()

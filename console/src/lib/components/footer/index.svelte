@@ -1,7 +1,7 @@
 <script>
   import i18n from '../../i18n'
 
-  const { t } = $i18n
+  $: t = $i18n.t
   const tKey = 'comp.footer'
 
   export let testId = null

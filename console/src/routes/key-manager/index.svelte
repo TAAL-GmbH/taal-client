@@ -12,7 +12,7 @@
   import { success, failure } from '../../lib/utils/notifications'
   import i18n from '../../lib/i18n'
 
-  const { t } = $i18n
+  $: t = $i18n.t
   const pageKey = 'page.key-manager'
 
   // injected by svelte-navigator

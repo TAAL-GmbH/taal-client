@@ -7,7 +7,7 @@
   import { getInputLabel } from '../../utils/strings'
   import i18n from '../../i18n'
 
-  const { t } = $i18n
+  $: t = $i18n.t
   const tKey = 'comp.file-upload'
 
   const dispatch = createEventDispatcher()

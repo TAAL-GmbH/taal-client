@@ -18,7 +18,6 @@
   import { getFileKey } from '../../lib/utils/files'
   import { success, failure } from '../../lib/utils/notifications'
   import {
-    copyCurl,
     getApiKeys,
     getCorrectURL,
     getCurlCommand,
@@ -30,7 +29,7 @@
   } from './utils'
   import i18n from '../../lib/i18n'
 
-  const { t } = $i18n
+  $: t = $i18n.t
   const pageKey = 'page.send-data'
 
   let modeItems = []
