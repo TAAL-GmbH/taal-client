@@ -24,7 +24,7 @@ func init() {
 	// Start with default values for all items...
 	settings["listenAddress"] = ":9500"
 	settings["taalUrl"] = "https://api.taal.com"
-	settings["taalTimeout"] = "10s"
+	settings["taalTimeout"] = "3m"
 	settings["dbType"] = "sqlite"
 	settings["dbFilename"] = "./taal_client.db"
 
