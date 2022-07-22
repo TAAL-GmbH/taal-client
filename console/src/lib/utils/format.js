@@ -114,7 +114,7 @@ export const petaHash = (val) => {
   return (val / 1e15).toFixed(2) + ' PH/s'
 }
 
-export const dataSize = (val) => {
+export const memSize = (val) => {
   let unit = 'B'
 
   if (isNaN(val)) {
@@ -135,6 +135,33 @@ export const dataSize = (val) => {
     unit = 'MB'
   } else if (val >= 1024) {
     val = val / 1024
+    unit = 'kB'
+  }
+
+  return addNumCommas(val, 2) + ' ' + unit
+}
+
+export const dataSize = (val) => {
+  let unit = 'B'
+
+  if (isNaN(val)) {
+    return '-'
+  }
+
+  if (val >= 1e15) {
+    val = val / 1e15
+    unit = 'PB'
+  } else if (val >= 1e12) {
+    val = val / 1e12
+    unit = 'TB'
+  } else if (val >= 1e9) {
+    val = val / 1e9
+    unit = 'GB'
+  } else if (val >= 1e6) {
+    val = val / 1e6
+    unit = 'MB'
+  } else if (val >= 1000) {
+    val = val / 1000
     unit = 'kB'
   }
 
