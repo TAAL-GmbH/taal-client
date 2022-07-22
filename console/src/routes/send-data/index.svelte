@@ -29,6 +29,7 @@
     updateStore,
   } from './utils'
   import i18n from '../../lib/i18n'
+  import { dataSize } from '../../lib/utils'
 
   $: t = $i18n.t
   const pageKey = 'page.send-data'
@@ -48,6 +49,7 @@
 
   let devMode = getStoreValue('devmode') === 'true'
   let taalClientURL = ''
+  let fileSizeLimitBytes = -1
   let mimeType = stdMimeType
   let tag = ''
   let mode = 'raw'
@@ -78,7 +80,7 @@
   let supportedImageSrcDataFileTypes = ['image/png', 'image/jpeg']
   let fileProgressData = {}
   let fileDataMap = {}
-  let fileSizeUploadLimitExceeded = false
+  let hasFileOverLimit = false
 
   $: compactFileUpload = devMode || files.length > 0
   $: inputDataDisabled = files.length > 0
@@ -88,11 +90,11 @@
       !mimeType ||
       !apiKey ||
       dataTransmissionInProgress ||
-      fileSizeUploadLimitExceeded
+      hasFileOverLimit
     : files.length === 0 ||
       !apiKey ||
       dataTransmissionInProgress ||
-      fileSizeUploadLimitExceeded
+      hasFileOverLimit
 
   $: submitButtonText =
     files.length > 1
@@ -148,10 +150,13 @@
   }
 
   $: {
-    let totalSize = 0
+    hasFileOverLimit = false
     files.forEach((file) => {
       const key = getFileKey(file)
-      totalSize += file.size
+      // check file size limit
+      if (fileSizeLimitBytes !== -1 && file.size > fileSizeLimitBytes) {
+        hasFileOverLimit = true
+      }
       // do img data
       if (
         !imageSrcData[key] &&
@@ -177,8 +182,6 @@
         reader.readAsArrayBuffer(file)
       }
     })
-    // check upload limit
-    fileSizeUploadLimitExceeded = totalSize > 10485760 // 10 MB
   }
 
   function onCancelTransfer(e) {
@@ -286,6 +289,9 @@
 
     const settings = await getSettings(t)
     taalClientURL = getCorrectURL(settings.listenAddress)
+    fileSizeLimitBytes = !isNaN(settings.fileSizeLimitBytes)
+      ? settings.fileSizeLimitBytes
+      : -1
 
     const keysResult = await getApiKeys(t)
     keys = keysResult.keys || []
@@ -402,7 +408,12 @@
     <Spacer h={24} />
     <FileUpload
       name="fileUpload"
-      label={t(`${pageKey}.file-label`)}
+      label={t(`${pageKey}.file-upload.label`)}
+      titleText={t(`${pageKey}.file-upload.title`)}
+      hintText={t(`${pageKey}.file-upload.hint`, {
+        size: dataSize(fileSizeLimitBytes),
+      })}
+      selectText={t(`${pageKey}.file-upload.select`)}
       required
       compact={compactFileUpload}
       on:change={onFileSelect}
@@ -415,8 +426,10 @@
         {files}
         {imageSrcData}
         {fileProgressData}
-        error={fileSizeUploadLimitExceeded
-          ? t(`${pageKey}.max-filesize-limit-error`)
+        error={hasFileOverLimit
+          ? t(`${pageKey}.max-filesize-limit-error`, {
+              size: dataSize(fileSizeLimitBytes),
+            })
           : ''}
         on:cancel={onCancelTransfer}
         on:remove={onRemoveTransferFile}
@@ -436,7 +449,13 @@
         </Button>
       </div>
       <Spacer h={24} />
-      <TextArea name="curlCommand" readonly minH={160} value={curlCommand} />
+      <TextArea
+        name="curlCommand"
+        readonly
+        minH={160}
+        value={curlCommand}
+        disabled={hasFileOverLimit}
+      />
     {/if}
     <Spacer h={64} />
     <div class="buttons">
