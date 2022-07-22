@@ -16,29 +16,27 @@
   import { spinCount } from './lib/stores'
   import i18n from './lib/i18n'
 
-  const { t } = $i18n
-
   $menuLinks = [
     {
       path: '/key-manager',
-      label: t('page.key-manager.menu-label'),
+      label: $i18n.t('page.key-manager.menu-label'),
       component: KeyManager,
     },
     {
       path: '/history',
-      label: t('page.history.menu-label'),
+      label: $i18n.t('page.history.menu-label'),
       component: History,
     },
     {
       path: '/settings',
-      label: t('page.settings.menu-label'),
+      label: $i18n.t('page.settings.menu-label'),
       component: Settings,
     },
   ]
   $menuActions = [
     {
       path: '/send-data',
-      label: t('page.send-data.menu-label'),
+      label: $i18n.t('page.send-data.menu-label'),
       component: SendData,
     },
   ]
@@ -74,13 +72,13 @@
     <Route
       path="/"
       component={NewUsers}
-      meta={{ name: t('page.new-users.menu-label') }}
+      meta={{ name: $i18n.t('page.new-users.menu-label') }}
       primary={false}
     />
     <Route
       path="/register-key"
       component={RegisterKey}
-      meta={{ name: t('page.register-key.menu-label') }}
+      meta={{ name: $i18n.t('page.register-key.menu-label') }}
       primary={false}
     />
     {#each $menuLinks as menuLink (menuLink.path)}
