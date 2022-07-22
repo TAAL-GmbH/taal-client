@@ -18,7 +18,7 @@ All requests will be sent to https://api.taal.com by default unless changed in t
 
 ## Database
 
-By default, Taal Client creates a local database with the filename `taal_client.db` where API keys with public-private key pairs and transaction information are stored. Instead of connecting to a local DB it is possible to connect Taal Client to a postgres DB. In order to do that the database mode has to be changed via [Settings](https://localhost:9500/settings) from `local` to `remote`. The same change can be done by the setting `dbType` from `sqlite` to `postgres` in the [settings.conf](./settings.conf) file. The hostname, port, user, db name, and password have to be configured accordingly, again via settings.
+By default, Taal Client creates a local database with the filename `taal_client.db` where API keys with public-private key pairs and transaction information are stored. Instead of connecting to a local DB it is possible to connect Taal Client to a postgres DB. In order to do that, the database mode has to be changed via [Settings](https://localhost:9500/settings) from `local` to `remote`. The same change can be done by the setting `dbType` from `sqlite` to `postgres` in the [settings.conf](./settings.conf) file. The hostname, port, user, db name, and password have to be configured accordingly, again via settings.
 
 ## Functions
 
@@ -95,7 +95,7 @@ Information about transactions which have been made through Taal Client are stor
 curl --location --request GET 'http://localhost:9500/api/v1/transactions/?hours_back=24'
 ```
 
-If the `hours_back` parameter is not set then the whole transaction history will be returned.
+If the `hours_back` parameter is not set, then the whole transaction history will be returned.
 
 ## Before usage (MacOS / Linux version)
 
@@ -111,10 +111,10 @@ For the Mac version the code is not signed with a certificate issued by Apple cu
 
 ![Mac1](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/mac1.png)
 
-In order to still run the application on a please open `Security & Privacy` settings and click on `Open Anyway` as shown in the following picture.
+In order to still run the application, please open `Security & Privacy` settings and click on `Open Anyway` as shown in the following picture.
 
 ![Mac2](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/mac2.png)
 
-After that when running the application the following message will be shown. This time it has an `Open` button. Press this button in order to run the application.
+After that when running the application the following message will be shown. This time it has an `Open` button. Press this button to run the application.
 
 ![Mac3](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/mac3.png)
