@@ -7,11 +7,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"taal-client/settings"
 	"time"
 
+	"github.com/labstack/echo/v4"
 	"github.com/libsv/go-bt"
 	"github.com/pkg/errors"
 )
@@ -20,6 +22,11 @@ type Client struct {
 	client  *http.Client
 	Url     string
 	Timeout time.Duration
+}
+type errorResponse struct {
+	Status int32  `json:"status"`
+	Code   int32  `json:"code"`
+	Err    string `json:"error"`
 }
 
 type RegisterRequest struct {
@@ -130,7 +137,15 @@ func (c *Client) GetTransactionsTemplate(apiKey string, size int, feesRequired b
 	}()
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, nil, fmt.Errorf("unexpected response code: %v", resp.StatusCode)
+
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			return nil, nil, errors.Wrap(err, "failed to get transaction template. failed to read response")
+		}
+
+		err = parseErrFromBody(bodyBytes)
+
+		return nil, nil, errors.Wrapf(err, "failed to get transaction template. response code: %d", resp.StatusCode)
 	}
 
 	var payload Payload
@@ -196,25 +211,14 @@ func (c *Client) SubmitTransactions(apiKey string, feeTx *bt.Tx, dataTx *bt.Tx) 
 	}()
 
 	if resp.StatusCode != http.StatusCreated {
-		type errorResponse struct {
-			Status int32  `json:"status"`
-			Code   int32  `json:"code"`
-			Err    string `json:"error"`
-		}
-
 		bodyBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return fmt.Errorf("failed to read response: %v", err)
+			return errors.Wrap(err, "failed to submit transaction. failed to read response")
 		}
 
-		var errorResponsePayload errorResponse
+		err = parseErrFromBody(bodyBytes)
 
-		if err := json.Unmarshal(bodyBytes, &errorResponsePayload); err != nil {
-			errorResponsePayload.Code = int32(resp.StatusCode)
-			errorResponsePayload.Err = string(bodyBytes)
-		}
-
-		return fmt.Errorf("failed to submit [%d]: %v", errorResponsePayload.Code, errorResponsePayload.Err)
+		return errors.Wrapf(err, "failed to submit transaction. response code: %d", resp.StatusCode)
 	}
 
 	return nil
@@ -243,11 +247,31 @@ func (c *Client) ReadTransaction(ctx context.Context, apiKey string, transaction
 	if resp.StatusCode != http.StatusOK {
 		bodyBytes, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return nil, "", errors.Wrap(err, "failed to read response")
+			return nil, "", errors.Wrap(err, "failed to read transaction. failed to read response")
 		}
 
-		return nil, "", errors.Errorf("failed to read %s", string(bodyBytes))
+		err = parseErrFromBody(bodyBytes)
+
+		return nil, "", errors.Wrapf(err, "failed to read transaction. response code: %d", resp.StatusCode)
 	}
 
 	return resp.Body, resp.Header.Get("content-type"), nil
+}
+
+func parseErrFromBody(bodyBytes []byte) error {
+	var errResp errorResponse
+
+	_ = json.Unmarshal(bodyBytes, &errResp)
+	if errResp != (errorResponse{}) {
+		return errors.New(errResp.Err)
+	}
+
+	var errResponseHttp echo.HTTPError
+	_ = json.Unmarshal(bodyBytes, &errResponseHttp)
+
+	if errResponseHttp != (echo.HTTPError{}) {
+		return errors.New(errResponseHttp.Error())
+	}
+
+	return errors.New(string(bodyBytes))
 }
