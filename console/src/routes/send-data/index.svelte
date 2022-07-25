@@ -166,9 +166,7 @@
 
         reader.onloadend = () => (imageSrcData[key] = reader.result)
         reader.onerror = () =>
-          failure(t('notifications.failure', { error: reader.error }), {
-            duration: 2000,
-          })
+          failure(t('notifications.failure', { error: reader.error }))
         reader.readAsDataURL(file)
       }
       // save file data into map
@@ -176,9 +174,7 @@
         const reader = new FileReader()
         reader.onload = () => (fileDataMap[key] = reader.result)
         reader.onerror = () =>
-          failure(t('notifications.failure', { error: reader.error }), {
-            duration: 2000,
-          })
+          failure(t('notifications.failure', { error: reader.error }))
         reader.readAsArrayBuffer(file)
       }
     })
@@ -266,10 +262,8 @@
         },
       },
       (data) =>
-        success(t(`${pageKey}.notifications.transaction-submit-success`), {
-          duration: 1000,
-        }),
-      (error) => failure(`Error: ${error}`, { duration: 2000 })
+        success(t(`${pageKey}.notifications.transaction-submit-success`)),
+      (error) => failure(t('notifications.failure', { error }))
     )
   }
 
@@ -314,7 +308,7 @@
 
     return () => {
       if (timeoutId) {
-        clearTimeout(timeoutId)
+        // clearTimeout(timeoutId)
       }
     }
   })

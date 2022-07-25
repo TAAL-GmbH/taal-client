@@ -29,9 +29,7 @@
   function getSettings() {
     api.getSettings(
       (data) => {
-        success(t(`${pageKey}.notifications.get-settings-success`), {
-          duration: 1000,
-        })
+        success(t(`${pageKey}.notifications.get-settings-success`))
         settings = data
       },
       (error) =>
@@ -52,12 +50,9 @@
       },
       (data) => {
         settings[key] = value
-        success(t(`${pageKey}.notifications.update-settings-success`), {
-          duration: 1000,
-        })
+        success(t(`${pageKey}.notifications.update-settings-success`))
       },
-      (error) =>
-        failure(t('notifications.failure', { error }), { duration: 2000 })
+      (error) => failure(t('notifications.failure', { error }))
     )
   }
 

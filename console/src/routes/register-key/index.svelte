@@ -30,9 +30,7 @@
     await api.registerKey(
       apiKey,
       (data) => {
-        success(t(`${pageKey}.notifications.key-register-success`), {
-          duration: 1000,
-        })
+        success(t(`${pageKey}.notifications.key-register-success`))
         ok = true
       },
       (error) =>

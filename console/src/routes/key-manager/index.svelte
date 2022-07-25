@@ -33,10 +33,7 @@
     api.getApiKeysUsage(
       (data) => (keys = data.key_usages),
       (error) =>
-        failure(
-          t(`${pageKey}.notifications.api-keys-load-failure`, { error }),
-          { duration: 2000 }
-        )
+        failure(t(`${pageKey}.notifications.api-keys-load-failure`, { error }))
     )
   }
 
@@ -45,12 +42,11 @@
       apiKey,
       (data) => {
         hidePopup()
-        success(t(`${pageKey}.notifications.key-register-success`), {
-          duration: 1000,
-        })
+        success(t(`${pageKey}.notifications.key-register-success`))
         getApiKeys()
       },
-      (error) => failure(`Error: ${error}`, { duration: 5000 })
+      (error) =>
+        failure(t('notifications.failure', { error }), { duration: 5000 })
     )
   }
 
@@ -58,12 +54,11 @@
     api.deleteKey(
       apiKey,
       (data) => {
-        success(t(`${pageKey}.notifications.key-delete-success`), {
-          duration: 1000,
-        })
+        success(t(`${pageKey}.notifications.key-delete-success`))
         getApiKeys()
       },
-      (error) => failure(`Error: ${error}`, { duration: 5000 })
+      (error) =>
+        failure(t('notifications.failure', { error }), { duration: 5000 })
     )
   }
 

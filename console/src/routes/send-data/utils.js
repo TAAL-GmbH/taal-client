@@ -64,9 +64,7 @@ export function getApiKeys(t) {
       return data
     },
     (error) =>
-      failure(t(`${pageKey}.notifications.api-keys-load-failure`, { error }), {
-        duration: 2000,
-      })
+      failure(t(`${pageKey}.notifications.api-keys-load-failure`, { error }))
   )
 }
 
@@ -76,9 +74,7 @@ export function getSettings(t) {
       return data
     },
     (error) =>
-      failure(t(`${pageKey}.notifications.settings-load-failure`, { error }), {
-        duration: 2000,
-      })
+      failure(t(`${pageKey}.notifications.settings-load-failure`, { error }))
   )
 }
 

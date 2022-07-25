@@ -90,8 +90,7 @@
       (data) => {
         transactions = data.transactions
       },
-      (error) =>
-        failure(t('notifications.failure', { error }), { duration: 2000 })
+      (error) => failure(t('notifications.failure', { error }))
     )
   }
 
@@ -124,13 +123,9 @@
         }
 
         downloadFileBlob(filename, blob)
-        success(t(`${pageKey}.notifications.download-success`, { filename }), {
-          duration: 2000,
-        })
+        success(t(`${pageKey}.notifications.download-success`, { filename }))
       })
-      .catch((error) =>
-        failure(t('notifications.failure', { error }), { duration: 2000 })
-      )
+      .catch((error) => failure(t('notifications.failure', { error })))
   }
 
   onMount(() => getTransactions(rangeValue))

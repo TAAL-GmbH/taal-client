@@ -9,10 +9,10 @@ i18n.subscribe((value) => {
 export async function copyTextToClipboard(text) {
   try {
     await navigator.clipboard.writeText(text)
-    success(t('notifications.copy-success'), { duration: 2000 })
+    success(t('notifications.copy-success'))
     return { ok: true }
   } catch (error) {
-    failure(t('notifications.copy-failure'), { duration: 2000 })
+    failure(t('notifications.copy-failure'))
     return { error }
   }
 }

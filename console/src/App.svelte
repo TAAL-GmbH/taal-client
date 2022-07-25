@@ -50,7 +50,7 @@
   export let url = ''
 
   const toastOptions = {
-    duration: 4000, // duration of progress bar tween to the `next` value
+    duration: 3000, // duration of progress bar tween to the `next` value
     pausable: true, // pause progress bar tween on mouse hover
     dismissable: true, // allow dismiss with close button
     reversed: false, // insert new toast to bottom of stack
