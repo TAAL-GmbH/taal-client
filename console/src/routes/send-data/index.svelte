@@ -290,7 +290,7 @@
     const settings = await getSettings(t)
     taalClientURL = getCorrectURL(settings.listenAddress)
     fileSizeLimitBytes = !isNaN(settings.fileSizeLimitBytes)
-      ? settings.fileSizeLimitBytes
+      ? parseInt(settings.fileSizeLimitBytes)
       : -1
 
     const keysResult = await getApiKeys(t)
@@ -410,10 +410,13 @@
       name="fileUpload"
       label={t(`${pageKey}.file-upload.label`)}
       titleText={t(`${pageKey}.file-upload.title`)}
-      hintText={t(`${pageKey}.file-upload.hint`, {
-        size: dataSize(fileSizeLimitBytes),
-      })}
+      hintText={fileSizeLimitBytes === -1
+        ? t(`${pageKey}.file-upload.hint-no-limit`)
+        : t(`${pageKey}.file-upload.hint`, {
+            size: dataSize(fileSizeLimitBytes),
+          })}
       selectText={t(`${pageKey}.file-upload.select`)}
+      multiple={!devMode}
       required
       compact={compactFileUpload}
       on:change={onFileSelect}
@@ -428,7 +431,7 @@
         {fileProgressData}
         error={hasFileOverLimit
           ? t(`${pageKey}.max-filesize-limit-error`, {
-              size: dataSize(fileSizeLimitBytes),
+              size: dataSize(fileSizeLimitBytes || 0),
             })
           : ''}
         on:cancel={onCancelTransfer}

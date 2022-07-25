@@ -82,6 +82,9 @@
       "taal-timeout-label": "TAAL timeout",
       "taal-timeout-placeholder": "3m",
       "taal-timeout-hint": "'The default timeout is 3 minutes. This setting can be provided in milliseconds (ms), seconds (s) or minutes (m).",
+      "filesize-limit-label": "File size limit",
+      "filesize-limit-placeholder": "-1",
+      "filesize-limit-hint": "Maximum per-file filesize allowed (in bytes) for any given transaction. A value of -1 signifies no limit.",
       "debug-label": "Debug",
       "debug-hint": "Debug modes will add extra output to the console output of this service. Server debug will output all access to server endpoints. Transactions debug will output funding and data transaction raw hex.",
       "server-checkbox-label": "Server",
@@ -122,6 +125,7 @@
         "label": "File",
         "title": "Drag and drop or select a file",
         "hint": "File size no more than {{ size }}",
+        "hint-no-limit": "No file size limit is set",
         "select": "Select file"
       },
       "file-transfer-label": "Files added",
