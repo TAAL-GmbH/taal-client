@@ -27,7 +27,7 @@
 
   <Field label={t(`${tKey}.address-label`)} value={key.address} copy={true} />
   <Field
-    label={t(`${tKey}.date-registered`)}
+    label={t(`${tKey}.date-registered-label`)}
     value={formatDate(key.createdAt, false, false)}
   />
 </div>
