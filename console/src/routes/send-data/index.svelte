@@ -307,7 +307,7 @@
 
     return () => {
       if (timeoutId) {
-        // clearTimeout(timeoutId)
+        clearTimeout(timeoutId)
       }
     }
   })
