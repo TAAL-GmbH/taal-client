@@ -27,10 +27,6 @@
   let rangeItems = []
   $: rangeItems = getRangeItems(t) || []
 
-  // injected by svelte-navigator
-  export let location = null
-  export let navigate = null
-
   let transactions = []
   let rangeValue = '720'
   let distinctKeys = []

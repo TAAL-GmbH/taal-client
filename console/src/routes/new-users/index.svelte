@@ -4,6 +4,7 @@
 
 <script>
   import { onMount } from 'svelte'
+  import { useNavigate } from 'svelte-navigator'
 
   import Button from '../../lib/components/button/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
@@ -17,9 +18,7 @@
   $: t = $i18n.t
   const pageKey = 'page.new-users'
 
-  // injected by svelte-navigator
-  export let location = null
-  export let navigate = null
+  const navigate = useNavigate()
 
   function onKey() {
     navigate('/register-key')
@@ -31,8 +30,6 @@
 
   onMount(async () => {
     const result = await api.getApiKeys()
-
-    console.log(result)
 
     if (firstLoad && result?.keys && result?.keys.length > 0) {
       firstLoad = false

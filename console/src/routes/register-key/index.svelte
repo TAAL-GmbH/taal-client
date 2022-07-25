@@ -1,4 +1,6 @@
 <script>
+  import { useNavigate } from 'svelte-navigator'
+
   import Button from '../../lib/components/button/index.svelte'
   import Heading from '../../lib/components/heading/index.svelte'
   import PageBasic from '../../lib/components/page/template/basic/index.svelte'
@@ -15,9 +17,7 @@
   $: t = $i18n.t
   const pageKey = 'page.register-key'
 
-  // injected by svelte-navigator
-  export let location = null
-  export let navigate = null
+  const navigate = useNavigate()
 
   let key = ''
 

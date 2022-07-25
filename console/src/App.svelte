@@ -71,31 +71,35 @@
   <GlobalStyle>
     <Route
       path="/"
-      component={NewUsers}
       meta={{ name: $i18n.t('page.new-users.menu-label') }}
       primary={false}
-    />
+    >
+      <NewUsers />
+    </Route>
     <Route
       path="/register-key"
-      component={RegisterKey}
       meta={{ name: $i18n.t('page.register-key.menu-label') }}
       primary={false}
-    />
+    >
+      <RegisterKey />
+    </Route>
     {#each $menuLinks as menuLink (menuLink.path)}
       <Route
         path={menuLink.path}
-        component={menuLink.component}
         meta={{ name: menuLink.label }}
         primary={false}
-      />
+      >
+        <svelte:component this={menuLink.component} />
+      </Route>
     {/each}
     {#each $menuActions as menuAction (menuAction.path)}
       <Route
         path={menuAction.path}
-        component={menuAction.component}
         meta={{ name: menuAction.label }}
         primary={false}
-      />
+      >
+        <svelte:component this={menuAction.component} />
+      </Route>
     {/each}
   </GlobalStyle>
 </Router>

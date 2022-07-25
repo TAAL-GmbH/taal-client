@@ -16,10 +16,6 @@
   $: t = $i18n.t
   const pageKey = 'page.settings'
 
-  // injected by svelte-navigator
-  export let location = null
-  export let navigate = null
-
   let settings = {}
 
   onMount(() => {

@@ -1,5 +1,6 @@
 <script>
   import { onMount } from 'svelte'
+  import { useNavigate } from 'svelte-navigator'
 
   import Button from '../../lib/components/button/index.svelte'
   import Dropdown from '../../lib/components/dropdown/index.svelte'
@@ -37,9 +38,7 @@
   let modeItems = []
   $: modeItems = getModeItems(t) || []
 
-  // injected by svelte-navigator
-  export let location = null
-  export let navigate = null
+  const navigate = useNavigate()
 
   const stdMimeType = 'text/plain'
   let dataTransmissionInProgress = false
