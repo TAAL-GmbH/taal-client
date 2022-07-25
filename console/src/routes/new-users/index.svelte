@@ -12,6 +12,10 @@
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
 
   import * as api from '../../lib/api'
+  import i18n from '../../lib/i18n'
+
+  $: t = $i18n.t
+  const pageKey = 'page.new-users'
 
   // injected by svelte-navigator
   export let location = null
@@ -39,14 +43,14 @@
 
 <PageBasic>
   <div class="island">
-    <Heading value="Do you have an API key?" />
+    <Heading value={t(`${pageKey}.new-users-label`)} />
     <Spacer h={64} />
     <Row gap={16}>
       <Button variant="secondary" size="large" width={236} on:click={onNoKey}>
-        I don't have an API key
+        {t(`${pageKey}.answer-no-label`)}
       </Button>
       <Button width={236} size="large" on:click={onKey}>
-        I have an API key
+        {t(`${pageKey}.answer-yes-label`)}
       </Button>
     </Row>
   </div>

@@ -10,6 +10,10 @@
   import { link } from '../../lib/utils/format'
   import { success, failure } from '../../lib/utils/notifications'
   import * as api from '../../lib/api'
+  import i18n from '../../lib/i18n'
+
+  $: t = $i18n.t
+  const pageKey = 'page.register-key'
 
   // injected by svelte-navigator
   export let location = null
@@ -26,10 +30,13 @@
     await api.registerKey(
       apiKey,
       (data) => {
-        success('API key registered successfully', { duration: 1000 })
+        success(t(`${pageKey}.notifications.key-register-success`), {
+          duration: 1000,
+        })
         ok = true
       },
-      (error) => failure(`Error: ${error}`, { duration: 5000 })
+      (error) =>
+        failure(t('notifications.failure', { error }), { duration: 5000 })
     )
     if (ok) {
       navigate('/key-manager')
@@ -47,11 +54,11 @@
 
 <PageBasic>
   <div class="island">
-    <Heading value="Register API key" />
+    <Heading value={t(`${pageKey}.register-key-label`)} />
     <Spacer h={48} />
     <TextInput
       name="api-key"
-      label="API key"
+      label={t(`${pageKey}.api-key-label`)}
       value={key}
       required
       on:change={onInputChange}
@@ -60,13 +67,19 @@
     <Text
       size={5}
       html
-      value="API keys can be obtained from {link('https://console.taal.com')}"
+      value={t(`${pageKey}.api-key-hint`, {
+        url: link('https://console.taal.com'),
+      })}
     />
     <Spacer h={120} />
     <div class="right">
       <Row gap={16}>
-        <Button variant="ghost" size="large" on:click={onReset}>Reset</Button>
-        <Button size="large" on:click={onRegister}>Register</Button>
+        <Button variant="ghost" size="large" on:click={onReset}>
+          {t(`${pageKey}.reset-label`)}
+        </Button>
+        <Button size="large" on:click={onRegister}>
+          {t(`${pageKey}.register-label`)}
+        </Button>
       </Row>
     </div>
   </div>

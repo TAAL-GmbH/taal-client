@@ -22,6 +22,9 @@
   export let error = ''
   export let accept = '*'
   export let multiple = false
+  export let titleText = ''
+  export let hintText = ''
+  export let selectText = ''
 
   export let compact = false
 
@@ -170,11 +173,11 @@
         </div>
         <div class="text">
           <Text
-            value="Drag and drop or select a file"
+            value={titleText || 'Drag and drop or select a file'}
             size={4}
             color={disabled ? '#8F8D94' : '#232D7C'}
           />
-          <Text value="File size no more than 10MB" size={5} color="#8F8D94" />
+          <Text value={hintText} size={5} color="#8F8D94" />
         </div>
       </div>
       <div class="action">
@@ -186,7 +189,7 @@
           forceDisabledBorderDark
           on:click={onSelect}
         >
-          Select file
+          {selectText ? selectText : 'Select file'}
         </Button>
       </div>
     </div>

@@ -1,12 +1,18 @@
 import { success, failure } from './notifications'
+import i18n from '../i18n'
+
+let t = () => {}
+i18n.subscribe((value) => {
+  t = value.t
+})
 
 export async function copyTextToClipboard(text) {
   try {
     await navigator.clipboard.writeText(text)
-    success('Successfully copied.', { duration: 2000 })
+    success(t('notifications.copy-success'), { duration: 2000 })
     return { ok: true }
   } catch (error) {
-    failure('Failed to copy.', { duration: 2000 })
+    failure(t('notifications.copy-failure'), { duration: 2000 })
     return { error }
   }
 }

@@ -2,11 +2,15 @@ import { copyTextToClipboard } from '../../lib/utils/clipboard'
 import { failure } from '../../lib/utils/notifications'
 import * as api from '../../lib/api'
 
-export const modeItems = [
-  { label: 'Raw', value: 'raw' },
-  { label: 'Hash', value: 'hash' },
-  { label: 'Encrypt', value: 'encrypt' },
-]
+const pageKey = 'page.send-data'
+
+export const getModeItems = (t) => {
+  return [
+    { label: t(`${pageKey}.mode-item-label.raw`), value: 'raw' },
+    { label: t(`${pageKey}.mode-item-label.hash`), value: 'hash' },
+    { label: t(`${pageKey}.mode-item-label.encrypt`), value: 'encrypt' },
+  ]
+}
 
 export function getStoreValue(key, defaultValue) {
   return localStorage.getItem(key) || defaultValue
@@ -54,21 +58,27 @@ export function getTimeoutMillis(timeout) {
   return parseInt(numStr) * factor
 }
 
-export function getApiKeys() {
+export function getApiKeys(t) {
   return api.getApiKeys(
     (data) => {
       return data
     },
-    (error) => failure(`Failed to load api keys: ${error}`, { duration: 2000 })
+    (error) =>
+      failure(t(`${pageKey}.notifications.api-keys-load-failure`, { error }), {
+        duration: 2000,
+      })
   )
 }
 
-export function getSettings() {
+export function getSettings(t) {
   return api.getSettings(
     (data) => {
       return data
     },
-    (error) => failure(`Failed to load settings: ${error}`, { duration: 2000 })
+    (error) =>
+      failure(t(`${pageKey}.notifications.settings-load-failure`, { error }), {
+        duration: 2000,
+      })
   )
 }
 

@@ -15,7 +15,17 @@
   } from '../../lib/utils'
   import { success, failure } from '../../lib/utils/notifications'
   import * as api from '../../lib/api'
-  import { colDefs, rangeItems } from './data'
+  import { getColDefs, getRangeItems } from './data'
+  import i18n from '../../lib/i18n'
+
+  $: t = $i18n.t
+  const pageKey = 'page.history'
+
+  let colDefs = []
+  $: colDefs = getColDefs(t) || []
+
+  let rangeItems = []
+  $: rangeItems = getRangeItems(t) || []
 
   // injected by svelte-navigator
   export let location = null
@@ -80,7 +90,8 @@
       (data) => {
         transactions = data.transactions
       },
-      (error) => failure(`Error: ${error}`, { duration: 2000 })
+      (error) =>
+        failure(t('notifications.failure', { error }), { duration: 2000 })
     )
   }
 
@@ -95,7 +106,7 @@
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error('Network response was not OK')
+          throw new Error(t(`${pageKey}.errors.network-response`))
         }
         contentType = response.headers.get('content-type')
         return response.blob()
@@ -113,9 +124,13 @@
         }
 
         downloadFileBlob(filename, blob)
-        success(`Successfully downloaded: ${filename}`, { duration: 2000 })
+        success(t(`${pageKey}.notifications.download-success`, { filename }), {
+          duration: 2000,
+        })
       })
-      .catch((err) => failure(`Error: ${err}`, { duration: 2000 }))
+      .catch((error) =>
+        failure(t('notifications.failure', { error }), { duration: 2000 })
+      )
   }
 
   onMount(() => getTransactions(rangeValue))
@@ -123,7 +138,7 @@
 
 <PageWithMenu>
   <div class="island">
-    <Heading value="History" />
+    <Heading value={t(`${pageKey}.history-label`)} />
     <Spacer h={24} />
     <div class="sub-row">
       <ButtonSelect
