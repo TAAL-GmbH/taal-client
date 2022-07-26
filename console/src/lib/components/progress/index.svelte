@@ -102,23 +102,16 @@
       progress.set(0)
     }
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <div
   class="tui-progress"
+  data-test-id={testId}
   style:--value-width-local="{$progress * 100}%"
   style:--value-color-local={color}
   style:--height-local={height + 'px'}
   style:--border-radius-local={borderRadius + 'px'}
   style:--value-border-radius-local="{borderRadius}px 0 0 {borderRadius}px"
-  {...optProps}
 >
   {#if showValue}
     <div class="value" />

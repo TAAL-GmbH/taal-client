@@ -75,30 +75,45 @@
 
   // files
   let files = []
-  let imageSrcData = {}
-  let supportedImageSrcDataFileTypes = ['image/png', 'image/jpeg']
-  let fileProgressData = {}
+  let fileStatusData = {}
   let fileDataMap = {}
   let hasFileOverLimit = false
 
   $: compactFileUpload = devMode || files.length > 0
   $: inputDataDisabled = files.length > 0
 
-  $: submitButtonIsDisabled = devMode
-    ? !textData ||
-      !mimeType ||
-      !apiKey ||
-      dataTransmissionInProgress ||
-      hasFileOverLimit
-    : files.length === 0 ||
-      !apiKey ||
-      dataTransmissionInProgress ||
-      hasFileOverLimit
+  let submitButtonText = ''
+  let successFilesCount = 0
+  let inProgress = false
+  $: {
+    successFilesCount = 0
+    inProgress = false
 
-  $: submitButtonText =
-    files.length > 1
-      ? t(`${pageKey}.submit-many-label`, { count: files.length })
-      : t(`${pageKey}.submit-label`)
+    files.forEach((file) => {
+      const key = getFileKey(file)
+
+      if (fileStatusData[key]) {
+        if (fileStatusData[key].state === 'success') {
+          successFilesCount++
+        }
+        if (fileStatusData[key].progress < 1) {
+          inProgress = true
+        }
+      }
+    })
+
+    submitButtonText =
+      successFilesCount > 1
+        ? t(`${pageKey}.submit-many-label`, { count: successFilesCount })
+        : t(`${pageKey}.submit-label`)
+  }
+
+  $: submitDisabledCommon =
+    !apiKey || dataTransmissionInProgress || hasFileOverLimit || inProgress
+
+  $: submitButtonIsDisabled = devMode
+    ? !textData || !mimeType || submitDisabledCommon
+    : files.length === 0 || submitDisabledCommon
 
   $: {
     if (devMode) {
@@ -151,53 +166,16 @@
   $: {
     hasFileOverLimit = false
     files.forEach((file) => {
-      const key = getFileKey(file)
-      // check file size limit
       if (fileSizeLimitBytes !== -1 && file.size > fileSizeLimitBytes) {
         hasFileOverLimit = true
-      }
-      // do img data
-      if (
-        !imageSrcData[key] &&
-        supportedImageSrcDataFileTypes.includes(file.type)
-      ) {
-        const reader = new FileReader()
-
-        reader.onloadend = () => (imageSrcData[key] = reader.result)
-        reader.onerror = () =>
-          failure(t('notifications.failure', { error: reader.error }))
-        reader.readAsDataURL(file)
-      }
-      // save file data into map
-      if (!fileDataMap[key]) {
-        const reader = new FileReader()
-        reader.onload = () => (fileDataMap[key] = reader.result)
-        reader.onerror = () =>
-          failure(t('notifications.failure', { error: reader.error }))
-        reader.readAsArrayBuffer(file)
       }
     })
   }
 
-  function onCancelTransfer(e) {
-    const file = e.detail.value
-    const fileKey = getFileKey(file)
-    fileProgressData[fileKey] = { state: 'cancelled', progress: 1 }
-  }
-
   function onRemoveTransferFile(e) {
     const file = e.detail.value
-    const fileKey = getFileKey(file)
-    files = files.filter((item) => getFileKey(item) !== fileKey)
-    if (imageSrcData[fileKey]) {
-      delete imageSrcData[fileKey]
-    }
-    if (fileDataMap[fileKey]) {
-      delete fileDataMap[fileKey]
-    }
-    if (fileProgressData[fileKey]) {
-      delete fileProgressData[fileKey]
-    }
+    const key = getFileKey(file)
+    files = files.filter((item) => getFileKey(item) !== key)
     if (files.length === 0) {
       textData = ''
       mimeType = stdMimeType
@@ -218,15 +196,9 @@
     if (files.length > 0) {
       Promise.all(
         files.map((file) => {
-          const key = getFileKey(file)
-          fileProgressData[key] = { state: 'progress', progress: 0 }
-          writeDataItem(fileDataMap[key], file.type, file.name)
+          writeDataItem(fileDataMap[getFileKey(file)], file.type, file.name)
         })
       ).finally(() => {
-        files.forEach((file) => {
-          const key = getFileKey(file)
-          fileProgressData[key] = { state: 'done', progress: 1 }
-        })
         onTransmissionEnd()
       })
     } else {
@@ -270,9 +242,8 @@
     files = []
     textData = ''
     mimeType = stdMimeType
-    imageSrcData = {}
+    fileStatusData = {}
     fileDataMap = {}
-    fileProgressData = {}
   }
 
   onMount(async () => {
@@ -420,15 +391,15 @@
         name="fileTransfer"
         label={t(`${pageKey}.file-transfer-label`)}
         {files}
-        {imageSrcData}
-        {fileProgressData}
         error={hasFileOverLimit
           ? t(`${pageKey}.max-filesize-limit-error`, {
               size: dataSize(fileSizeLimitBytes || 0),
             })
           : ''}
-        on:cancel={onCancelTransfer}
+        onError={(error) => failure(t('notifications.failure', { error }))}
         on:remove={onRemoveTransferFile}
+        on:data={(e) => (fileDataMap = e.detail.value)}
+        on:status={(e) => (fileStatusData = e.detail.value)}
       />
     {/if}
     {#if devMode}
