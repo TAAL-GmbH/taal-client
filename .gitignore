@@ -12,3 +12,6 @@ __debug_bin
 build2.sh
 build_linux.sh
 package-lock.json
+*.tar.gz
+*.log
+taal-client
