@@ -5,21 +5,14 @@
   import ContentBasic from '../../content/basic/index.svelte'
 
   export let testId = null
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <Header showLinks={false} showActions={false} testId="header" />
 
 <div
   class="content-container"
+  data-test-id={testId}
   style:--top-local={$headerHeight + 'px'}
-  {...optProps}
 >
   <ContentBasic>
     <slot />

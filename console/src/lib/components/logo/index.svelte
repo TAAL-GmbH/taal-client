@@ -12,23 +12,16 @@
   $: {
     hasNoSize = width === -1 && height === -1
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <div
   class="tui-logo"
+  data-test-id={testId}
   class:w={width !== -1}
   class:h={height !== -1 || hasNoSize}
   style:--width-local={width + 'px'}
   style:--height-local={hasNoSize ? '64px' : height + 'px'}
   on:click
-  {...optProps}
 >
   {#if logos[name]}
     {@html logos[name]}

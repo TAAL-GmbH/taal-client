@@ -19,16 +19,9 @@
       prefix = 'https://'
     }
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
-<a href={prefix + href} {...propObj} {...optProps}>{text || href}</a>
+<a href={prefix + href} {...propObj} data-test-id={testId}>{text || href}</a>
 
 <style>
   a {

@@ -161,17 +161,11 @@
     }
     dispatch(eventName)
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <div
   class="tui-dropdown"
+  data-test-id={testId}
   class:open
   style:--height-local={height + 'px'}
   style:--padding-local={padding}
@@ -182,7 +176,6 @@
   use:clickOutside
   on:outclick={onClose}
   on:focus={(e) => (focused = true)}
-  {...optProps}
 >
   <div class="placement">
     {#if label}

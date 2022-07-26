@@ -35,23 +35,16 @@
         break
     }
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <div
   class="tui-text"
+  data-test-id={testId}
   style:--color-local={color}
   style:--font-size-local={fontSize}
   style:--font-weight-local={fontWeight}
   style:--letting-spacing-local={letterSpacing}
   style:--line-height-local={lineHeight}
-  {...optProps}
 >
   {#if html}
     {@html value}

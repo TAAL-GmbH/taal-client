@@ -68,23 +68,16 @@
     open = !open
     dispatch('toggle-menu', { open })
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <div
   class="tui-header"
+  data-test-id={testId}
   class:small={$mediaSize === 'small'}
   style:--gutter-local={gutter + 'px'}
   style:--height-local={height + 'px'}
   style:--content-margin-left={contentMarginLeft + 'px'}
   style:--logo-margin-right={logoMarginRight + 'px'}
-  {...optProps}
 >
   {#if showMobile && hasMenu}
     <div class="icon" on:click={(e) => onToggle()}>

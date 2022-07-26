@@ -80,17 +80,11 @@
       fontSize = '16px'
     }
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <div
   class={`tui-button${clazz ? ' ' + clazz : ''}`}
+  data-test-id={testId}
   class:primary
   class:secondary
   class:ghost
@@ -106,7 +100,6 @@
   style:--direction-local={direction}
   style:--width-local={width === -1 ? 'auto' : `${width}px`}
   on:click
-  {...optProps}
 >
   {#if hasIcon}
     <div class="icon" style="width: {iconSize}px; height: {iconSize}px;">

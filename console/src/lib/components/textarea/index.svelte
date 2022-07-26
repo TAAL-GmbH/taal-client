@@ -147,24 +147,17 @@
     }
     dispatch(eventName)
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <div
   class="tui-textarea"
+  data-test-id={testId}
   style:--height-local={height + 'px'}
   style:--padding-local={padding}
   style:--padding-focused-local={paddingFocused}
   style:--fontSize-local={fontSize}
   style:--direction-local={direction}
   style:--native-height-local={nativeHeight + 'px'}
-  {...optProps}
 >
   <div class="placement">
     {#if label}

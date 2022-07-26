@@ -153,17 +153,11 @@
     }
     dispatch(eventName)
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <div
   class="tui-button-select"
+  data-test-id={testId}
   style:--height-local={height + 'px'}
   style:--padding-local={padding}
   style:--gap-local={gap}
@@ -172,7 +166,6 @@
   style:--direction-local={direction}
   style:--list-height-local={listHeight + 'px'}
   tabindex={-1}
-  {...optProps}
 >
   <div class="placement">
     {#if label}

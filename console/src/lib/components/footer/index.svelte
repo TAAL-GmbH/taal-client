@@ -7,16 +7,9 @@
   export let testId = null
 
   let year = new Date().getFullYear()
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
-<div class="tui-footer" {...optProps}>
+<div class="tui-footer" data-test-id={testId}>
   <span>{t(`${tKey}.copyright`, { year })}</span>
 </div>
 

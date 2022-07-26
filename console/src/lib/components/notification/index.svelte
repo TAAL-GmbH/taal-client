@@ -22,19 +22,12 @@
         break
     }
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <div
   class="tui-notification"
+  data-test-id={testId}
   style:--status-col-local={statusCol}
-  {...optProps}
 >
   <div class="tab"><Icon name={icon} size={24} /></div>
   <div class="body">

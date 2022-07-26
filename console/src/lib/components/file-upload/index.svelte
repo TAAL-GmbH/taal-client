@@ -118,17 +118,11 @@
     }
     dispatch(eventName)
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <div
   class="tui-file-upload"
+  data-test-id={testId}
   class:compact
   style:--direction-input-local={compact ? 'row' : 'column'}
   style:--prompt-gap-local={compact ? '15px' : '26px'}
@@ -138,7 +132,6 @@
   style:--label-align-local={labelAlign}
   style:--gap-local={gap}
   on:click={disabled ? null : onInputParentClick}
-  {...optProps}
 >
   <div class="placement">
     {#if label}

@@ -38,13 +38,6 @@
   function onToggleMenu(e) {
     showSidebarMenu = e.detail.open
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <Header
@@ -61,8 +54,8 @@
 
 <div
   class="content-container"
+  data-test-id={testId}
   style:--top-local={$headerHeight + 'px'}
-  {...optProps}
 >
   <ContentMenu>
     <slot />

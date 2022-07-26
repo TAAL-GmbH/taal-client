@@ -93,17 +93,11 @@
     }
     dispatch(eventName)
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <div
   class="tui-radio placement"
+  data-test-id={testId}
   style:--width-local={width}
   style:--height-local={height}
   style:--fontSize-local={fontSize}
@@ -113,7 +107,6 @@
   style:--cursor-local={cursor}
   style:--gap-local={gap}
   on:click={disabled || cursor !== 'pointer' ? null : onInputParentClick}
-  {...optProps}
 >
   <label for={name}>{getInputLabel(label, required)}</label>
   <div

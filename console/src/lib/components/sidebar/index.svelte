@@ -18,20 +18,13 @@
   function onClose() {
     dispatch('close')
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <div
   class="tui-sidebar"
+  data-test-id={testId}
   style:--top-local={$headerHeight + 'px'}
   style:--menu-width-local={menuWidth + 'px'}
-  {...optProps}
 >
   <div class="cover" in:fade on:mousedown|preventDefault={onClose} />
   <div class="menu" in:fly={{ x: -menuWidth, duration: 200 }}>

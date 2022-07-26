@@ -21,21 +21,14 @@
   function onCopy(value) {
     copyTextToClipboard(value)
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <div
   class="tui-field"
+  data-test-id={testId}
   class:row={layout === 'row'}
   style:--text-width={textWidth}
   style:--wrap-label={wrapLabel ? 'normal' : 'nowrap'}
-  {...optProps}
 >
   <div class="label">{label}</div>
   <div class="value">

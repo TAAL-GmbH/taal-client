@@ -13,19 +13,12 @@
   function onClose() {
     dispatch('close')
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
 <div
   class="tui-popup"
+  data-test-id={testId}
   style:--max-width-local={maxW !== -1 ? maxW + 'px' : 'auto'}
-  {...optProps}
 >
   <div class="header">
     <div class="title"><Heading value={title} size={5} /></div>

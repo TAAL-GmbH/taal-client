@@ -206,16 +206,9 @@
     const { type, value } = e.detail
     dispatch('action', { name, type, value })
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
-<div class="tui-table" {...optProps}>
+<div class="tui-table" data-test-id={testId}>
   {#if renderComp}
     <svelte:component
       this={renderComp}

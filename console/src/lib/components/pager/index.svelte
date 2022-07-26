@@ -57,16 +57,9 @@
     }
     dispatch('change', { name, type, value })
   }
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
-<div class="tui-pager" {...optProps}>
+<div class="tui-pager" data-test-id={testId}>
   <Button
     variant="ghost"
     icon="chevron-left"

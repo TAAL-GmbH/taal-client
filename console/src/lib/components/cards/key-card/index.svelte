@@ -9,16 +9,9 @@
   export let testId = null
 
   export let key
-
-  let optProps = {}
-  $: {
-    if (testId) {
-      optProps['data-test-id'] = testId
-    }
-  }
 </script>
 
-<div class="tui-key-card" {...optProps}>
+<div class="tui-key-card" data-test-id={testId}>
   <Field label={t(`${tKey}.api-key-label`)} value={key.api_key} copy={true} />
   <Field
     label={t(`${tKey}.data-sent-label`, { size: dataSize(key.dataBytes) })}
