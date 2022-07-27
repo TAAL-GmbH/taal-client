@@ -99,11 +99,9 @@
   }
 
   function onSelectChange(e) {
-    dispatch('change', {
-      name,
-      type,
-      value: items[e.srcElement.selectedIndex].value,
-    })
+    arrowFocusIndex = -1
+    value = items[e.srcElement.selectedIndex].value
+    dispatch('change', { name, type, value })
     selectRef.focus()
   }
 
@@ -119,7 +117,7 @@
     selectRef.focus()
   }
 
-  let arrowFocusIndex = 0
+  let arrowFocusIndex = -1
 
   function onKeyDown(e) {
     if (!e) e = window.event

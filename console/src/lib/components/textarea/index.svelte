@@ -88,7 +88,8 @@
   }
 
   function onInputChange(e) {
-    dispatch('change', { name, type, value: e.srcElement.value })
+    value = e.srcElement.value
+    dispatch('change', { name, type, value })
   }
 
   afterUpdate(() => {
