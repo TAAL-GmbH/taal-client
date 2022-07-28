@@ -145,7 +145,8 @@
         "api-keys-load-failure": "Failed to load api keys: {{ error }}",
         "settings-load-failure": "Failed to load settings: {{ error }}",
         "transaction-submit-success": "Transaction submitted successfully"
-      }
+      },
+      "disclaimer": "By clicking submit, you agree to the terms of the {{ link }}"
     }
   },
   "notifications": {

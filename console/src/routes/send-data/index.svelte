@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
   import { useNavigate } from 'svelte-navigator'
 
+  import { link } from '../../lib/utils/format'
   import Button from '../../lib/components/button/index.svelte'
   import Dropdown from '../../lib/components/dropdown/index.svelte'
   import FileUpload from '../../lib/components/file-upload/index.svelte'
@@ -12,6 +13,7 @@
   import Spacer from '../../lib/components/layout/spacer/index.svelte'
   import TextInput from '../../lib/components/textinput/index.svelte'
   import TextArea from '../../lib/components/textarea/index.svelte'
+  import Text from '../../lib/components/text/index.svelte'
 
   import { spinCount } from '../../lib/stores'
   import * as api from '../../lib/api'
@@ -423,14 +425,27 @@
       >
         {t(`${pageKey}.reset-label`)}
       </Button>
-      <Button
-        size="large"
-        iconAfter="arrow-narrow-right"
-        disabled={submitButtonIsDisabled}
-        on:click={onSubmit}
-      >
-        {submitButtonText}
-      </Button>
+      <div>
+        <Button
+          size="large"
+          iconAfter="arrow-narrow-right"
+          disabled={submitButtonIsDisabled}
+          on:click={onSubmit}
+        >
+          {submitButtonText}
+        </Button>
+        <Spacer h={12} />
+        <div>
+          <Text
+            size={5}
+            html={true}
+            color="#8F8D94"
+            value={t(`${pageKey}.disclaimer`, {
+              link: link('https://console.taal.com', 'client agreement'),
+            })}
+          />
+        </div>
+      </div>
     </div>
   </div>
 </PageWithMenu>
@@ -460,7 +475,7 @@
     display: flex;
     justify-content: flex-end;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: top;
     gap: 24px;
   }
 </style>
