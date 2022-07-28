@@ -73,9 +73,8 @@
 
   function onInputParentClick() {
     inputRef.focus()
-    const newValue = !checked
-    checked = newValue
-    dispatch('change', { name, type, checked: newValue })
+    checked = !checked
+    dispatch('change', { name, type, checked })
   }
 
   function onFocusAction(eventName) {

@@ -77,9 +77,8 @@
       return
     }
     inputRef.focus()
-    const newValue = !checked
-    checked = newValue
-    dispatch('change', { name, group, type, checked: newValue })
+    checked = !checked
+    dispatch('change', { name, group, type, checked })
   }
 
   function onFocusAction(eventName) {

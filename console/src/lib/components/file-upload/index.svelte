@@ -91,7 +91,8 @@
   }
 
   function onInputChange(e) {
-    dispatch('change', { name, type, value: toArray(inputRef.files) })
+    value = toArray(inputRef.files)
+    dispatch('change', { name, type, value })
   }
 
   let dragOver = false

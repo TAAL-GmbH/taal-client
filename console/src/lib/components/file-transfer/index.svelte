@@ -26,10 +26,11 @@
   export let onError = (error) => {}
   export let getFileKey = getKey
   export let files = []
-  let imageSrcData = {}
-  let supportedImageSrcDataFileTypes = ['image/png', 'image/jpeg']
-  let fileStatusData = {}
-  let fileDataMap = {}
+  export let fileStatusData = {} // exposed mostly to allow reactive binding for reading values
+  export let fileDataMap = {} // exposed mostly to allow reactive binding for reading values
+  export let imageSrcData = {} // exposed mostly to allow reactive binding for reading values
+  export let supportedImageSrcDataFileTypes = ['image/png', 'image/jpeg']
+
   let readerMap = {}
 
   $: {
@@ -40,6 +41,7 @@
       fileDataMap = {}
       readerMap = {}
       onData()
+      onStatus()
     } else {
       files.forEach((file) => {
         const key = getFileKey(file)
@@ -155,6 +157,7 @@
     }
     if (fileStatusData[key]) {
       delete fileStatusData[key]
+      onStatus()
     }
     if (readerMap[key]) {
       delete readerMap[key]

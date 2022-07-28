@@ -293,8 +293,7 @@
       <Switch
         name="devMode"
         label={t(`${pageKey}.developer-mode-label`)}
-        checked={devMode}
-        on:change={(e) => (devMode = e.detail.checked)}
+        bind:checked={devMode}
       />
     </div>
     <Spacer h={24} />
@@ -316,25 +315,18 @@
       <TextInput
         name="taalClientUrl"
         label={t(`${pageKey}.taal-client-url-label`)}
-        value={taalClientURL}
-        on:change={(e) => (taalClientURL = e.detail.value)}
+        bind:value={taalClientURL}
       />
       <Spacer h={24} />
       <TextInput
         name="mimeType"
         label={t(`${pageKey}.mime-type-label`)}
-        value={mimeType}
+        bind:value={mimeType}
         disabled={inputDataDisabled}
-        on:change={(e) => (mimeType = e.detail.value)}
       />
     {/if}
     <Spacer h={24} />
-    <TextInput
-      name="tag"
-      label={t(`${pageKey}.tag-label`)}
-      value={tag}
-      on:change={(e) => (tag = e.detail.value)}
-    />
+    <TextInput name="tag" label={t(`${pageKey}.tag-label`)} bind:value={tag} />
     <Spacer h={32} />
     <div class="sub-row">
       <Heading value={t(`${pageKey}.transaction-data-label`)} size={2} />
@@ -345,16 +337,14 @@
         name="mode"
         label={t(`${pageKey}.mode-label`)}
         required
-        value={mode}
+        bind:value={mode}
         items={modeItems}
-        on:change={(e) => (mode = e.detail.value)}
       />
       {#if mode === 'encrypt'}
         <TextInput
           name="secret"
           label={t(`${pageKey}.secret-label`)}
-          value={secret}
-          on:change={(e) => (secret = e.detail.value)}
+          bind:value={secret}
         />
       {/if}
     </div>
@@ -364,9 +354,8 @@
         name="textData"
         label={t(`${pageKey}.text-data-label`)}
         required
-        value={textData}
+        bind:value={textData}
         disabled={inputDataDisabled}
-        on:change={(e) => (textData = e.detail.value)}
       />
     {/if}
     <Spacer h={24} />
@@ -398,8 +387,8 @@
           : ''}
         onError={(error) => failure(t('notifications.failure', { error }))}
         on:remove={onRemoveTransferFile}
-        on:data={(e) => (fileDataMap = e.detail.value)}
-        on:status={(e) => (fileStatusData = e.detail.value)}
+        bind:fileDataMap
+        bind:fileStatusData
       />
     {/if}
     {#if devMode}

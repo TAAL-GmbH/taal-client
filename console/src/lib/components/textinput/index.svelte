@@ -2,7 +2,6 @@
   import { createEventDispatcher, onMount } from 'svelte'
   import Icon from '../icon/index.svelte'
   import { getInputLabel } from '../../utils/strings'
-  import Index from '../icon/index.svelte'
 
   const dispatch = createEventDispatcher()
 
@@ -102,7 +101,10 @@
   function onInputChange(e) {
     if (confirm) {
       localValue = e.srcElement.value
+    } else {
+      value = e.srcElement.value
     }
+    // we always pass through the raw value here to aid validators, etc
     dispatch('change', { name, type, value: e.srcElement.value })
   }
 
