@@ -49,57 +49,50 @@ npm i
 npm run build
 cd ..
 
-
-mkdir -p build/darwin
-mkdir -p build/windows
-mkdir -p build/linux
-
-#env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build --trimpath -o build/darwin/intel/${PROG_NAME} -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-#env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build --trimpath -o  -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-#lipo -create -output build/darwin/$PROG_NAME build/darwin/intel/${PROG_NAME} build/darwin/arm/${PROG_NAME}
-ssh taal@www.masa.gi << EOL
-  cd taal-client
-  git reset --hard
-  git pull
-
-  rm -rf build
-  mkdir -p build/darwin/intel
-  mkdir -p build/darwin/arm
-
-  cd console
-  PATH=$PATH:/opt/homebrew/bin npm i
-  PATH=$PATH:/opt/homebrew/bin npm run build
-  cd ..
-
-  env CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 /opt/homebrew/bin/go build --trimpath  -o build/${PROG_NAME}_amd64 -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-  env CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 /opt/homebrew/bin/go build --trimpath  -o build/${PROG_NAME}_arm64 -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-  lipo -create -output build/$PROG_NAME build/${PROG_NAME}_amd64 build/${PROG_NAME}_arm64
-EOL
-
-scp -r taal@www.masa.gi:./taal-client/build/* ./build/darwin 
-
-env CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build --trimpath -o build/linux/$PROG_NAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-
-env CGO_ENABLED=1 GOOS=windows GOARCH=386 CC="i686-w64-mingw32-gcc -fno-stack-protector -D_FORTIFY_SOURCE=0 -lssp" go build  --trimpath  -o build/windows/${PROG_NAME}.exe -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-cd build/windows
-jar cvf taal-client.zip ./taal-client.exe
-cd ../..
-
 if [[ $BUILD == "" ]]; then
   FILENAME=${PROG_NAME}_${GIT_COMMIT}
 else
   FILENAME=${PROG_NAME}_${GIT_COMMIT}_${BUILD}
 fi
 
+
+mkdir -p build/darwin/$FILENAME
+mkdir -p build/windows/$FILENAME
+mkdir -p build/linux/$FILENAME
+mkdir -p build/dist
+
+# Darwin
+env GOOS=darwin GOARCH=amd64 go build --trimpath -o build/darwin/$FILENAME/${PROG_NAME}_amd64 -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+env GOOS=darwin GOARCH=arm64 go build --trimpath -o build/darwin/$FILENAME/${PROG_NAME}_arm64 -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+#lipo -create -output build/darwin/$PROG_NAME build/darwin/${PROG_NAME}_amd64 build/darwin/${PROG_NAME}_arm64
+cp assets/darwin/start.sh assets/darwin/stop.sh build/darwin/$FILENAME
+cd build/darwin
+tar cvfz ../dist/${FILENAME}-darwin.tar.gz ./$FILENAME
+cd ../.. 
+
+# Linux
+env GOOS=linux GOARCH=amd64 go build --trimpath -o build/linux/$FILENAME/$PROG_NAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+cp assets/linux/start.sh assets/linux/stop.sh build/linux/$FILENAME
+cd build/linux
+tar cvfz ../dist/${FILENAME}-linux.tar.gz ./$FILENAME
+cd ../.. 
+
+# Windows
+env GOOS=windows GOARCH=386 go build --trimpath -o build/windows/$FILENAME/${PROG_NAME}.exe -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+cd build/windows
+jar cvf ../dist/${FILENAME}-windows.zip ./$FILENAME
+cd ../..
+
+
 if [[ "$?" == "0" ]]; then
   echo $GIT_COMMIT > build/commit.dat
 
-  cp index.html ./build/
-  cp -r media ./build/
+  cp index.html ./build/dist
+  cp -r media ./build/dist
 
-  cd build
+  cd build/dist
 
-  tar cvfz ../$FILENAME.tar.gz ./*
+  tar cvfz ../../$FILENAME.tar.gz ./*
   echo "${PROG_NAME}: Built $FILENAME"
 else
   echo "${PROG_NAME}: Build FAILED"

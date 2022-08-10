@@ -22,14 +22,14 @@ func GetSQLiteDB(dbFilePath string) (*sqlx.DB, error) {
 		}
 	}
 
-	sqliteDb, err := sql.Open("sqlite3", dbFilePath)
+	sqliteDb, err := sql.Open("sqlite", dbFilePath)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to open sqlite DB")
 	}
 
 	dbPathToRemove = dir
 
-	return sqlx.NewDb(sqliteDb, "sqlite3"), nil
+	return sqlx.NewDb(sqliteDb, "sqlite"), nil
 }
 
 func RemoveSQLiteDB() error {
