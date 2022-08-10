@@ -441,7 +441,7 @@
             html={true}
             color="#8F8D94"
             value={t(`${pageKey}.disclaimer`, {
-              link: link('https://beta-console.taal.com/terms-and-conditions', 'client agreement'),
+              link: link('https://console.taal.com/terms-and-conditions', 'client agreement'),
             })}
           />
         </div>
