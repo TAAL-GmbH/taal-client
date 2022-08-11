@@ -2,8 +2,6 @@ module taal-client
 
 go 1.17
 
-replace github.com/golang-migrate/migrate/v4 => github.com/ordishs/migrate/v4 v4.0.0
-
 require (
 	github.com/bitcoinsv/bsvd v0.0.0-20190609155523-4c29707f7173
 	github.com/bitcoinsv/bsvutil v0.0.0-20181216182056-1d77cf353ea9
@@ -56,7 +54,6 @@ require (
 	golang.org/x/xerrors v0.0.0-20220609144429-65e65417b02f // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0 // indirect
-	gotest.tools v2.2.0+incompatible // indirect
 	lukechampine.com/uint128 v1.1.1 // indirect
 	modernc.org/cc/v3 v3.36.0 // indirect
 	modernc.org/ccgo/v3 v3.16.6 // indirect
