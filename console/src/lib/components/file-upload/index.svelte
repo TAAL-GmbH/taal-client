@@ -91,6 +91,7 @@
   }
 
   function onInputChange(e) {
+    var value
     value = toArray(inputRef.files)
     dispatch('change', { name, type, value })
   }
