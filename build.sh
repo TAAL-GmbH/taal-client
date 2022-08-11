@@ -57,15 +57,21 @@ fi
 
 
 mkdir -p build/darwin/$FILENAME
-mkdir -p build/windows/$FILENAME
 mkdir -p build/linux/$FILENAME
+mkdir -p build/windows/$FILENAME
+
 mkdir -p build/dist
+mkdir -p build/dist/darwin
+mkdir -p build/dist/linux
+mkdir -p build/dist/windows
+
 
 # Darwin
 env GOOS=darwin GOARCH=amd64 go build --trimpath -o build/darwin/$FILENAME/${PROG_NAME}_amd64 -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 env GOOS=darwin GOARCH=arm64 go build --trimpath -o build/darwin/$FILENAME/${PROG_NAME}_arm64 -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 #lipo -create -output build/darwin/$PROG_NAME build/darwin/${PROG_NAME}_amd64 build/darwin/${PROG_NAME}_arm64
 cp assets/darwin/start.sh assets/darwin/stop.sh build/darwin/$FILENAME
+cp build/darwin/$FILENAME/${PROG_NAME}_amd64 build/dist/darwin/taal-client
 cd build/darwin
 tar cvfz ../dist/${PROG_NAME}-darwin.tar.gz ./$FILENAME
 cd ../.. 
@@ -73,15 +79,18 @@ cd ../..
 # Linux
 env GOOS=linux GOARCH=amd64 go build --trimpath -o build/linux/$FILENAME/$PROG_NAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 cp assets/linux/start.sh assets/linux/stop.sh build/linux/$FILENAME
+cp build/linux/$FILENAME/$PROG_NAME build/dist/linux/taal-client
 cd build/linux
 tar cvfz ../dist/${PROG_NAME}-linux.tar.gz ./$FILENAME
 cd ../.. 
 
 # Windows
 env GOOS=windows GOARCH=386 go build --trimpath -o build/windows/$FILENAME/${PROG_NAME}.exe -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+cp build/windows/$FILENAME/${PROG_NAME}.exe build/dist/windows/taal-client.exe
 cd build/windows
 jar cvf ../dist/${PROG_NAME}-windows.zip ./$FILENAME
 cd ../..
+cp build/dist/${PROG_NAME}-windows.zip build/dist/windows/taal-client.zip
 
 
 if [[ "$?" == "0" ]]; then
