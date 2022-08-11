@@ -67,20 +67,20 @@ env GOOS=darwin GOARCH=arm64 go build --trimpath -o build/darwin/$FILENAME/${PRO
 #lipo -create -output build/darwin/$PROG_NAME build/darwin/${PROG_NAME}_amd64 build/darwin/${PROG_NAME}_arm64
 cp assets/darwin/start.sh assets/darwin/stop.sh build/darwin/$FILENAME
 cd build/darwin
-tar cvfz ../dist/${FILENAME}-darwin.tar.gz ./$FILENAME
+tar cvfz ../dist/${PROG_NAME}-darwin.tar.gz ./$FILENAME
 cd ../.. 
 
 # Linux
 env GOOS=linux GOARCH=amd64 go build --trimpath -o build/linux/$FILENAME/$PROG_NAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 cp assets/linux/start.sh assets/linux/stop.sh build/linux/$FILENAME
 cd build/linux
-tar cvfz ../dist/${FILENAME}-linux.tar.gz ./$FILENAME
+tar cvfz ../dist/${PROG_NAME}-linux.tar.gz ./$FILENAME
 cd ../.. 
 
 # Windows
 env GOOS=windows GOARCH=386 go build --trimpath -o build/windows/$FILENAME/${PROG_NAME}.exe -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 cd build/windows
-jar cvf ../dist/${FILENAME}-windows.zip ./$FILENAME
+jar cvf ../dist/${PROG_NAME}-windows.zip ./$FILENAME
 cd ../..
 
 
