@@ -21,6 +21,13 @@ import (
 	"taal-client/settings"
 )
 
+// Name used by build script for the binaries. (Please keep on single line)
+const progname = "taal-client"
+
+// Version & commit strings injected at build with -ldflags -X...
+var version string
+var commit string
+
 func usage() {
 	fmt.Println(`
 Usage
