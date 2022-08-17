@@ -12,15 +12,107 @@
       "program": "${workspaceFolder}/main.go"
     },
     {
-      "name": "test sqlite ",
+      "name": "test sqlite InsertKey",
       "type": "go",
       "request": "launch",
-      "mode": "auto",
+      "mode": "test",
       "program": "repository/repository_integration_test.go",
       "env": {
         "DB": "SQLITE"
       },
-      "args": ["^TestGetAllKeyUsages$"]
+      "args": [
+        "-test.v",
+        "-test.run",
+        "^TestInsertKey$"
+      ]
+    },
+    {
+      "name": "test sqlite GetAllKeys",
+      "type": "go",
+      "request": "launch",
+      "mode": "test",
+      "program": "repository/repository_integration_test.go",
+      "env": {
+        "DB": "SQLITE"
+      },
+      "args": [
+        "-test.v",
+        "-test.run",
+        "^TestGetAllKeys$"
+      ]
+    },
+    {
+      "name": "test sqlite GetAllKeyUsages",
+      "type": "go",
+      "request": "launch",
+      "mode": "test",
+      "program": "repository/repository_integration_test.go",
+      "env": {
+        "DB": "SQLITE"
+      },
+      "args": [
+        "-test.v",
+        "-test.run",
+        "^TestGetAllKeyUsages$"
+      ]
+    },
+    {
+      "name": "test sqlite DeactivateKey",
+      "type": "go",
+      "request": "launch",
+      "mode": "test",
+      "program": "repository/repository_integration_test.go",
+      "env": {
+        "DB": "SQLITE"
+      },
+      "args": [
+        "-test.v",
+        "-test.run",
+        "^TestDeactivateKey$"
+      ]
+    },
+    {
+      "name": "test sqlite InsertTransaction",
+      "type": "go",
+      "request": "launch",
+      "mode": "test",
+      "program": "repository/repository_integration_test.go",
+      "env": {
+        "DB": "SQLITE"
+      },
+      "args": [
+        "-test.v",
+        "-test.run",
+        "^TestInsertTransaction$"
+      ]
+    },
+    {
+      "name": "test sqlite GetTransactions",
+      "type": "go",
+      "request": "launch",
+      "mode": "test",
+      "program": "repository/repository_integration_test.go",
+      "env": {
+        "DB": "SQLITE"
+      },
+      "args": [
+        "-test.v",
+        "-test.run",
+        "^TestGetTransactions$"
+      ]
+    },
+    {
+      "name": "test sqlite All",
+      "type": "go",
+      "request": "launch",
+      "mode": "test",
+      "program": "repository/repository_integration_test.go",
+      "env": {
+        "DB": "SQLITE"
+      },
+      "args": [
+        "-test.v"
+      ]
     }
   ]
 }

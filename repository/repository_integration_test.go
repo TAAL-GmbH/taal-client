@@ -37,9 +37,9 @@ func TestMain(m *testing.M) {
 	var code int
 	var err error
 
-	db := os.Getenv("DB")
+	dbSetting := os.Getenv("DB")
 
-	switch db {
+	switch dbSetting {
 	case "POSTGRES":
 		code, err = runPostgres(m)
 		if err != nil {
@@ -72,6 +72,8 @@ func runSqLite(m *testing.M) (code int, err error) {
 		db.Close()
 		err = database.RemoveSQLiteDB()
 	}()
+
+	db.SetMaxOpenConns(1)
 
 	fixtures, err = testfixtures.New(
 		testfixtures.Database(db.DB),

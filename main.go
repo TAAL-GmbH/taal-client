@@ -120,6 +120,8 @@ func getSqlDb(dbType string) (*sqlx.DB, error) {
 			return nil, errors.Wrap(err, "sqlite database migration failed")
 		}
 
+		db.SetMaxOpenConns(1)
+
 	default:
 		return nil, errors.Errorf("invalid db type given %s", dbType)
 	}
