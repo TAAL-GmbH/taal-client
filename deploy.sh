@@ -59,7 +59,7 @@ tar xvfz ../$LATEST
 cd ../..
 mkdir -p public_cdn
 rm -f public_cdn/${PROG_NAME}
-ln -s ./${PROG_NAME}/${LATEST%.tar.gz} public_cdn/${PROG_NAME}
+ln -s ../${PROG_NAME}/${LATEST%.tar.gz} public_cdn/${PROG_NAME}
 EOL
 
 done
