@@ -26,7 +26,7 @@ func NewRepository(db *sqlx.DB, now func() time.Time) Repository {
 
 const ISO8601 = "2006-01-02T15:04:05.999Z"
 const ISO8601DBOutput = "2006-01-02 15:04:05.999Z"
-const ISO8601Sqlite = "2006-01-02 15:04:05.999+00:00"
+const ISO8601Sqlite = "2006-01-02 15:04:05.999 +0000 UTC"
 
 func (r Repository) InsertKey(ctx context.Context, key server.Key) error {
 	createdAt := r.now().UTC().Format(ISO8601)
