@@ -30,7 +30,7 @@ func (s Server) write(c echo.Context) error {
 		if err == sql.ErrNoRows {
 			return s.sendError(c, http.StatusUnauthorized, errWriteApiKeyUnknown, errors.New("unknown apikey"))
 		}
-		return s.sendError(c, http.StatusInternalServerError, errWriteFailedToReadApiKey, errors.New("failed to read apikey data"))
+		return s.sendError(c, http.StatusInternalServerError, errWriteFailedToReadApiKey, errors.Wrap(err, "failed to read apikey data"))
 	}
 
 	mimeType := c.Request().Header.Get(echo.HeaderContentType)
