@@ -27,7 +27,7 @@ if [ -z "$(git status --porcelain)" ]; then
   GIT_COMMIT=$(git rev-parse HEAD)
   LAST_BUILD=$(cat build/commit.dat)
   if [[ $GIT_COMMIT == $LAST_BUILD ]]; then
-    echo "$PROG_NAME: Nothing new."
+    echo "${PROG_NAME}: Nothing new."
     exit 1
   fi
 elif [[ "$FORCE" == "true" ]]; then
@@ -56,41 +56,46 @@ fi
 
 mkdir -p build/darwin/$FILENAME
 mkdir -p build/linux/$FILENAME
+mkdir -p build/raspian/$FILENAME
 mkdir -p build/windows/$FILENAME
 mkdir -p build/dist
+
 
 # Darwin
 env GOOS=darwin GOARCH=amd64 go build --trimpath -o build/darwin/$FILENAME/${PROG_NAME}_amd64 -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 env GOOS=darwin GOARCH=arm64 go build --trimpath -o build/darwin/$FILENAME/${PROG_NAME}_arm64 -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-#lipo -create -output build/darwin/$PROG_NAME build/darwin/${PROG_NAME}_amd64 build/darwin/${PROG_NAME}_arm64
+#lipo -create -output build/darwin/${PROG_NAME} build/darwin/${PROG_NAME}_amd64 build/darwin/${PROG_NAME}_arm64
 cp assets/darwin/start.sh assets/darwin/stop.sh build/darwin/$FILENAME
-cp build/darwin/$FILENAME/${PROG_NAME}_amd64 build/darwin/$FILENAME
 cd build/darwin
 tar cvfz ../dist/${PROG_NAME}-darwin.tar.gz ./$FILENAME
 cd ../.. 
 
 # Linux
-env GOOS=linux GOARCH=amd64 go build --trimpath -o build/linux/$FILENAME/$PROG_NAME -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+env GOOS=linux GOARCH=amd64 go build --trimpath -o build/linux/$FILENAME/${PROG_NAME} -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
 cp assets/linux/start.sh assets/linux/stop.sh build/linux/$FILENAME
-cp build/linux/$FILENAME/$PROG_NAME build/linux/$FILENAME
 cd build/linux
 tar cvfz ../dist/${PROG_NAME}-linux.tar.gz ./$FILENAME
 cd ../.. 
 
+# Raspian
+env GOOS=linux GOARCH=arm go build --trimpath -o build/raspian/$FILENAME/${PROG_NAME} -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
+cp assets/linux/start.sh assets/linux/stop.sh build/raspian/$FILENAME
+cd build/raspian
+tar cvfz ../dist/${PROG_NAME}-raspian.tar.gz ./$FILENAME
+cd ../.. 
+
 # Windows
 env GOOS=windows GOARCH=386 go build --trimpath -o build/windows/$FILENAME/${PROG_NAME}.exe -ldflags="-s -w -X main.commit=${GIT_COMMIT}"
-cp build/windows/$FILENAME/${PROG_NAME}.exe build/windows/${PROG_NAME}.exe
 cd build/windows
 jar cvf ../dist/${PROG_NAME}-windows.zip ./$FILENAME
 cd ../..
-
 
 if [[ "$?" == "0" ]]; then
   echo $GIT_COMMIT > build/commit.dat
   echo "${PROG_NAME}: Built $FILENAME"
 
-  cp index.html ./build/dist
-  cp -r media ./build/dist
+  cp assets/index.html ./build/dist
+  cp -r assets/media ./build/dist
 
   cd build/dist
   tar cvfz ../../$FILENAME.tar.gz ./*

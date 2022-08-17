@@ -6,7 +6,7 @@ DIR=./
 
 for i in "$@"
 do
-case $1 in
+  case $1 in
     --dir=*)
     DIR="${i#*=}"
     shift # past argument=value
@@ -19,17 +19,18 @@ case $1 in
     *)
     SERVERS="$SERVERS $1"
     shift
+      # unknown option: ignore
     ;;
-esac
+  esac
 done
 
 echo $SERVERS
 
-PROG_NAME=taal-client
+PROG_NAME=$(awk -F'"' '/^const progname =/ {print $2}' main.go)
+
 cd $DIR
 
-BASENAME=taal-client
-LATEST=$(ls -rtd ${BASENAME}_* | tail -1)
+LATEST=$(ls -rt ${PROG_NAME}_*.tar.gz | tail -1)
 echo $LATEST
 
 if [[ "$LATEST" == "" ]]; then
@@ -38,16 +39,33 @@ fi
 
 for var in $SERVERS
 do
-  echo Deploying $LATEST to $var
-  ssh $var mkdir -p ./taal-client
-  scp -r $LATEST $var:./taal-client/
-  ssh $var <<EOL
-cd taal-client
+  echo Deploying ${PROG_NAME} to $var
+  
+  ssh $var mkdir -p ./${PROG_NAME}
+  if [[ $? -ne 0 ]]; then
+    exit 1
+  fi
+
+  scp $LATEST $var:./${PROG_NAME}/
+  if [[ $? -ne 0 ]]; then
+    exit 1
+  fi
+
+  ssh $var << EOL
+cd ${PROG_NAME}
 mkdir ${LATEST%.tar.gz}
 cd ${LATEST%.tar.gz}
 tar xvfz ../$LATEST
 cd ../..
-rm -f public_taal-client
-ln -s ./taal-client/${LATEST%.tar.gz} public_taal-client
+mkdir -p public_cdn
+rm -f public_cdn/public_${PROG_NAME}
+ln -s ./${PROG_NAME}/${LATEST%.tar.gz} public_cdn/public_${PROG_NAME}
 EOL
+
 done
+
+if [[ $? -ne 0 ]]; then
+    exit 1
+fi
+
+exit 0
