@@ -1,8 +1,16 @@
 # Taal Client
 
-This is a small service that runs on a Taal customer's machine and interacts with Taal's API.
+## Overview
 
-All private keys used for signing customer transactions are held on the customer's machine only.
+TAAL Client is a service that runs on the server of a TAAL customer and interacts with [TAPI](https://docs.taal.com/core-products/transaction-processing/taal-transaction-endpoints). You can use the TAAL Client to upload data onto the BSV Blockchain without the need to construct and fund raw transactions.
+
+You can install and download the TAAL Client and obtain a valid TAAL API key. You can provide the data, and the TAAL component constructs a script stack to include the date (OP_Return) and finds the transaction (valid inputs) from the TAAL’s treasury. TAAL client then signs the transaction and TAAL submits the signed transaction.
+
+All the private keys used for signing a customer's transactions are held only on the customer's server.
+
+The use of TAAL Client service is subject to fees as per the Transaction Agreement.
+
+## Installation
 
 Binaries for Linux, Mac and Windows can be found at https://cdn.taal.com.
 
@@ -24,16 +32,20 @@ By default, Taal Client creates a local database with the filename `taal_client.
 
 ### Registration
 
-For TAAL Client use, a valid Taal API key needs to be registered in order to bind it with a public key.
+For TAAL Client use, a valid Taal API key needs to be registered in order to bind it with a public key. For more details, see the [Get an API key](https://docs.taal.com/introduction/get-an-api-key) page.
 
 1. Register at https://console.taal.com
 2. Obtain a Taal Client plan which best suits your needs
 3. Make sure that Taal Client is running
-4. Register the API key issued with the plan in Taal Client via the [Key-manager](https://localhost:9500/key-manager) page
+4. Register the API key issued with the plan in Taal Client by clicking "Add new" on the [Key-manager](https://localhost:9500/key-manager) page
+
+![Key-manager page](assets/key-manager.png)
 
 This key is stored in the database with the public-private key pair. When creating transactions the key pair never leaves the machine.
 
-![Register sequence](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/register.png)
+The following image describes the registration of the API key on the TAAL Client.
+
+![Register sequence](assets/register.png)
 
 ### Writing data
 
@@ -45,7 +57,11 @@ Currently data can be submitted in 3 different modes
 
 After starting the Taal Client by running `taal-client` on the command line, you can then write data to the blockchain. On the [Send-data](http://localhost:9500/send-data) page multiple files can be drag-and-dropped to the `File` area. Upon clicking the button `Submit transactions` the data will be submitted in the chosen mode, each in a separate transaction.
 
+![Send data simple mode](assets/send-data-simple-mode.png)
+
 Additionally the [Send-data](http://localhost:9500/send-data) page offers a Developer mode which allows users to enter data as pure text. The call to the Taal Client API will be displayed as a cURL command. In the Developer mode it is only possible to submit individual transactions.
+
+![Send data developer mode](assets/send-data-developer-mode.png)
 
 Alternatively data can be written to the blockchain by POSTing directly to the Taal Client API.
 
@@ -76,7 +92,7 @@ curl --location --request POST 'http://localhost:9500/api/v1/transactions' \
 
 The following diagram shows the different steps that happen when writing data
 
-![Writing sequence](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/write.png)
+![Writing sequence](assets/write.png)
 
 ### Reading data
 
@@ -89,7 +105,11 @@ curl --location --request GET 'http://localhost:9500/api/v1/transactions/<txid>'
 
 ### Transaction history
 
-Information about transactions which have been made through Taal Client are stored in a local database. This information includes ID, data size and timestamp. The history of all these transactions can be viewed on the `History` page of the console or by GETing from the Taal Client API.
+Information about transactions which have been made through Taal Client are stored in a local database. This information includes ID, data size and timestamp. The history of all these transactions can be viewed on the `History` page of the console.
+
+![Transaction history](assets/transaction-history.png)
+
+Alternatively data can be read by GETing from the Taal Client API.
 
 ```c
 curl --location --request GET 'http://localhost:9500/api/v1/transactions/?hours_back=24'
@@ -109,12 +129,12 @@ chmod 755 taal-client
 
 For the Mac version the code is not signed with a certificate issued by Apple currently. Therefore when running for the first time the following message will be shown.
 
-![Mac1](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/mac1.png)
+![Mac1](assets/mac1.png)
 
 In order to still run the application, please open `Security & Privacy` settings and click on `Open Anyway` as shown in the following picture.
 
-![Mac2](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/mac2.png)
+![Mac2](assets/mac2.png)
 
 After that when running the application the following message will be shown. This time it has an `Open` button. Press this button to run the application.
 
-![Mac3](https://github.com/TAAL-GmbH/taal-client/blob/master/assets/mac3.png)
+![Mac3](assets/mac3.png)
