@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ~/.nvm/nvm.sh
+
 for i in "$@"
 do
 case $i in
