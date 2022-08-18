@@ -39,13 +39,13 @@ For TAAL Client use, a valid Taal API key needs to be registered in order to bin
 3. Make sure that Taal Client is running
 4. Register the API key issued with the plan in Taal Client by clicking "Add new" on the [Key-manager](https://localhost:9500/key-manager) page
 
-![Key-manager page](assets/key-manager.png)
+<img src="assets/key-manager.png" width="900">
 
 This key is stored in the database with the public-private key pair. When creating transactions the key pair never leaves the machine.
 
 The following image describes the registration of the API key on the TAAL Client.
 
-![Register sequence](assets/register.png)
+<img src="assets/register.png" width="600">
 
 ### Writing data
 
@@ -57,11 +57,11 @@ Currently data can be submitted in 3 different modes
 
 After starting the Taal Client by running `taal-client` on the command line, you can then write data to the blockchain. On the [Send-data](http://localhost:9500/send-data) page multiple files can be drag-and-dropped to the `File` area. Upon clicking the button `Submit transactions` the data will be submitted in the chosen mode, each in a separate transaction.
 
-![Send data simple mode](assets/send-data-simple-mode.png)
+<img src="assets/send-data-simple-mode.png" width="600">
 
 Additionally the [Send-data](http://localhost:9500/send-data) page offers a Developer mode which allows users to enter data as pure text. The call to the Taal Client API will be displayed as a cURL command. In the Developer mode it is only possible to submit individual transactions.
 
-![Send data developer mode](assets/send-data-developer-mode.png)
+<img src="assets/send-data-developer-mode.png" width="600">
 
 Alternatively data can be written to the blockchain by POSTing directly to the Taal Client API.
 
@@ -92,7 +92,7 @@ curl --location --request POST 'http://localhost:9500/api/v1/transactions' \
 
 The following diagram shows the different steps that happen when writing data
 
-![Writing sequence](assets/write.png)
+<img src="assets/write.png" width="600">
 
 ### Reading data
 
@@ -107,7 +107,7 @@ curl --location --request GET 'http://localhost:9500/api/v1/transactions/<txid>'
 
 Information about transactions which have been made through Taal Client are stored in a local database. This information includes ID, data size and timestamp. The history of all these transactions can be viewed on the `History` page of the console.
 
-![Transaction history](assets/transaction-history.png)
+<img src="assets/transaction-history.png" width="80800">
 
 Alternatively data can be read by GETing from the Taal Client API.
 
@@ -129,12 +129,12 @@ chmod 755 taal-client
 
 For the Mac version the code is not signed with a certificate issued by Apple currently. Therefore when running for the first time the following message will be shown.
 
-![Mac1](assets/mac1.png)
+<img src="assets/mac1.png" width="200">
 
 In order to still run the application, please open `Security & Privacy` settings and click on `Open Anyway` as shown in the following picture.
 
-![Mac2](assets/mac2.png)
+<img src="assets/mac2.png" width="600">
 
 After that when running the application the following message will be shown. This time it has an `Open` button. Press this button to run the application.
 
-![Mac3](assets/mac3.png)
+<img src="assets/mac3.png" width="200">
