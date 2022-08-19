@@ -2,17 +2,17 @@
 
 ## Overview
 
-TAAL Client is a service that runs on the server of a TAAL customer and interacts with [TAPI](https://docs.taal.com/core-products/transaction-processing/taal-transaction-endpoints). You can use the TAAL Client to upload data onto the BSV Blockchain without the need to construct and fund raw transactions.
+TAAL Client is a service that runs on the server of a TAAL customer and interacts with [TAPI](https://docs.taal.com/core-products/transaction-processing/taal-transaction-endpoints). You can use the TAAL Client to upload data onto the BSV Blockchain without the need to construct and fund raw transactions. A customer does need to hold BSV.
 
-You can install and download the TAAL Client and obtain a valid TAAL API key. You can provide the data, and the TAAL component constructs a script stack to include the date (OP_Return) and finds the transaction (valid inputs) from the TAAL’s treasury. TAAL Client then signs the transaction and TAAL submits the signed transaction.
+After downloading and installing TAAL Client it can be used with a valid TAAL API key. You can then submit the data or data files. TAAL Client constructs a script stack to include the data (OP_Return) and funds the transaction (valid inputs) from the TAAL Client treasury. TAAL Client signs the transaction and TAAL broadcasts the signed transaction.
 
 All the private keys used for signing a customer's transactions are held only on the customer's server.
 
-The use of TAAL Client service is subject to fees as per the Transaction Agreement.
+The use of TAAL Client is subject to fees as per plans on [TAAL Console](https://console.taal.com).
 
 ## Installation
 
-Binaries for Linux, Mac and Windows can be found at https://cdn.taal.com.
+Binaries for Linux, Mac and Windows can be found at https://cdn.taal.com/taal-client.
 
 ## Console
 
