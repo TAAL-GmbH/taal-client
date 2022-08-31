@@ -4,7 +4,7 @@ This is a small service that runs on a Taal customer's machine and interacts wit
 
 All private keys used for signing customer transactions are held on the customer's machine only.
 
-Binaries for Linux, Mac and Windows can be found at https://cdn.taal.com.
+Binaries for Linux, Mac and Windows can be found at https://cdn.taal.com/taal-client/
 
 ## Console
 
