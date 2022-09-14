@@ -72,7 +72,7 @@ func (s Server) write(c echo.Context) error {
 		}
 		encryptedBytes, err := encryption.Encrypt(reqBody, []byte(key))
 		if err != nil {
-			return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.New("decrypted body is wrong1"))
+			return s.sendError(c, http.StatusBadRequest, errWriteFailedToReturnOpReturnOutput, errors.New("decrypted body is wrong"))
 		}
 		payload = encryptedBytes
 	default:
