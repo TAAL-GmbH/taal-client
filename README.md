@@ -12,7 +12,7 @@ The use of TAAL Client is subject to fees as per plans on [TAAL Console](https:/
 
 ## Installation
 
-Binaries for Linux, Mac and Windows can be found at https://cdn.taal.com/taal-client.
+Binaries for Linux, Mac and Windows can be found at https://cdn.taal.com/taal-client/
 
 ## Console
 
